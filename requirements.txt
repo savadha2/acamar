@@ -1,0 +1,12 @@
+langchain
+langgraph
+langchain-ollama
+fastapi
+uvicorn[standard]
+streamlit
+psycopg[binary]
+pgvector
+beautifulsoup4
+requests
+python-dotenv
+pydantic
