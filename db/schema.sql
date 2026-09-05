@@ -4,7 +4,7 @@
 -- (shared) or a family (private); documents are the shared retrieval table
 -- every source writes into.
 
-CREATE EXTENSION IF NOT EXISTS pgvector;
+CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ---------------------------------------------------------------------------
@@ -105,10 +105,10 @@ CREATE INDEX idx_documents_domain_category ON documents(domain, category);
 CREATE INDEX idx_documents_event_date ON documents(event_date);
 
 -- Approximate nearest-neighbor index for semantic search.
--- ivfflat needs ANALYZE after the table has real data to pick good `lists`;
--- fine to defer this until there's a non-trivial number of rows.
+-- HNSW over IVFFlat: no "needs real data first to cluster well" quirk,
+-- and generally the better modern default for a project this size.
 CREATE INDEX idx_documents_embedding ON documents
-    USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+    USING hnsw (embedding vector_cosine_ops);
 
 -- ---------------------------------------------------------------------------
 -- Notification preferences (per user, per domain/category push toggle)
