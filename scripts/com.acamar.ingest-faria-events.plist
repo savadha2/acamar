@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Label kept as-is (it predates the second source) — this is "the daily
+         ingestion job", not Faria-specific anymore. See scripts/run_daily_ingestion.sh
+         for which sources it runs. -->
+    <key>Label</key>
+    <string>com.acamar.ingest-faria-events</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/kavitha/Projects/acamar/scripts/run_daily_ingestion.sh</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/kavitha/Projects/acamar</string>
+
+    <!-- Six times daily local time: 08:00, 10:00, 12:00, 14:00, 16:00, 22:00.
+         StartCalendarInterval takes an array of dicts for multiple firings —
+         each entry is independent. (Was twice daily — 06:00/16:00 — until
+         2026-09-25.) manual_menu is deliberately NOT run from this job: it's
+         upload-triggered (POST /admin/menu-upload runs its ingestion
+         immediately), not schedule-driven — see sources/manual_menu/connector.py. -->
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict>
+            <key>Hour</key>
+            <integer>8</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+        <dict>
+            <key>Hour</key>
+            <integer>10</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+        <dict>
+            <key>Hour</key>
+            <integer>12</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+        <dict>
+            <key>Hour</key>
+            <integer>14</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+        <dict>
+            <key>Hour</key>
+            <integer>16</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+        <dict>
+            <key>Hour</key>
+            <integer>22</integer>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/Users/kavitha/Projects/acamar/logs/ingest-daily.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/kavitha/Projects/acamar/logs/ingest-daily.error.log</string>
+
+    <!-- Postgres/Ollama must be reachable at wake time; this doesn't start them. -->
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

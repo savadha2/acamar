@@ -1,0 +1,72 @@
+[
+  {
+    "external_id": "199017449_2026-09-04T15:30:00Z_2026-09-04T16:00:00Z",
+    "title": "Principal's Coffee",
+    "domain": "school",
+    "category": "event",
+    "event_date": "2026-09-04",
+    "published_at": null,
+    "student_ref": null,
+    "content": "Faria Elementary School event: Principal's Coffee — on Friday, September 4, 2026 from 8:30 AM to 9:00 AM."
+  },
+  {
+    "external_id": "200347750_2026-09-10T00:45:00Z_2026-09-10T02:00:00Z",
+    "title": "FEEF Meeting",
+    "domain": "school",
+    "category": "event",
+    "event_date": "2026-09-09",
+    "published_at": null,
+    "student_ref": null,
+    "content": "Faria Elementary School event: FEEF Meeting — on Wednesday, September 9, 2026 from 5:45 PM to 7:00 PM."
+  },
+  {
+    "external_id": "192493501_2026-09-12T01:00:00Z_2026-09-12T04:00:00Z",
+    "title": "Fall Festival + Movie Night",
+    "domain": "school",
+    "category": "event",
+    "event_date": "2026-09-11",
+    "published_at": null,
+    "student_ref": null,
+    "content": "Faria Elementary School event: Fall Festival + Movie Night — on Friday, September 11, 2026 from 6:00 PM to 9:00 PM."
+  },
+  {
+    "external_id": "149570674_2026-09-18T00:00:00Z_2026-09-19T00:00:00Z",
+    "title": "Minimum Day for all grades-12:10pm dismissal",
+    "domain": "school",
+    "category": "event",
+    "event_date": "2026-09-18",
+    "published_at": null,
+    "student_ref": null,
+    "content": "Faria Elementary School event: Minimum Day for all grades-12:10pm dismissal — all day on Friday, September 18, 2026."
+  },
+  {
+    "external_id": "149570667_2026-09-21T00:00:00Z_2026-09-22T00:00:00Z",
+    "title": "Staff Learning Day (no school)",
+    "domain": "school",
+    "category": "event",
+    "event_date": "2026-09-21",
+    "published_at": null,
+    "student_ref": null,
+    "content": "Faria Elementary School event: Staff Learning Day (no school) — all day on Monday, September 21, 2026."
+  },
+  {
+    "external_id": "195481349_2026-10-01T00:00:00Z_2026-10-03T00:00:00Z",
+    "title": "Parent Teacher Conference",
+    "domain": "school",
+    "category": "event",
+    "event_date": "2026-10-01",
+    "published_at": null,
+    "student_ref": null,
+    "content": "Faria Elementary School event: Parent Teacher Conference — all day from Thursday, October 1, 2026 through Friday, October 2, 2026."
+  },
+  {
+    "external_id": "200327283_2026-10-02T15:30:00Z_2026-10-02T16:00:00Z",
+    "title": "Principal's Coffee",
+    "domain": "school",
+    "category": "event",
+    "event_date": "2026-10-02",
+    "published_at": null,
+    "student_ref": null,
+    "content": "Faria Elementary School event: Principal's Coffee — on Friday, October 2, 2026 from 8:30 AM to 9:00 AM."
+  }
+]

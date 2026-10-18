@@ -1,0 +1,169 @@
+[project]
+name = "acamar"
+version = "0.1.0"
+description = "Dashboard and query system for daily-care logistics (school/daycare ingestion + reasoning agents)."
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+
+# Runtime dependencies. Lower bounds = the versions validated on 2026-09-05;
+# exact resolution is pinned in uv.lock. Add/remove with `uv add` / `uv remove`.
+dependencies = [
+    # --- Orchestration / LLM ---
+    "langchain>=1.4.0",
+    "langgraph>=1.2.11",
+    "langchain-ollama>=1.1.0",
+    "langgraph-checkpoint-postgres>=3.1.2",  # PostgresSaver for LangGraph state
+    # --- Backend / dashboard ---
+    "fastapi>=0.141.1",
+    "uvicorn[standard]>=0.52.4",
+    "streamlit>=1.63.0",
+    # --- Database ---
+    "psycopg[binary]>=3.3.5",
+    "psycopg-pool>=3.3.1",
+    "pgvector>=0.5.0",
+    "ollama>=0.6.2",         # embedding client
+    # --- Scraping / ingestion ---
+    "beautifulsoup4>=4.15.0",
+    "lxml>=5.3.0",
+    "httpx>=0.28.1",         # async HTTP (architecture.md decision #5)
+    "requests>=2.34.2",
+    "pdfplumber>=0.11.10",   # manual_menu PDF table extraction
+    "python-multipart>=0.0.20",  # FastAPI UploadFile parsing (admin menu-upload route)
+    # --- Gmail connector ---
+    "google-api-python-client>=2.150.0",
+    "google-auth-httplib2>=0.2.0",
+    "google-auth-oauthlib>=1.2.0",
+    # --- Config / models ---
+    "python-dotenv>=1.2.3",
+    "pydantic>=2.13.5",
+    "pydantic-settings>=2.5.0",  # typed Settings from env (architecture.md §3.4, decision #6)
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.0",
+    "mypy>=1.14.0",
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+    "pytest-asyncio>=0.25.0",
+    "respx>=0.22.0",          # httpx request mocking
+    "pre-commit>=4.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/acamar"]
+
+# ---------------------------------------------------------------------------
+# Ruff — lint + format (architecture.md §3.2)
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "W",   # pycodestyle + pyflakes
+    "I",             # isort
+    "N",             # pep8-naming
+    "UP",            # pyupgrade
+    "B",             # flake8-bugbear
+    "BLE",           # flake8-blind-except
+    "SIM",           # flake8-simplify
+    "PTH",           # flake8-use-pathlib
+    "ANN",           # flake8-annotations
+    "ASYNC",         # flake8-async
+    "S",             # flake8-bandit (security)
+    "D",             # pydocstyle
+    "RUF",
+]
+ignore = [
+    "D203",  # conflicts with D211
+    "D213",  # conflicts with D212
+    "D107",  # __init__ documented in the class docstring (google convention)
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "D", "ANN"]  # asserts + fixture creds fine; docs/anns relaxed
+"scripts/**" = ["D", "ANN401"]         # psycopg cursors are legitimately `Any` here
+# adapters document their contract on the port they implement, not the impl
+"src/acamar/adapters/**" = ["D101", "D102"]
+"src/acamar/api/dependencies.py" = ["D103"]  # DI providers are self-evident wiring
+
+# ---------------------------------------------------------------------------
+# mypy — strict on the core (architecture.md §3.1)
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.13"
+strict = true
+files = ["src", "tests", "scripts"]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = [
+    "langchain.*",
+    "langgraph.*",
+    "langchain_ollama.*",
+    "pgvector.*",
+    "bs4.*",
+    "lxml.*",
+    "requests.*",
+    "streamlit.*",
+    "pdfplumber.*",
+    "googleapiclient.*",
+    "google_auth_oauthlib.*",
+    "google.oauth2.*",
+    "google.auth.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["acamar.dashboard.*"]
+# Streamlit script — loose by nature; not part of the typed core.
+warn_return_any = false
+disallow_untyped_calls = false
+
+[[tool.mypy.overrides]]
+module = ["acamar.adapters.gmail.*"]
+# googleapiclient/google-auth-oauthlib ship no py.typed marker, so every call
+# into Credentials/InstalledAppFlow/the Gmail service is "untyped" by
+# construction, not because this module is loosely written.
+disallow_untyped_calls = false
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_decorators = false  # respx.mock is untyped
+
+[[tool.mypy.overrides]]
+module = ["scripts.*"]
+# psycopg cursors return Any; scripts are thin glue, not the typed core.
+disallow_any_generics = false
+warn_return_any = false
+
+# ---------------------------------------------------------------------------
+# pytest (architecture.md §4)
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# importlib mode + full package tree: test modules get dotted names, no collisions.
+addopts = "--import-mode=importlib --strict-markers --strict-config"
+# repo root on sys.path so `tests.fakes` and `scripts.*` import in test modules;
+# `acamar` still comes from the installed (editable) package.
+pythonpath = ["."]
+asyncio_mode = "auto"
+markers = [
+    "contract: shared suite every SourceConnector implementation must pass",
+    "integration: needs a real Postgres (testcontainers)",
+    "e2e: full stack, slow, opt-in",
+]
+
+[tool.coverage.run]
+source = ["src/acamar"]
+omit = ["src/acamar/dashboard/*"]

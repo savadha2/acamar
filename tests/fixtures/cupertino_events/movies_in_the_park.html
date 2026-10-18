@@ -1,0 +1,46 @@
+<!--
+  Hand-reconstructed from real content fetched live from
+  https://www.cupertino.gov/Parks-Recreation/Events/Movies-in-the-Park on
+  2026-10-01 (markdown-converting fetch, not a raw curl capture — see
+  index.html's own fixture comment for why). The verified raw markdown this
+  came back as (trimmed to what this fixture exercises):
+
+    Movies in the Park
+    ==================
+    Thank you to everyone who joined us for Movies in the Park! ...
+    Movies in the Park will return in August 2027, with the movie lineup
+    and event details available in summer 2027.
+    FAQs
+    ----
+    **When do the movies start?**
+    Movies start at 8 p.m.
+    **What do I bring?**
+    We recommend a blanket or lawn chair for your comfort, but nothing is
+    required.
+
+  Real finding this fixture exists to pin down: this is the common,
+  off-season shape — the "will return in <year>" sentence is a PLAIN
+  paragraph, not bold, so it never matches the date pattern at all (correct:
+  no document should be produced this run); the FAQ questions, by contrast,
+  ARE bold, and must NOT be mistaken for a date either. Confirms the date
+  regex is a real discriminator, not just theoretical.
+-->
+<html>
+<head><title>Movies in the Park | City of Cupertino</title></head>
+<body>
+  <main>
+    <h1>Movies in the Park</h1>
+    <p>Thank you to everyone who joined us for Movies in the Park! It was
+    great to see the community fill Creekside Park each Friday with
+    blankets, lawn chairs, family, and friends for a month of movies under
+    the stars.</p>
+    <p>Movies in the Park will return in August 2027, with the movie lineup
+    and event details available in summer 2027.</p>
+    <h2>FAQs</h2>
+    <p><strong>When do the movies start?</strong><br>Movies start at 8 p.m.</p>
+    <p><strong>What do I bring?</strong><br>We recommend a blanket or lawn
+    chair for your comfort, but nothing is required.</p>
+    <p><strong>Can I bring my dog?</strong></p>
+  </main>
+</body>
+</html>

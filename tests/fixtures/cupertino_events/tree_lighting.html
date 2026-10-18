@@ -1,0 +1,40 @@
+<!--
+  Hand-reconstructed from real content fetched live from
+  https://www.cupertino.gov/Parks-Recreation/Events/Tree-Lighting on
+  2026-10-01 (markdown-converting fetch, not a raw curl capture — see
+  index.html's own fixture comment for why). The verified raw markdown this
+  came back as:
+
+    # Community Tree Lighting
+    **Friday, December 4**
+    **6 p.m. to 8 p.m.**
+    **Quinlan Community Center 10185 North Stelling Road**
+    Kick off the holiday season. Experience the moment when the tree comes
+    alive with hundreds of twinkling lights, filling the air with a magical
+    glow. Stay for holiday photo opportunities including a photo with Santa,
+    our snowball room, holiday movie watching, and kids activities. This is
+    a free event open to the community. No registration is required.
+
+  Each of date/time/venue as its own isolated **bold** markdown fragment is
+  strong, direct evidence they're each wrapped in their own <strong> (or <b>)
+  tag on the real page — exactly the shape this fixture encodes. The exact
+  surrounding tag nesting (div/section structure) is reconstructed, not
+  verbatim. Real finding this fixture exists to pin down: the date has NO
+  YEAR anywhere on the real page — "Friday, December 4" only.
+-->
+<html>
+<head><title>Community Tree Lighting | City of Cupertino</title></head>
+<body>
+  <main>
+    <h1>Community Tree Lighting</h1>
+    <p><strong>Friday, December 4</strong></p>
+    <p><strong>6 p.m. to 8 p.m.</strong></p>
+    <p><strong>Quinlan Community Center 10185 North Stelling Road</strong></p>
+    <p>Kick off the holiday season. Experience the moment when the tree comes
+    alive with hundreds of twinkling lights, filling the air with a magical
+    glow. Stay for holiday photo opportunities including a photo with Santa,
+    our snowball room, holiday movie watching, and kids activities. This is
+    a free event open to the community. No registration is required.</p>
+  </main>
+</body>
+</html>

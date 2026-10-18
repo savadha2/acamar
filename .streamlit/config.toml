@@ -1,0 +1,7 @@
+[theme]
+# Pinned dark (2026-09-24, your call — dark is the preferred look here,
+# the logo legibility issue that motivated trying light isn't something
+# you need fixed). Still pinned rather than left to each viewer's OS
+# setting, so it looks the same on every LAN device (iPad, laptop)
+# regardless of that device's own dark/light preference.
+base = "dark"

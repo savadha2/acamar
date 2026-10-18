@@ -1,29 +1,21 @@
 -- ACAMAR database schema (Postgres + pgvector)
--- Implements the reviewed ERD: families/users/schools/students own the tenant
--- boundary; sources own ingestion config and are scoped to EITHER a school
--- (shared) or a family (private); documents are the shared retrieval table
--- every source writes into.
+--
+-- Single-household tool. Access to the dashboard/API is gated by opaque bearer
+-- tokens (the `subscribers` table); there is no per-user data scoping -- a valid
+-- token sees everything. Sources are anchored to a school and are the only place
+-- ingestion config lives; `documents` is the shared retrieval table every source
+-- writes into.
+--
+-- (Earlier revisions modelled families/users/students for multi-tenancy. Dropped
+-- 2026-09-08 -- see docs/architecture.md and CLAUDE.md. Re-add a tenant boundary
+-- only if the tool is ever shared beyond one household with data separation.)
 
 CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ---------------------------------------------------------------------------
--- Tenant boundary
+-- Schools -- the anchor a source's events/menus belong to
 -- ---------------------------------------------------------------------------
-
-CREATE TABLE families (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name        TEXT NOT NULL,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE TABLE users (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    family_id   UUID NOT NULL REFERENCES families(id) ON DELETE CASCADE,
-    email       TEXT NOT NULL UNIQUE,
-    role        TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('owner', 'member')),
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
-);
 
 CREATE TABLE schools (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -31,47 +23,46 @@ CREATE TABLE schools (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE students (
+-- ---------------------------------------------------------------------------
+-- Subscribers -- bearer tokens for the dashboard/API.
+--
+-- Store only a hash of the token, never the token itself. A row with
+-- `revoked_at IS NULL` is active. No per-token scoping yet: any active token
+-- authorizes every read.
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE subscribers (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    family_id   UUID NOT NULL REFERENCES families(id) ON DELETE CASCADE,
-    school_id   UUID REFERENCES schools(id) ON DELETE SET NULL,
-    name        TEXT NOT NULL,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    token_hash  TEXT NOT NULL UNIQUE,   -- sha256 hex of the bearer token
+    label       TEXT NOT NULL,          -- who this token is for ('me', 'partner', ...)
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    revoked_at  TIMESTAMPTZ             -- set to disable a token without losing history
 );
 
-CREATE INDEX idx_users_family_id ON users(family_id);
-CREATE INDEX idx_students_family_id ON students(family_id);
-CREATE INDEX idx_students_school_id ON students(school_id);
+CREATE INDEX idx_subscribers_active
+    ON subscribers (token_hash) WHERE revoked_at IS NULL;
 
 -- ---------------------------------------------------------------------------
 -- Sources (per-domain connectors: scrapers, Gmail filters, etc.)
 --
--- Ownership determines visibility: a source belongs to EITHER a school
--- (shared with every family enrolled there) OR a family (private). This is
--- the "sensitivity" of every document it produces -- derived, not a
--- separately-tracked flag that could drift out of sync.
+-- A new source type is added as a row here + one connector class, never a new
+-- code path. `config` (JSONB) holds per-source settings: schedule, calendar URL,
+-- Gmail filter, ETag cache, etc.
 -- ---------------------------------------------------------------------------
 
 CREATE TABLE sources (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    school_id       UUID REFERENCES schools(id) ON DELETE CASCADE,
-    family_id       UUID REFERENCES families(id) ON DELETE CASCADE,
-    domain          TEXT NOT NULL,   -- e.g. 'school', 'daycare', 'gmail', 'financial', 'product_manual'
-    category        TEXT NOT NULL,   -- e.g. 'event', 'menu', 'reminder', 'activity'
+    school_id       UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    domain          TEXT NOT NULL,   -- 'school', 'daycare', 'gmail', 'financial', 'product_manual', 'city'
+    category        TEXT NOT NULL,   -- 'event', 'menu', 'reminder', 'activity'
     config          JSONB NOT NULL DEFAULT '{}'::jsonb,
     last_run_at     TIMESTAMPTZ,
-    last_status     TEXT CHECK (last_status IN ('ok', 'error', 'never_run')) DEFAULT 'never_run',
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-
-    -- exactly one owner: a source is shared (school) or private (family), never both, never neither
-    CONSTRAINT sources_single_owner CHECK (
-        (school_id IS NOT NULL AND family_id IS NULL) OR
-        (school_id IS NULL AND family_id IS NOT NULL)
-    )
+    last_status     TEXT NOT NULL DEFAULT 'never_run'
+                    CHECK (last_status IN ('ok', 'error', 'never_run')),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX idx_sources_school_id ON sources(school_id);
-CREATE INDEX idx_sources_family_id ON sources(family_id);
 CREATE INDEX idx_sources_domain_category ON sources(domain, category);
 
 -- ---------------------------------------------------------------------------
@@ -81,51 +72,53 @@ CREATE INDEX idx_sources_domain_category ON sources(domain, category);
 CREATE TABLE documents (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     source_id       UUID NOT NULL REFERENCES sources(id) ON DELETE CASCADE,
-    student_id      UUID REFERENCES students(id) ON DELETE CASCADE,  -- nullable: not every doc is about a specific kid
 
-    -- denormalized from sources for fast filtering on every retrieval query
+    -- denormalized from sources: the Router/Retrieval agents filter on these
+    -- on every query, so they must not require a join through `sources`.
     domain          TEXT NOT NULL,
     category        TEXT NOT NULL,
 
+    -- free-text label for which kid this concerns ('daughter'); NULL = whole-school.
+    -- Not a FK: students aren't modelled.
+    student_ref     TEXT,
+
     title           TEXT NOT NULL,
     content         TEXT NOT NULL,
-    external_id     TEXT NOT NULL,  -- dedup key: e.g. calendar event id, email message id
+    headline        TEXT,           -- short assistant-style card title (not the raw subject)
+    summary         TEXT,           -- LLM one/two-sentence gloss of `content`, for dashboard cards
+    is_relevant     BOOLEAN NOT NULL DEFAULT true,  -- dashboard filter only; retrieval ignores this
+    organization    TEXT,           -- closed taxonomy, see domain.enums.Organization
+    external_id     TEXT NOT NULL,  -- dedup key: calendar occurrence id, email Message-ID
+    url             TEXT,           -- source page, if the connector has one (e.g. cupertino_events'
+                                     -- event page) — NULL for sources with nothing to link to
+                                     -- (Faria's calendar has no stable per-event URL, Gmail has no
+                                     -- public one, manual_menu has no web page at all)
 
-    event_date      DATE,           -- the date this document is ABOUT (menu date, event date) -- not when it was ingested
-    published_at    TIMESTAMPTZ,    -- when the source itself published/sent this
+    event_date      DATE,           -- the date this document is ABOUT (not when ingested)
+    published_at    TIMESTAMPTZ,    -- when the source itself published/sent it
+
     ingested_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),  -- last ingest that changed this row's content
+    last_seen_at    TIMESTAMPTZ NOT NULL DEFAULT now(),  -- last ingest run that still produced it
+    deleted_at      TIMESTAMPTZ,    -- soft-delete: upstream removed it (e.g. a cancelled event)
+    dismissed_at    TIMESTAMPTZ,    -- user marked "done" on the dashboard — deliberately separate
+                                    -- from deleted_at: a future re-ingest must not undo this the way
+                                    -- reconcile_deletions legitimately clears deleted_at
 
-    embedding       vector(1536),   -- adjust dimension to match your chosen embedding model
+    embedding       vector(768),    -- nomic-embed-text (768-dim); change with the model
 
     CONSTRAINT documents_dedup UNIQUE (source_id, external_id)
 );
 
-CREATE INDEX idx_documents_student_id ON documents(student_id);
 CREATE INDEX idx_documents_domain_category ON documents(domain, category);
 CREATE INDEX idx_documents_event_date ON documents(event_date);
+-- the hot path: live (not soft-deleted) docs in a date window
+CREATE INDEX idx_documents_live ON documents(event_date) WHERE deleted_at IS NULL;
 
--- Approximate nearest-neighbor index for semantic search.
--- HNSW over IVFFlat: no "needs real data first to cluster well" quirk,
--- and generally the better modern default for a project this size.
+-- Approximate nearest-neighbour index for semantic search.
+-- HNSW over IVFFlat: no "needs real data first to cluster well" quirk.
 CREATE INDEX idx_documents_embedding ON documents
     USING hnsw (embedding vector_cosine_ops);
-
--- ---------------------------------------------------------------------------
--- Notification preferences (per user, per domain/category push toggle)
--- ---------------------------------------------------------------------------
-
-CREATE TABLE notification_preferences (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    domain          TEXT NOT NULL,
-    category        TEXT NOT NULL,
-    push_enabled    BOOLEAN NOT NULL DEFAULT true,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-
-    CONSTRAINT notification_preferences_unique UNIQUE (user_id, domain, category)
-);
-
-CREATE INDEX idx_notification_preferences_user_id ON notification_preferences(user_id);
 
 -- ---------------------------------------------------------------------------
 -- Note: LangGraph's own checkpointer/state tables are intentionally NOT
