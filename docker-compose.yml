@@ -1,0 +1,123 @@
+# Local dev/test stack — builds the same Dockerfile (§14: one shared
+# dependency layer, four targets) that gets pushed to Artifact Registry for
+# the real Cloud Run deploy, so this is genuine parity, not a parallel
+# definition that can drift from what actually ships.
+#
+# Ollama is NOT a service here on purpose — see .env.docker and
+# docs/gcp-aws-deployment-proposal.md §14: Docker Desktop on Mac can't pass
+# Metal GPU through to a container, so the containers below reach the
+# native, already-running Ollama.app via host.docker.internal instead
+# (works natively on Docker Desktop for Mac; Linux hosts would need an
+# extra_hosts entry — not needed here, this stack targets this Mac).
+#
+# `docker compose up` brings up postgres + api + dashboard + cockpit.
+# `ingestion` and `seed` are run-on-demand (`docker compose run ...`), not
+# always-up — ingestion is genuinely one-shot-per-source in production too
+# (Cloud Run Jobs, not a Service), and seed only needs to run once per
+# fresh database.
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: acamar
+      POSTGRES_PASSWORD: acamar
+      POSTGRES_DB: acamar
+    ports:
+      - "5433:5432"  # host 5433, not 5432 — the local bare-metal Postgres
+                      # (still running, per the "retain local setup"
+                      # requirement) already owns 5432 on this Mac.
+    volumes:
+      - acamar_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acamar -d acamar"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  seed:
+    build:
+      context: .
+      target: api  # any target works — this just needs the venv + db/,
+                    # `api`'s image already has both, no reason for a 5th target
+    env_file: [.env, .env.docker]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./secrets:/app/secrets:ro
+    entrypoint: ["sh", "-c", "psql \"$$DATABASE_URL\" -f db/schema.sql && python -m scripts.seed"]
+    profiles: ["tools"]  # never starts on a plain `docker compose up`
+
+  api:
+    build:
+      context: .
+      target: api
+    env_file: [.env, .env.docker]
+    ports:
+      - "18000:8000"  # host 18000, not 8000 — consistent with
+                       # dashboard/cockpit below: didn't collide with the
+                       # bare-metal API in this particular test run, but
+                       # leaving it on the same port is a latent conflict
+                       # waiting for the next time both happen to be up.
+    volumes:
+      - ./secrets:/app/secrets:ro  # read-only — api never writes credentials back
+      # Read-write: confirmed by reading the real code, not assumed — the
+      # cockpit UI only ever does `requests.post(...)` to the API
+      # (cockpit_app.py); it's api/routers/admin.py's `/menu-upload` route
+      # that actually stages the uploaded PDF to `cockpit_upload_dir`
+      # (data/uploads/menu). First pass had this mount on the wrong
+      # service entirely.
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # explicit, though Docker Desktop for Mac also provides this natively — harmless belt-and-suspenders, costs nothing
+
+  dashboard:
+    build:
+      context: .
+      target: dashboard
+    env_file: [.env, .env.docker]
+    ports:
+      - "18501:8501"  # host 18501, not 8501 — real bug caught by actually
+                       # running this: the bare-metal dashboard already
+                       # owns 8501 on this Mac, and "retain local setup for
+                       # dev/testing" means both need to run at once, not
+                       # take turns. Same reasoning as postgres's 5433.
+    depends_on:
+      - api
+
+  cockpit:
+    build:
+      context: .
+      target: cockpit
+    env_file: [.env, .env.docker]
+    ports:
+      - "18502:8502"  # host 18502 — same reasoning, confirmed by a real
+                       # bind-address-already-in-use error against 8502.
+    depends_on:
+      - api
+
+  ingestion:
+    build:
+      context: .
+      target: ingestion
+    env_file: [.env, .env.docker]
+    volumes:
+      # Read-write, not read-only — the Gmail client genuinely rewrites
+      # gmail_token.json on refresh (confirmed directly: watched its mtime
+      # change during the real 2026-10-17 token-refresh fix). A read-only
+      # mount here would silently break the exact mechanism that incident
+      # was about, so this one has to differ from api/cockpit/seed's :ro.
+      - ./secrets:/app/secrets
+      - ./data:/app/data:ro  # reads staged menu PDFs; never writes here
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: ["tools"]  # never starts on a plain `docker compose up` —
+                          # run explicitly: `docker compose run --rm ingestion --source <id>`
+
+volumes:
+  acamar_pg_data:

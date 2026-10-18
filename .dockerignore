@@ -1,0 +1,33 @@
+# Never baked into an image — secrets are bind-mounted locally (§14) and
+# come from Secret Manager in the cloud; a secret in an image layer is a
+# secret that leaked the moment the image is pushed anywhere.
+secrets/
+.env
+.env.docker
+.env.example
+
+# Local-only state, never needed inside a container.
+.venv/
+.git/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+logs/
+data/
+.streamlit/
+.DS_Store
+
+# Not part of the runtime image — tests run in CI before the image is
+# even built (§7's test gate), not inside the shipped container.
+tests/
+docs/
+*.md
+!README.md
+# ^ exception: hatchling's build backend reads README.md (pyproject.toml's
+# `readme =` field) and the Dockerfile explicitly COPYs it — excluding it
+# would break `uv sync` at build time, not just lose a doc file.
+Review.md
+
+# Dependency manifests for tooling this image doesn't use.
+requirements.txt
+requirements.lock.txt

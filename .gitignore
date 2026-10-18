@@ -3,6 +3,23 @@ __pycache__/
 *.pyc
 .env
 secrets/
+data/uploads/
 .DS_Store
 *.log
 .ipynb_checkpoints/
+
+# tooling caches
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+
+# Claude Code's own local tool state (settings, session locks) — not
+# project config a non-Claude developer needs; CLAUDE.md itself is kept
+# (real architecture documentation), this is just runtime/local state.
+.claude/
+
+# A session-specific guided-review scratch notebook, not general docs.
+Review.md
