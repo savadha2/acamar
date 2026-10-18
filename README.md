@@ -6,9 +6,7 @@ information sources into a shared, queryable store, so questions like
 without checking multiple websites and emails manually.
 
 Single household — access is gated by opaque bearer tokens, not a
-families/users model. Built as a hands-on technical proving ground alongside
-a career transition into technical product management at a frontier AI lab;
-`docs/portfolio.md` (not yet written) will carry the full write-up.
+families/users model. 
 
 ## Current scope
 
