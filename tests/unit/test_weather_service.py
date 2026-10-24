@@ -9,7 +9,7 @@ from acamar.services.weather import weather_advice
 def _forecast(
     *,
     temp_high_f: float = 70.0,
-    temp_low_f: float = 55.0,
+    temp_low_f: float = 70.0,
     precipitation_probability: float = 10.0,
     condition: str = "clear",
 ) -> WeatherForecast:
@@ -41,7 +41,7 @@ def test_cold_low_suggests_dressing_warm() -> None:
 
 
 def test_low_at_threshold_has_no_warm_advice() -> None:
-    advice = weather_advice(_forecast(temp_low_f=45.0))
+    advice = weather_advice(_forecast(temp_low_f=65.0))
     assert "warm" not in advice
 
 

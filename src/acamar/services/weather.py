@@ -11,10 +11,11 @@ from acamar.ports.weather import WeatherForecast
 
 _UMBRELLA_PRECIP_PCT = 40.0
 """Precipitation probability (%) at/above which an umbrella gets suggested."""
-_WARM_BELOW_F = 45.0
+_WARM_BELOW_F = 65.0
 """Today's 8am-5pm low (`WeatherForecast.temp_low_f`) below this suggests
 a jacket — not the whole day's low (2026-09-29, see that field's own
-docstring)."""
+docstring). Raised from 45 to 65 (2026-10-19) — 45 was too lenient to ever
+fire on a normal mild morning."""
 _HAT_SUNSCREEN_ABOVE_F = 80.0
 """Today's 8am-5pm high (`WeatherForecast.temp_high_f`) above this
 suggests sun protection — not the whole day's high."""
