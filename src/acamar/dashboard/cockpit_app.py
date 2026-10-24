@@ -371,6 +371,26 @@ def _admin_status(token: str) -> dict[str, Any]:
     return dict(response.json())
 
 
+def _api_is_live() -> bool:
+    """Real liveness, no auth required.
+
+    Distinct from `_admin_status()` succeeding, which also depends on the
+    cockpit token being valid. `/health` sits outside `/admin`'s auth gate
+    entirely (api/auth.py), so this can't itself be the thing a wrong
+    token breaks.
+
+    Added 2026-10-24 (docs/deployment-rcca-2026-10-24.md issue 4) — the
+    "API Link" light used to be driven by `_admin_status()` succeeding,
+    so a real outage and a wrong-but-rejected cockpit token looked
+    identical on that one light, with no way to tell them apart.
+    """
+    try:
+        requests.get(f"{_SETTINGS.api_base_url}/health", timeout=5).raise_for_status()
+        return True
+    except requests.RequestException:
+        return False
+
+
 def _menu_coverage(
     token: str, *, source_id: str, meal: str, year: int, month: int
 ) -> dict[str, Any]:
@@ -1052,14 +1072,27 @@ def main() -> None:
 
     status: dict[str, Any] | None = None
     api_error: str | None = None
+    admin_auth_rejected = False
     try:
         status = _admin_status(token)
+    except requests.HTTPError as exc:
+        if exc.response is not None and exc.response.status_code in (401, 403):
+            admin_auth_rejected = True
+            api_error = "Admin token rejected — check the token in the sidebar."
+        else:
+            api_error = str(exc)
     except requests.RequestException as exc:
         api_error = str(exc)
 
-    _render_header(status, token=token, api_reachable=api_error is None)
+    # API Link reflects real liveness (/health, no auth) -- NOT whether the
+    # admin call above succeeded, so a wrong cockpit token no longer reads
+    # as "the API is down" (see _api_is_live()'s docstring).
+    _render_header(status, token=token, api_reachable=_api_is_live())
     if api_error:
-        st.error(f"Can't reach the API at {_SETTINGS.api_base_url}: {api_error}")
+        if admin_auth_rejected:
+            st.error(api_error)
+        else:
+            st.error(f"Can't reach the API at {_SETTINGS.api_base_url}: {api_error}")
 
     _render_upload_section(token)
     st.divider()

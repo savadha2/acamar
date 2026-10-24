@@ -41,10 +41,23 @@ async def test_missing_header_is_401(monkeypatch: pytest.MonkeyPatch) -> None:
     assert exc_info.value.status_code == 401
 
 
-async def test_disable_auth_bypasses_the_check_entirely(
+async def test_disable_auth_does_not_bypass_the_admin_check(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Real incident, 2026-10-24 (docs/deployment-rcca-2026-10-24.md issue
+    4): `require_admin` used to share `require_subscriber`'s `disable_auth`
+    bypass, so turning off the household dashboard's token prompt silently
+    also opened `/admin/shutdown`/pause/menu-upload to anyone — confirmed
+    exploitable against the real deployed cloud API before this fix.
+    `disable_auth` is specifically about `require_subscriber`; admin stays
+    gated by `cockpit_token` regardless of it.
+    """
     monkeypatch.setenv("DISABLE_AUTH", "true")
+    monkeypatch.setenv("COCKPIT_TOKEN", "secret-admin-token")
     get_settings.cache_clear()
 
-    await require_admin(authorization=None)  # does not raise
+    with pytest.raises(HTTPException) as exc_info:
+        await require_admin(authorization=None)
+    assert exc_info.value.status_code == 401
+
+    await require_admin(authorization="Bearer secret-admin-token")  # a real token still works

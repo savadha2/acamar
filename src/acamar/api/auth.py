@@ -75,12 +75,16 @@ async def require_admin(authorization: Annotated[str | None, Header()] = None) -
     `require_subscriber`/`Subscriber`) — routes depend on this purely for
     its side effect of raising 401.
 
-    Skips the check under `disable_auth`, same escape hatch as
-    `require_subscriber`.
+    Deliberately does NOT honor `disable_auth` — fixed 2026-10-24 (real
+    incident, docs/deployment-rcca-2026-10-24.md issue 4's investigation
+    surfaced it live): `DISABLE_AUTH=true` is meant to drop the household
+    dashboard's token prompt, not also open `/admin/shutdown`/`/admin/
+    pause`/menu-upload to the whole internet. The two credentials sharing
+    one bypass flag meant turning off one silently turned off both —
+    confirmed exploitable against the real deployed cloud API before this
+    fix (`/admin/status` returned real data with zero auth header set).
     """
     settings = get_settings()
-    if settings.disable_auth:
-        return
     if settings.cockpit_token is None:
         raise _UNAUTHORIZED_ADMIN
     if authorization is None or not authorization.lower().startswith("bearer "):
