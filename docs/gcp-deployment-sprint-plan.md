@@ -134,6 +134,53 @@ its original ports — both run simultaneously now, confirmed, not assumed.
 **End-of-day checkpoint**: Cloud SQL live, schema applied via the new
 runner, confirmed empty-but-ready (`\dt`, `\dx` against the real instance).
 
+**Run one calendar day late (2026-10-19), against this slot — five more
+real bugs found and fixed by actually provisioning this, not caught by
+review alone:**
+1. `db-g1-small`/`db-f1-micro` are **Enterprise**-edition-only machine
+   types; this project's account defaults new Cloud SQL instances to
+   **Enterprise Plus**, which rejects them outright. Fixed with an
+   explicit `--edition=enterprise` on `gcloud sql instances create`.
+2. `--no-assign-ip` alone leaves an instance with **no** connectivity
+   path at all — it only disables the public IP, it doesn't enable
+   private IP or PSC in its place. Fixed by dropping the flag: a public
+   IP is safe here with no `--authorized-networks` added, since the
+   Cloud SQL Auth Proxy authenticates via IAM/mutual TLS through the
+   Cloud SQL Admin API, not via network-level IP exposure.
+3. The Cloud SQL Auth Proxy's suggested download URL
+   (`.../v2/latest/cloud-sql-proxy.darwin.arm64`) doesn't exist on the
+   bucket — `latest` isn't a real path there. Fixed with a real pinned
+   version (`v2.26.2`), confirmed live (HTTP 200) before handing it over
+   a second time.
+4. The proxy needs **Application Default Credentials**, a separate local
+   credential from the `gcloud auth login` already done on Day 0 —
+   failed with "could not find default credentials" until
+   `gcloud auth application-default login` was run once. Also needed by
+   other Google client libraries going forward, not just this proxy.
+5. The real time-sink: the proxy's chosen local port (5433) collided
+   with the **already-running Day 0 `docker compose` Postgres
+   container** (`acamar-postgres-1`, up 46 hours, same host port) —
+   every migration attempt was silently hitting local Docker's fixed
+   `acamar`/`acamar` credentials instead of Cloud SQL, surfacing as
+   repeated "password authentication failed" no matter how carefully the
+   real Cloud SQL password was regenerated and matched. Not a password
+   bug at all — fixed by moving the proxy to a genuinely free port
+   (5434). A reminder that "retain the local stack" (this sprint's own
+   explicit requirement) means its ports stay live and have to be
+   designed around, not just its processes.
+
+**End-of-day checkpoint — met**, confirmed against the real instance:
+```
+ public | documents         | table | acamar
+ public | schema_migrations | table | acamar
+ public | schools           | table | acamar
+ public | sources           | table | acamar
+ public | subscribers       | table | acamar
+
+ vector    | 0.8.5 | public | vector data type and ivfflat and hnsw access methods
+ uuid-ossp | 1.1   | public | generate universally unique identifiers (UUIDs)
+```
+
 ## Day 2 — Mon Oct 19
 
 **Me:**
@@ -152,6 +199,30 @@ runner, confirmed empty-but-ready (`\dt`, `\dx` against the real instance).
 **End-of-day checkpoint**: one CI run goes green end to end — tests pass,
 image builds, pushes to Artifact Registry. A manual `gcloud run deploy` is
 an acceptable stand-in if CI's own deploy step isn't trusted yet.
+
+**Run 2026-10-23/24 (one day past the original Oct 22 deadline — noted,
+not hidden; sequencing continued anyway):** all of steps 1–5 done and
+verified live, not assumed:
+1. Artifact Registry repo (`acamar`, `us-central1`) — already existed by
+   the time this was checked.
+2. WIF pool (`github-pool`) + OIDC provider (`github-provider`, attribute-
+   condition restricted to `savadha2/acamar`) + dedicated `acamar-deployer`
+   SA + the impersonation binding — all confirmed live via `gcloud`
+   describe/list calls, not just "command ran with no error."
+3. `acamar-deployer` granted `roles/artifactregistry.writer` (scoped to
+   the `acamar` repo) and `roles/run.developer` (project-wide for
+   now — the services/jobs it would otherwise scope to don't exist until
+   Day 3/4; revisit tightening this once they do).
+4. The 4 Secret Manager secrets created — **caught one real gap**:
+   `cockpit-token` came up with zero versions (an empty container, no
+   payload ever attached) while the other three correctly showed one
+   `enabled` version each. Fixed with `gcloud secrets versions add`
+   piping the real value straight from `.env`, confirmed after.
+5. `.github/workflows/deploy.yml` written (test gate → build all 4
+   targets → SHA-tag → push → deploy services → update ingestion jobs)
+   and committed locally (`4afb430`, bundled with a `.gitignore` fix to
+   keep the downloaded `cloud-sql-proxy` binary out of git) — **not yet
+   pushed**, so the first real CI run hasn't fired yet.
 
 ## Day 3 — Tue Oct 20
 
