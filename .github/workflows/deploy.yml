@@ -18,11 +18,20 @@
 # cockpit_token check regardless of this setting (a different code path
 # in api/auth.py, unaffected by disable_auth).
 #
-# Known gap, not yet wired: OLLAMA_BASE_URL. Nothing points `api` at a real
-# Ollama yet (GPU quota still ungranted as of 2026-10-24) -- DB-backed
-# routes (dashboard, events/menu) work once this deploys; anything needing
-# the LLM (/query, synthesis) won't until that's resolved. Tracked
-# separately, not blocking this workflow.
+# OLLAMA_BASE_URL points at `ollama-embed` (2026-10-24) -- a separate,
+# locked-down (no --allow-unauthenticated), CPU-only Cloud Run service,
+# NOT deployed by this workflow (a static base image + one pre-pulled
+# model, provisioned once by hand, not rebuilt on every app push -- see
+# ollama/Dockerfile). Interim: Cloud Run GPU quota for this project came
+# back explicitly REJECTED in both zonal-redundancy modes (not just
+# "ungranted" -- a live deploy attempt was tried and denied), so this
+# isn't "swap when quota clears" on a known timeline, it's the real path
+# until further notice. Scoped to embeddings only (`nomic-embed-text`,
+# confirmed OllamaEmbedder.__init__ in adapters/embedding/ollama_embedder.py
+# attaches a Cloud-Run identity token automatically for any *.run.app
+# host) -- `/query` and enrichment (Gmail/Cupertino, both need real
+# llama3 chat calls) are NOT covered by this and stay unaddressed here;
+# see backlog for the local-launchd-cron-against-Cloud-SQL plan for those.
 #
 # The ingestion-jobs update step still legitimately fails/warns until those
 # Cloud Run Jobs exist (Day 4) -- expected, not a bug.
@@ -87,7 +96,7 @@ jobs:
             --allow-unauthenticated \
             --add-cloudsql-instances="${{ env.PROJECT_ID }}:${{ env.REGION }}:acamar-db" \
             --set-secrets="DATABASE_URL=database-url:latest,COCKPIT_TOKEN=cockpit-token:latest" \
-            --set-env-vars="DISABLE_AUTH=true" \
+            --set-env-vars="DISABLE_AUTH=true,OLLAMA_BASE_URL=https://ollama-embed-86020187429.us-central1.run.app" \
             --quiet
 
       - name: deploy dashboard + cockpit (need api's URL, so they deploy after it)
