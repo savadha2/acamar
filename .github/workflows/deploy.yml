@@ -1,0 +1,81 @@
+# Test -> build -> push -> deploy, gated top to bottom (docs/gcp-aws-deployment-proposal.md §7).
+# A failure in `test` stops the pipeline — nothing builds or deploys.
+#
+# Auth is Workload Identity Federation (no long-lived key in GitHub Secrets):
+# this repo's runs impersonate acamar-deployer@acamar-508716.iam.gserviceaccount.com,
+# scoped by the `github-provider`'s attribute-condition to savadha2/acamar only.
+#
+# The deploy/update-job steps will legitimately fail until the Cloud Run
+# services/jobs they target actually exist (Day 3/4 of
+# docs/gcp-deployment-sprint-plan.md) — expected during the first runs, not a bug.
+
+name: test-build-deploy
+
+on:
+  push:
+    branches: [main]
+
+env:
+  PROJECT_ID: acamar-508716
+  REGION: us-central1
+  REPO: acamar # Artifact Registry repo
+
+permissions:
+  contents: read
+  id-token: write # required for Workload Identity Federation
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - run: uv sync --locked
+      - run: uv run ruff check
+      - run: uv run ruff format --check
+      - run: uv run mypy
+      - run: uv run pytest
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/86020187429/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: acamar-deployer@acamar-508716.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: build + push all 4 targets, tagged by commit SHA
+        run: |
+          set -euo pipefail
+          for target in api dashboard cockpit ingestion; do
+            image="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/$target:${{ github.sha }}"
+            docker build --target "$target" -t "$image" .
+            docker push "$image"
+          done
+
+      - name: deploy the 3 Cloud Run services
+        run: |
+          set -euo pipefail
+          for svc in api dashboard cockpit; do
+            image="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/$svc:${{ github.sha }}"
+            gcloud run deploy "$svc" \
+              --image="$image" \
+              --region="${{ env.REGION }}" \
+              --quiet
+          done
+
+      - name: update the 2 ingestion Cloud Run Jobs' image
+        run: |
+          set -euo pipefail
+          image="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/ingestion:${{ github.sha }}"
+          for job in gmail-school cupertino-events; do
+            gcloud run jobs update "$job" --image="$image" --region="${{ env.REGION }}" --quiet \
+              || echo "::warning::job $job not deployed yet (Day 4) — skipping, not failing the run"
+          done

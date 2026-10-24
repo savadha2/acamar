@@ -23,3 +23,6 @@ dist/
 
 # A session-specific guided-review scratch notebook, not general docs.
 Review.md
+
+# Downloaded local dev tooling (GCP deployment sprint) — a binary, not source.
+cloud-sql-proxy
