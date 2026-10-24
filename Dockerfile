@@ -77,21 +77,33 @@ RUN uv sync --locked --no-dev --no-editable
 ENV PATH="/app/.venv/bin:${PATH}"
 
 # ---------------------------------------------------------------------------
+# Shell-form CMD (not an array) in the three services below, specifically so
+# `${PORT:-N}` expands at container start: Cloud Run injects its own PORT
+# env var (8080) and healthchecks exactly that port, regardless of EXPOSE or
+# whatever port the process actually binds -- a real deploy failure, caught
+# live (2026-10-24), not anticipated: "container failed to start and listen
+# on the port defined by the PORT=8080 environment variable" the first time
+# `api` deployed, because it was hardcoded to 8000 with nothing reading
+# $PORT. The :-N fallback keeps local `docker compose` (which never sets
+# $PORT) on the exact same ports as before -- one image, no behavior change
+# outside Cloud Run.
 FROM base AS api
 EXPOSE 8000
-CMD ["uvicorn", "acamar.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+# `exec` hands the shell's PID to uvicorn itself, so it receives Cloud Run's
+# SIGTERM directly on scale-down/deploy -- a shell-form CMD without exec
+# leaves /bin/sh as PID 1, which can swallow or delay that signal instead of
+# forwarding it.
+CMD ["sh", "-c", "exec uvicorn acamar.api.app:app --host 0.0.0.0 --port ${PORT:-8000}"]
 
 # ---------------------------------------------------------------------------
 FROM base AS dashboard
 EXPOSE 8501
-CMD ["streamlit", "run", "src/acamar/dashboard/streamlit_app.py", \
-     "--server.address=0.0.0.0", "--server.port=8501"]
+CMD ["sh", "-c", "exec streamlit run src/acamar/dashboard/streamlit_app.py --server.address=0.0.0.0 --server.port=${PORT:-8501}"]
 
 # ---------------------------------------------------------------------------
 FROM base AS cockpit
 EXPOSE 8502
-CMD ["streamlit", "run", "src/acamar/dashboard/cockpit_app.py", \
-     "--server.address=0.0.0.0", "--server.port=8502"]
+CMD ["sh", "-c", "exec streamlit run src/acamar/dashboard/cockpit_app.py --server.address=0.0.0.0 --server.port=${PORT:-8502}"]
 
 # ---------------------------------------------------------------------------
 FROM base AS ingestion
