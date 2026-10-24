@@ -55,12 +55,19 @@ RUN uv sync --locked --no-dev --no-install-project
 
 # Application code. Everything the four targets below actually need:
 # the package itself, the scripts/ CLI entrypoints (ingestion, seed,
-# gmail_auth), and db/ (schema.sql — used by the local `seed` compose
+# gmail_auth), db/ (schema.sql — used by the local `seed` compose
 # service only; the real Cloud SQL migration path is the numbered-SQL
-# runner, §8, not this file).
+# runner, §8, not this file), and .streamlit/ (config.toml pins the
+# theme -- real, committed config, not local state; was wrongly in
+# .dockerignore until a real deploy showed dashboard/cockpit rendering
+# an inconsistent default theme instead of the pinned one, 2026-10-24).
+# Streamlit resolves this relative to the CWD at process start, and
+# WORKDIR is /app for every target here, so this lands exactly where
+# it needs to: /app/.streamlit/config.toml.
 COPY src/ src/
 COPY scripts/ scripts/
 COPY db/ db/
+COPY .streamlit/ .streamlit/
 
 # Second sync, now that src/ exists — fast, since every third-party
 # dependency is already installed from the layer above; this one just
