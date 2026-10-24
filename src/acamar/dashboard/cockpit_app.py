@@ -391,6 +391,22 @@ def _api_is_live() -> bool:
         return False
 
 
+def _classify_admin_error(exc: requests.RequestException) -> tuple[str, bool]:
+    """Turn a failed `_admin_status()` call into (message, admin_auth_rejected).
+
+    Pulled out as its own pure function (2026-10-24) specifically so this
+    classification is unit-testable without mocking Streamlit's sidebar/
+    session_state machinery — `main()` just calls this inside its `except`.
+    """
+    if (
+        isinstance(exc, requests.HTTPError)
+        and exc.response is not None
+        and exc.response.status_code in (401, 403)
+    ):
+        return "Admin token rejected — check the token in the sidebar.", True
+    return f"Can't reach the API at {_SETTINGS.api_base_url}: {exc}", False
+
+
 def _menu_coverage(
     token: str, *, source_id: str, meal: str, year: int, month: int
 ) -> dict[str, Any]:
@@ -1065,34 +1081,29 @@ def main() -> None:
         st.session_state["cockpit_token"] = token
 
     if not token:
-        if not _SETTINGS.disable_auth:
-            st.info("Enter the cockpit admin token in the sidebar.")
-            return
-        token = "dev"  # noqa: S105 - not a secret, disable_auth means the API ignores it
+        # Unlike the household dashboard, this always requires a real token
+        # — `disable_auth` deliberately does NOT cover admin (api/auth.py's
+        # `require_admin`), so there's no synthetic fallback to offer here.
+        # (Fixed 2026-10-24, docs/deployment-rcca-2026-10-24.md issue 4's
+        # investigation: a stale "token = 'dev'" fallback here used to
+        # assume the opposite and broke outright the moment the backend
+        # was corrected — every admin call started 401ing instead.)
+        st.info("Enter the cockpit admin token in the sidebar.")
+        return
 
     status: dict[str, Any] | None = None
     api_error: str | None = None
-    admin_auth_rejected = False
     try:
         status = _admin_status(token)
-    except requests.HTTPError as exc:
-        if exc.response is not None and exc.response.status_code in (401, 403):
-            admin_auth_rejected = True
-            api_error = "Admin token rejected — check the token in the sidebar."
-        else:
-            api_error = str(exc)
     except requests.RequestException as exc:
-        api_error = str(exc)
+        api_error, _ = _classify_admin_error(exc)
 
-    # API Link reflects real liveness (/health, no auth) -- NOT whether the
+    # API Link reflects real liveness (/health, no auth) — NOT whether the
     # admin call above succeeded, so a wrong cockpit token no longer reads
     # as "the API is down" (see _api_is_live()'s docstring).
     _render_header(status, token=token, api_reachable=_api_is_live())
     if api_error:
-        if admin_auth_rejected:
-            st.error(api_error)
-        else:
-            st.error(f"Can't reach the API at {_SETTINGS.api_base_url}: {api_error}")
+        st.error(api_error)
 
     _render_upload_section(token)
     st.divider()

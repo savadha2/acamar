@@ -221,3 +221,92 @@ def test_attention_only_filter_now_catches_a_stale_but_ok_source() -> None:
 
     assert "ALL NOMINAL" not in html
     assert "1 NEEDS ATTENTION" in html
+
+
+# --- _api_is_live() / _classify_admin_error() -------------------------------
+# Added 2026-10-24 (docs/deployment-rcca-2026-10-24.md issue 4 + the review
+# that followed it, backlog Flight Log same date): the whole point of this
+# fix is that a wrong cockpit token must read differently from a real
+# outage. These were previously untested — a later "simplification" back to
+# the old api_reachable=(admin call succeeded) would have passed the full
+# suite silently.
+
+
+def test_api_is_live_true_on_a_real_200(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(cockpit_app, "_SETTINGS", SimpleNamespace(api_base_url="http://fake"))
+    monkeypatch.setattr(
+        requests, "get", lambda *a, **k: SimpleNamespace(raise_for_status=lambda: None)
+    )
+
+    assert cockpit_app._api_is_live() is True
+
+
+def test_api_is_live_false_when_the_request_itself_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(cockpit_app, "_SETTINGS", SimpleNamespace(api_base_url="http://fake"))
+
+    def _raise(*_a: Any, **_k: Any) -> Any:
+        raise requests.ConnectionError("connection refused")
+
+    monkeypatch.setattr(requests, "get", _raise)
+
+    assert cockpit_app._api_is_live() is False
+
+
+def test_api_is_live_false_on_a_5xx_even_though_the_socket_connected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Connecting isn't the same as being live — raise_for_status() must
+    # actually be checked, not just "a response object came back."
+    monkeypatch.setattr(cockpit_app, "_SETTINGS", SimpleNamespace(api_base_url="http://fake"))
+
+    def _raise_500() -> None:
+        raise requests.HTTPError("500 Server Error")
+
+    monkeypatch.setattr(
+        requests, "get", lambda *a, **k: SimpleNamespace(raise_for_status=_raise_500)
+    )
+
+    assert cockpit_app._api_is_live() is False
+
+
+def test_classify_admin_error_401_reads_as_a_rejected_token_not_an_outage() -> None:
+    exc = requests.HTTPError("401", response=SimpleNamespace(status_code=401))
+
+    message, rejected = cockpit_app._classify_admin_error(exc)
+
+    assert rejected is True
+    assert "Admin token rejected" in message
+
+
+def test_classify_admin_error_403_also_reads_as_a_rejected_token() -> None:
+    exc = requests.HTTPError("403", response=SimpleNamespace(status_code=403))
+
+    _message, rejected = cockpit_app._classify_admin_error(exc)
+
+    assert rejected is True
+
+
+def test_classify_admin_error_connection_failure_is_not_an_admin_rejection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(cockpit_app, "_SETTINGS", SimpleNamespace(api_base_url="http://fake"))
+    exc = requests.ConnectionError("connection refused")
+
+    message, rejected = cockpit_app._classify_admin_error(exc)
+
+    assert rejected is False
+    assert "Can't reach the API" in message
+
+
+def test_classify_admin_error_5xx_is_not_an_admin_rejection_either(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A real server-side failure, not an auth problem — must not be
+    # mistaken for "token rejected" just because it's also an HTTPError.
+    monkeypatch.setattr(cockpit_app, "_SETTINGS", SimpleNamespace(api_base_url="http://fake"))
+    exc = requests.HTTPError("500", response=SimpleNamespace(status_code=500))
+
+    message, rejected = cockpit_app._classify_admin_error(exc)
+
+    assert rejected is False
+    assert "Can't reach the API" in message

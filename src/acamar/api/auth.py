@@ -1,6 +1,9 @@
 """Bearer-token auth.
 
-An active ``subscribers`` row is required for every route except ``/health``.
+An active ``subscribers`` row is required for every route except ``/health``
+and ``/admin/*`` — the latter is gated by a separate, non-subscriber
+credential (``settings.cockpit_token``, see ``require_admin`` below); a
+subscriber token alone does not grant admin access.
 """
 
 from __future__ import annotations
@@ -85,7 +88,11 @@ async def require_admin(authorization: Annotated[str | None, Header()] = None) -
     fix (`/admin/status` returned real data with zero auth header set).
     """
     settings = get_settings()
-    if settings.cockpit_token is None:
+    # `not settings.cockpit_token` (not `is None`): an empty string is just
+    # as "unset" as None here. A misconfigured-empty Secret Manager value
+    # mustn't make `secrets.compare_digest("", "")` the de facto admin
+    # credential — found by review 2026-10-24, same incident as above.
+    if not settings.cockpit_token:
         raise _UNAUTHORIZED_ADMIN
     if authorization is None or not authorization.lower().startswith("bearer "):
         raise _UNAUTHORIZED_ADMIN

@@ -18,9 +18,10 @@ from pathlib import Path
 
 import pytest
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]  # tests/unit/ -> tests/ -> repo root
 _ENTRYPOINTS = [
-    Path("src/acamar/dashboard/streamlit_app.py"),
-    Path("src/acamar/dashboard/cockpit_app.py"),
+    _REPO_ROOT / "src/acamar/dashboard/streamlit_app.py",
+    _REPO_ROOT / "src/acamar/dashboard/cockpit_app.py",
 ]
 
 
