@@ -8,9 +8,15 @@
 # `api` deploys first (gets DATABASE_URL/COCKPIT_TOKEN from Secret Manager,
 # the Cloud SQL Unix socket via --add-cloudsql-instances); dashboard/cockpit
 # deploy after, pointed at api's real URL via --set-env-vars. All three are
-# --allow-unauthenticated -- the real security boundary is the app's own
-# bearer-token/cockpit_token checks (api/auth.py), matching how this already
-# works bare-metal/local, not Cloud Run's own IAM-invoker layer.
+# --allow-unauthenticated at the Cloud Run/IAM layer.
+#
+# api + dashboard also run with DISABLE_AUTH=true (2026-10-24, explicit
+# user decision after being shown the tradeoff, not a default) -- the
+# household dashboard's own bearer-token gate (api/auth.py) is OFF, so the
+# dashboard's real data is reachable by anyone with the URL, no login.
+# cockpit is NOT included -- its admin routes stay behind the separate
+# cockpit_token check regardless of this setting (a different code path
+# in api/auth.py, unaffected by disable_auth).
 #
 # Known gap, not yet wired: OLLAMA_BASE_URL. Nothing points `api` at a real
 # Ollama yet (GPU quota still ungranted as of 2026-10-24) -- DB-backed
@@ -81,6 +87,7 @@ jobs:
             --allow-unauthenticated \
             --add-cloudsql-instances="${{ env.PROJECT_ID }}:${{ env.REGION }}:acamar-db" \
             --set-secrets="DATABASE_URL=database-url:latest,COCKPIT_TOKEN=cockpit-token:latest" \
+            --set-env-vars="DISABLE_AUTH=true" \
             --quiet
 
       - name: deploy dashboard + cockpit (need api's URL, so they deploy after it)
@@ -93,7 +100,7 @@ jobs:
             --image="$dashboard_image" \
             --region="${{ env.REGION }}" \
             --allow-unauthenticated \
-            --set-env-vars="API_BASE_URL=$api_url" \
+            --set-env-vars="API_BASE_URL=$api_url,DISABLE_AUTH=true" \
             --quiet
 
           # MANUAL_MENU_SOURCE_ID pre-fills the Cockpit's "Source id" upload
