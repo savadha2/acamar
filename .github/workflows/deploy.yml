@@ -87,15 +87,24 @@ jobs:
         run: |
           set -euo pipefail
           api_url=$(gcloud run services describe api --region="${{ env.REGION }}" --format="value(status.url)")
-          for svc in dashboard cockpit; do
-            image="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/$svc:${{ github.sha }}"
-            gcloud run deploy "$svc" \
-              --image="$image" \
-              --region="${{ env.REGION }}" \
-              --allow-unauthenticated \
-              --set-env-vars="API_BASE_URL=$api_url" \
-              --quiet
-          done
+
+          dashboard_image="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/dashboard:${{ github.sha }}"
+          gcloud run deploy dashboard \
+            --image="$dashboard_image" \
+            --region="${{ env.REGION }}" \
+            --allow-unauthenticated \
+            --set-env-vars="API_BASE_URL=$api_url" \
+            --quiet
+
+          # MANUAL_MENU_SOURCE_ID pre-fills the Cockpit's "Source id" upload
+          # field (dashboard doesn't need it -- it never uploads anything).
+          cockpit_image="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/cockpit:${{ github.sha }}"
+          gcloud run deploy cockpit \
+            --image="$cockpit_image" \
+            --region="${{ env.REGION }}" \
+            --allow-unauthenticated \
+            --set-env-vars="API_BASE_URL=$api_url,MANUAL_MENU_SOURCE_ID=765248f6-2883-43be-801c-4ada9e0cf3ce" \
+            --quiet
 
       - name: update the 2 ingestion Cloud Run Jobs' image
         run: |
