@@ -44,13 +44,12 @@ from acamar.config import get_settings
 
 _SETTINGS = get_settings()
 _SHUTDOWN_CONFIRMATION = "SHUTDOWN"
+# A source is considered fully "overdue" (needle fully drooped) at 3x this
+# — matches the ingest cron's current 6x/day (~4h) schedule
+# (`scripts/com.acamar.ingest-faria-events.plist`); not stored anywhere
+# queryable, so this is a display-only estimate, not a per-source contract.
+# Default for any `domain` not in `_EXPECTED_CADENCE_HOURS_BY_DOMAIN` below.
 _EXPECTED_CADENCE_HOURS = 4.0
-"""A source is considered fully "overdue" (needle fully drooped) at 3x this
-— matches the ingest cron's current 6x/day (~4h) schedule
-(`scripts/com.acamar.ingest-faria-events.plist`); not stored anywhere
-queryable, so this is a display-only estimate, not a per-source contract.
-Default for any `domain` not in `_EXPECTED_CADENCE_HOURS_BY_DOMAIN` below.
-"""
 _EXPECTED_CADENCE_HOURS_BY_SOURCE: dict[tuple[str, str], float | None] = {
     ("city", "event"): 24.0,
     # cupertino_events runs once daily (scripts/com.acamar.ingest-cupertino-
@@ -485,14 +484,14 @@ def _gauge_config(source: dict[str, Any], *, now: datetime) -> dict[str, Any]:
     return {"state": "ok", "angle": angle, "flag": False}
 
 
+# Shared by every "is this source stale" check in this module (2026-10-02,
+# found by review — the 30deg threshold used to be duplicated as a bare
+# literal in `_render_header` and `_tile_html` independently, with
+# `_source_tiles_html`'s "Attention only" filter not checking it at all,
+# so a source could light Master Caution globally while reading "ALL
+# NOMINAL"/being hidden under that filter, with no way to find out why
+# the light was on).
 _STALE_ANGLE_THRESHOLD = 30.0
-"""Shared by every "is this source stale" check in this module (2026-10-02,
-found by review — the 30deg threshold used to be duplicated as a bare
-literal in `_render_header` and `_tile_html` independently, with
-`_source_tiles_html`'s "Attention only" filter not checking it at all,
-so a source could light Master Caution globally while reading "ALL
-NOMINAL"/being hidden under that filter, with no way to find out why
-the light was on)."""
 
 
 def _is_stale(source: dict[str, Any], *, now: datetime) -> bool:
