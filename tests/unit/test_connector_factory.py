@@ -37,7 +37,7 @@ def test_builds_the_faria_events_connector() -> None:
 
 def test_builds_the_cupertino_events_connector() -> None:
     connector = connector_for(
-        _source(Domain.CITY, Category.EVENT, index_url="https://x.test/Events")
+        _source(Domain.CITY, Category.EVENT, calendar_url="https://x.test/Events/Calendar")
     )
     assert isinstance(connector, CupertinoEventsConnector)
     assert isinstance(connector, SourceConnector)

@@ -100,11 +100,12 @@ class Settings(BaseSettings):
     """Total tries for a transient fetch failure (connection error / 502-504)."""
 
     # --- Cupertino events connector (shares scraper_* settings above) ---
-    cupertino_events_index_url: str = "https://www.cupertino.gov/Parks-Recreation/Events"
-    """Confirmed from a real environment this project's dev machine actually
-    gets blocked on: the site's own Akamai edge WAF 403s a direct
-    curl/httpx request regardless of User-Agent. Whoever runs this connector
-    needs network egress that WAF doesn't block — see
+    cupertino_events_calendar_url: str = (
+        "https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar"
+    )
+    """The Event Calendar listing (2026-10-25; replaced the events index
+    page). The site's Akamai edge WAF 403s Google Cloud egress outright, so
+    this runs from the household Mac — see
     ``sources.cupertino_events.parser``'s own module docstring."""
 
     # --- Gmail connector (shared transport; each source has its own query) ---

@@ -37,15 +37,16 @@ A `(domain, category)` pair with no entry (e.g. `manual_menu`'s
 `(SCHOOL, MENU)`) falls through to `None` via `.get()` below — unchanged from
 today's behavior, not a guess."""
 
-_SUMMARY_ONLY_DOMAINS = frozenset({Domain.CITY})
+_SUMMARY_ONLY_DOMAINS: frozenset[Domain] = frozenset()
 """Domains that get an LLM call for headline/summary ONLY — not the full
-Gmail-style enrichment. Added 2026-10-02 for `cupertino_events`: its
-`event_date`/`category`/`organization` are already deterministic and
-cross-validated by its own parser (more reliable than an LLM re-guess over
-messy scraped prose), but `content` is too unstructured (nav leftovers,
-registration boilerplate, image filenames) to show on a dashboard card
-as-is the way Faria's own clean scraped titles can. See `_summarize_only`
-and docs/cupertino-events-source-design.md's 2026-10-02 follow-up."""
+Gmail-style enrichment. Added 2026-10-02 for `cupertino_events`, whose
+scraped detail-page prose was too unstructured to show as-is; **empty since
+2026-10-25**, when that connector moved to the city's Event Calendar
+listing, whose own description is already clean (the connector now sets
+`summary` itself and the source takes the fully deterministic branch — no
+LLM at all). Kept, not deleted, for the next scraped source whose text needs
+a gloss but whose dates/category the parser already gets right. See
+`_summarize_only`."""
 
 ConnectorFactory = Callable[[Source], SourceConnector]
 
@@ -179,7 +180,7 @@ class IngestionService:
         - Gmail: full LLM enrichment (this method's bulk, below) — its own
           event_date/category/organization are unreliable from the parser
           alone, so the LLM gets to decide all of them.
-        - `_SUMMARY_ONLY_DOMAINS` (currently just `Domain.CITY`): a
+        - `_SUMMARY_ONLY_DOMAINS` (currently empty — see its docstring): a
           *narrower* LLM call, headline/summary only — see
           `_summarize_only`. event_date/category/organization are already
           deterministic and more reliable than an LLM re-guess, but

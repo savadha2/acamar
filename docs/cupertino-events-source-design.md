@@ -1,5 +1,22 @@
 # Cupertino Parks & Rec events — source design
 
+> **Superseded in part, 2026-10-25.** The connector now scrapes the city's
+> Event Calendar listing
+> (`/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar`, paged
+> via `?dlv_PR%20Events%20Listing%20-%20Custom=(pageindex=N)`) instead of
+> the index page + each event's detail page described below. Why: the index
+> scrape only followed `/Events/<slug>` links one level deep, but the real
+> dated pages sit one level deeper (`/Events/McClellan-Events/<event>`,
+> `/Events/Tree-Lighting/Tree-Lighting-Event`), so it stored 4 events while
+> the calendar listed 8. The listing gives an explicit day/month/year (the
+> year-inference logic in §4 is gone), a clean description (so the LLM
+> summary-only enrichment is no longer used for this source), venue and
+> link — no detail page is fetched. It runs from the household Mac, into
+> both local Postgres and Cloud SQL, because the site's Akamai WAF 403s
+> Google Cloud egress (confirmed 2026-10-24, every URL). Parser/connector
+> docstrings and tests reflect the current design; the sections below are
+> the original build's history.
+
 Status: **built 2026-10-01**, on explicit "Execute" after this design was
 reviewed. Four critical forks were reviewed and resolved with the user before
 writing the original version of this doc; their answers are reflected

@@ -2,16 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Separate job from com.acamar.ingest-faria-events.plist (the main
-         6x/day one) on purpose: cupertino_events runs once daily, not 6x —
-         city events change far less often than the school calendar/email
-         sources, and a single run is already a multi-minute, ~30-request
-         sequential scrape (politeness throttle, see
-         sources/cupertino_events/connector.py's own docstring). 07:00 is
-         deliberately before the main job's first 08:00 firing, so city
-         events are fresh by the time anyone checks the dashboard in the
-         morning, and deliberately not 06:00/08:00/... to avoid two
-         launchd jobs firing at the exact same minute. -->
+    <!-- Cupertino Parks & Rec events, once a day, from this Mac, into both
+         local Postgres and GCP Cloud SQL (2026-10-25 — cupertino.gov's
+         Akamai WAF blocks Google Cloud, see CLAUDE.md). Fires every hour on
+         the hour, plus at load/login; launchd also fires a missed hourly
+         check right after wake. The script only does real work when a
+         target hasn't succeeded since the most recent 07:00 — see
+         run_cupertino_events_ingestion.sh — so this is a daily run with
+         catch-up after sleep, shutdown, or a failed attempt. -->
     <key>Label</key>
     <string>com.acamar.ingest-cupertino-events</string>
 
@@ -25,8 +23,6 @@
 
     <key>StartCalendarInterval</key>
     <dict>
-        <key>Hour</key>
-        <integer>7</integer>
         <key>Minute</key>
         <integer>0</integer>
     </dict>
@@ -36,14 +32,10 @@
     <key>StandardErrorPath</key>
     <string>/Users/kavitha/Projects/acamar/logs/ingest-cupertino-events.error.log</string>
 
-    <!-- Postgres/network must be reachable at wake time; this doesn't start
-         them. Also note (2026-10-01, confirmed while building this source):
-         cupertino.gov sits behind an Akamai edge WAF that has, at least
-         once, 403'd direct requests from this same kind of environment
-         regardless of User-Agent — if this job's error log fills with
-         403s, that's the likely cause, not a bug in the connector itself;
-         see CLAUDE.md's "Known gotchas". -->
+    <!-- Local Postgres must be running; the script waits up to ~2 min for
+         the network itself (Wi-Fi right after wake) and starts/stops its
+         own cloud-sql-proxy for the cloud write. -->
     <key>RunAtLoad</key>
-    <false/>
+    <true/>
 </dict>
 </plist>

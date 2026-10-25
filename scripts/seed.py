@@ -42,7 +42,7 @@ CUPERTINO_EVENTS_CONFIG: dict[str, Any] = {
     # disappears within two days — see IngestionService._reconcile_grace.
     "reconcile_grace_hours": 48,
 }
-# `index_url` is only set in config to override the settings default, not
+# `calendar_url` is only set in config to override the settings default, not
 # needed normally.
 
 

@@ -1,28 +1,28 @@
-"""Cupertino Parks & Rec events — scraped from the city's public events pages.
+"""Cupertino Parks & Rec events — scraped from the city's public Event Calendar.
 
-Index: https://www.cupertino.gov/Parks-Recreation/Events (a plain list of
-event links, no dates). Each linked event's own page is then fetched
-separately to learn its date (if one is currently posted at all).
+Listing: https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar
+(paged via a ``pageindex`` query parameter). Every field the dashboard needs
+— title, full date, description, venue, link — is on the listing itself, so
+individual event pages are never fetched (rebuilt 2026-10-25; the original
+index-page + detail-page scrape missed most dated events). Each listing page
+is still checked against robots.txt individually by `PoliteFetcher`.
 
-robots.txt allows the index page and most individual events, but explicitly
-disallows several specific event paths (e.g. `/Events/Monster-Mash/*`) — this
-connector checks every URL it fetches against robots.txt individually, not
-just once like `faria_events` does for its single calendar URL. Full design
-and real findings: docs/cupertino-events-source-design.md.
+Runs from the household Mac only: the site's Akamai WAF 403s Google Cloud
+egress. Design history: docs/cupertino-events-source-design.md.
 """
 
 from acamar.sources.cupertino_events.connector import CupertinoEventsConnector
 from acamar.sources.cupertino_events.parser import (
-    IndexStructureError,
-    extract_event_date,
-    parse_event_detail_html,
-    parse_index_html,
+    CalendarPage,
+    CalendarStructureError,
+    page_url,
+    parse_calendar_page_html,
 )
 
 __all__ = [
+    "CalendarPage",
+    "CalendarStructureError",
     "CupertinoEventsConnector",
-    "IndexStructureError",
-    "extract_event_date",
-    "parse_event_detail_html",
-    "parse_index_html",
+    "page_url",
+    "parse_calendar_page_html",
 ]

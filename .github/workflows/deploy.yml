@@ -36,7 +36,8 @@
 # cupertino-events), started by Cloud Scheduler, created by hand once
 # (runtime SA acamar-ingestion) -- this workflow only rolls their image.
 # cupertino-events' trigger is PAUSED (2026-10-24): cupertino.gov's Akamai
-# WAF 403s Cloud Run egress, so Cupertino stays on the local launchd job.
+# WAF 403s Cloud Run egress, so the household Mac's launchd job scrapes it
+# and writes to Cloud SQL itself (scripts/run_cupertino_events_ingestion.sh).
 
 name: test-build-deploy
 

@@ -26,3 +26,6 @@ Review.md
 
 # Downloaded local dev tooling (GCP deployment sprint) — a binary, not source.
 cloud-sql-proxy
+
+# Cupertino launchd job: per-target "last success" markers (scripts/run_cupertino_events_ingestion.sh)
+logs/*.last-success

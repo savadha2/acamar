@@ -37,7 +37,7 @@ _REGISTRY: dict[tuple[Domain, Category], _Builder] = {
         since=source.last_run_at,
     ),
     (Domain.CITY, Category.EVENT): lambda source: CupertinoEventsConnector(
-        index_url=source.config.get("index_url"),
+        calendar_url=source.config.get("calendar_url"),
     ),
 }
 

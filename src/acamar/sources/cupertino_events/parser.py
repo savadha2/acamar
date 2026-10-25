@@ -1,37 +1,43 @@
-"""Parse Cupertino's Parks & Rec events pages into :class:`RawDocument`s.
+"""Parse Cupertino's Parks & Rec Event Calendar listing into :class:`RawDocument`s.
 
-Two distinct pages, two functions: the index page (a plain list of event
-links, no dates at all) and one event's own detail page (which may or may not
-currently state a date).
+**Rebuilt 2026-10-25** against the calendar listing
+(``/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar``), replacing
+the original index-page + per-event-detail-page scrape. That original only
+followed links exactly one level under ``/Events/`` and read a date out of
+each detail page's bold text — but the real dated pages sit one level
+deeper (``/Events/McClellan-Events/<event>``, ``/Events/Tree-Lighting/
+Tree-Lighting-Event``), so most upcoming events were never found (4 stored
+vs. 8 on the calendar the day this was rebuilt).
 
-Built against real content fetched live from the real site 2026-10-01 — not
-guessed at — see docs/cupertino-events-source-design.md §2 for the full
-findings this was built from. Two real, load-bearing shapes confirmed there:
+Built against two real pages captured 2026-10-25 (fixtures
+``calendar_page1.html``/``calendar_page2.html``), not guessed at. The
+listing is server-rendered; each event is one ``<article>``:
 
-- A scheduled event states its date as a short, isolated ``<strong>``/``<b>``
-  fragment (e.g. "Friday, December 4") — sometimes **with no year at all**.
-  Other short bold fragments on the same kind of page are FAQ headings
-  ("When do the movies start?"), not dates — the date regex exists
-  specifically to pick the real date out from that noise.
-- An event with nothing currently scheduled reads as a plain, non-bold
-  sentence ("Movies in the Park will return in August 2027...") — this
-  never matches the date pattern at all, which is the correct outcome: no
-  document should be produced for it this run, not a fabricated date.
+- ``h2.list-item-title`` — the event's own clean name.
+- ``span.part-date`` / ``span.part-month`` / ``span.part-year`` — the
+  (next) date, **with an explicit year** — no year inference needed, unlike
+  the old detail-page parser.
+- ``.list-item-block-desc`` — a clean one-paragraph description, good
+  enough to show as-is (so this source needs no LLM summary at all).
+- ``p.list-item-address`` — the venue.
+- ``"N more dates"`` — a repeating event; the listing shows its next
+  occurrence only, which rolls forward on later runs as each one passes.
+- The pager reads ``"Page X of N"`` (no pagination links in the HTML —
+  pages are addressed by a ``pageindex`` query parameter instead, see
+  :func:`page_url`).
 
-**Direct `curl`/`httpx` access to cupertino.gov from this project's usual dev
-environment was found to be blocked by the site's own Akamai edge WAF
-(403, regardless of User-Agent) while building this** — a real, confirmed
-environmental constraint, not a guess. Whoever runs this connector for real
-needs network egress that WAF doesn't block (a normal residential/office
-connection works fine; a shared datacenter/cloud IP range may not).
+**cupertino.gov sits behind an Akamai edge WAF that 403s Google Cloud
+egress outright** (2026-10-24, every URL including ``robots.txt``) — this
+runs from the household Mac's launchd job, not on GCP. See CLAUDE.md.
 """
 
 from __future__ import annotations
 
 import logging
 import re
+from dataclasses import dataclass
 from datetime import date, datetime
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -43,231 +49,127 @@ logger = logging.getLogger("acamar.ingestion")
 
 _HTML_PARSER = "lxml"
 
-# Matches an /Events/<slug> detail-page link, not the bare index URL itself
-# (confirmed necessary: the real index page's own nav includes the bare
-# index URL repeated many times over, e.g. with `?oc_lang=...` query params
-# for the language switcher — those have no path segment after "Events" and
-# so never match this).
-_EVENT_LINK_PATTERN = re.compile(r"/Parks-Recreation/Events/[^/?#]+/?$")
+_PAGE_QUERY = "dlv_PR%20Events%20Listing%20-%20Custom=(pageindex={page})"
+"""The calendar's own pagination parameter, verbatim from the real site."""
 
-_NON_EVENT_SLUGS = frozenset(
-    {
-        # Confirmed real during the 2026-10-02 live run (see docs/
-        # cupertino-events-source-design.md §10): these match
-        # _EVENT_LINK_PATTERN (same /Events/<slug> shape as a real event)
-        # but are utility/info pages, not individual events — there's no
-        # structural way to tell them apart from the URL or link text
-        # alone, so this is an explicit, known-finite denylist rather than
-        # a heuristic. Harmless if left in (they just never match a date
-        # and produce no document), but each one wastes a throttled fetch.
-        "parks-and-recreation-event-calendar",
-        "festival-information",
-    }
-)
-
-_BOLD_TAGS = ("strong", "b")
-
-_DATE_PATTERN = re.compile(
-    r"(?:(?P<weekday>Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s+)?"
-    r"(?P<month>[A-Z][a-z]+)\s+(?P<day>\d{1,2})(?:st|nd|rd|th)?"
-    r"(?:,\s+(?P<year>\d{4}))?\b"
-)
-# NOTE vs. the original spec this was built from: the trailing ", <year>" is
-# OPTIONAL here (a non-capturing `(?:...)?` group) — a real live page states
-# its date as "Friday, December 4" with no year anywhere on the page at all;
-# a regex requiring `\d{4}` unconditionally would never match it.
-#
-# Two more real gaps found by review (2026-10-02), both fixed the same way:
-# the leading "<weekday>, " is now ALSO optional — the design doc's own real
-# finding (§2: Fourth-of-July's page states its next instance as plain
-# "July 4, 2027", no weekday at all) is a confirmed real shape this
-# originally required-weekday pattern couldn't match — and the day number
-# now tolerates an ordinal suffix ("4th", "22nd"), matching the same
-# accommodation `ingestion.service._ABSOLUTE_DATE_PATTERN` already makes for
-# Gmail-narrated dates; nothing confirmed this site never uses one, and the
-# failure mode (silently indistinguishable from a genuinely unscheduled
-# event) is the same one the optional-year fix above already guards against.
-
-_MAX_CONTENT_CHARS = 1200
+_PAGER_PATTERN = re.compile(r"Page\s+(\d+)\s+of\s+(\d+)")
+_EVENTS_PATH = "/parks-recreation/events/"
 
 
-class IndexStructureError(ValueError):
-    """The index page has no recognisable event links at all.
+class CalendarStructureError(ValueError):
+    """The calendar page has no event listing container at all.
 
-    Raised instead of silently returning ``[]`` so a site redesign surfaces
+    Raised instead of silently returning nothing so a site redesign surfaces
     as a failed ingestion run rather than a quietly empty events list — same
     reasoning as `faria_events.parser.CalendarStructureError`.
     """
 
 
-def parse_index_html(html: str, *, base_url: str) -> list[tuple[str, str]]:
-    """Return ``(title, absolute_url)`` for every linked event, de-duplicated by URL.
+@dataclass(frozen=True)
+class CalendarPage:
+    """One parsed listing page: its events, plus how many pages there are."""
 
-    ``title`` is the link's own text (already clean on the real page — e.g.
-    "Tree Lighting" — so the detail page's own ``<title>``, which likely
-    carries a site-wide suffix, is never used for this).
+    documents: list[RawDocument]
+    total_pages: int
+
+
+def page_url(calendar_url: str, page: int) -> str:
+    """The URL of listing page ``page`` (1-based); page 1 is the bare calendar URL."""
+    if page == 1:
+        return calendar_url
+    return f"{calendar_url}?{_PAGE_QUERY.format(page=page)}"
+
+
+def parse_calendar_page_html(html: str, *, base_url: str) -> CalendarPage:
+    """Every well-formed event on one listing page.
+
+    A listing container with no events in it is a legitimately quiet
+    listing — ``[]``, not an error. A malformed ``<article>`` (missing its
+    title, link or any date part) is skipped and logged, never guessed at —
+    one bad entry must not cost the others. No ``"Page X of N"`` pager is
+    read as a single page.
 
     Raises:
-        IndexStructureError: no ``/Parks-Recreation/Events/<slug>`` link was
-            found anywhere on the page — the real index always has ~27.
+        CalendarStructureError: no ``div.events-list-container`` at all —
+            the page has changed shape, not merely gone quiet.
     """
     soup = BeautifulSoup(html or "", _HTML_PARSER)
-    seen_slugs: set[str] = set()
-    entries: list[tuple[str, str]] = []
-    for anchor in soup.find_all("a", href=True):
-        if not isinstance(anchor, Tag):
-            continue
-        href = str(anchor["href"])
-        if not _EVENT_LINK_PATTERN.search(href):
-            continue
-        slug = href.rstrip("/").rsplit("/", 1)[-1].lower()
-        if slug in _NON_EVENT_SLUGS:
-            continue
-        # Dedup by the same normalized slug external_id is keyed by below
-        # (2026-10-02, real bug found by review) — deduping by the raw
-        # absolute URL string instead let a case- or trailing-slash-differing
-        # variant of the same event slip through as two "different" entries:
-        # a wasted extra fetch, and a silent external_id collision at upsert
-        # time (whichever document happened to be upserted last would win,
-        # non-deterministically, depending on index-page HTML order).
-        if slug in seen_slugs:
-            continue
-        title = anchor.get_text(strip=True)
-        if not title:
-            continue
-        seen_slugs.add(slug)
-        entries.append((title, urljoin(base_url, href)))
-
-    if not entries:
-        raise IndexStructureError(
-            "no /Parks-Recreation/Events/<slug> links found on the index page"
+    container = soup.find(class_="events-list-container")
+    if not isinstance(container, Tag):
+        raise CalendarStructureError(
+            "no div.events-list-container on the calendar page — the site changed shape"
         )
-    return entries
+
+    documents: list[RawDocument] = []
+    for article in container.find_all("article"):
+        if isinstance(article, Tag) and article.find(class_="list-item-title"):
+            doc = _parse_article(article, base_url=base_url)
+            if doc is not None:
+                documents.append(doc)
+    pager = _PAGER_PATTERN.search(soup.get_text(" "))
+    return CalendarPage(documents=documents, total_pages=int(pager.group(2)) if pager else 1)
 
 
-def parse_event_detail_html(
-    html: str, *, url: str, title: str, today: date
-) -> RawDocument | None:
-    """Return one :class:`RawDocument` for this event, or ``None``.
-
-    ``None`` is the expected, common outcome for an event with nothing
-    currently scheduled ("will return in <year>") — not an error.
-    """
-    soup = BeautifulSoup(html or "", _HTML_PARSER)
-    bold_fragments = [
-        text
-        for tag in soup.find_all(_BOLD_TAGS)
-        if (text := tag.get_text(strip=True))
-    ]
-    event_date = extract_event_date(bold_fragments, today=today)
-    if event_date is None:
+def _parse_article(article: Tag, *, base_url: str) -> RawDocument | None:
+    title = _text(article, "list-item-title")
+    link = article.find("a", href=True)
+    event_date = _event_date(article)
+    if not title or not isinstance(link, Tag) or event_date is None:
+        logger.warning(
+            "cupertino_events: skipping a malformed listing entry (title=%r)", title
+        )
         return None
 
-    slug = url.rstrip("/").rsplit("/", 1)[-1].lower()
-    body = _body_text(soup)
+    url = urljoin(base_url, str(link["href"]))
+    description = _text(article, "list-item-block-desc")
+    address = _text(article, "list-item-address")
+    more_dates = _more_dates(article)
+    content = " — ".join(part for part in (title, description, address, more_dates) if part)
     return RawDocument(
-        external_id=slug,
+        external_id=_external_id(url),
         title=title,
-        content=f"{title} — {body}" if body else title,
+        content=content,
         domain=Domain.CITY,
         category=Category.EVENT,
         event_date=event_date,
         student_ref=None,  # whole-household, same default as faria_events
         url=url,  # lets the dashboard link straight to the real event page
+        # The listing's own description is already clean (unlike the old
+        # detail-page prose), so it IS the dashboard summary — no LLM call.
+        # IngestionService's deterministic branch sets headline = title.
+        summary=description or None,
     )
 
 
-def extract_event_date(fragments: list[str], *, today: date) -> date | None:
-    """First date-shaped fragment among ``fragments``, resolved to a real date.
-
-    ``None`` if nothing matches the date pattern at all (confirmed real case:
-    an "off-season" event page's prose never matches it), or if a
-    date-shaped fragment is found but can't be resolved to a self-consistent
-    date (its stated weekday doesn't match any candidate year) — logged, and
-    treated the same as "no date found" rather than guessed.
-    """
-    for fragment in fragments:
-        match = _DATE_PATTERN.search(fragment)
-        if match is None:
-            continue
-        resolved = _resolve_match(match, today=today)
-        if resolved is not None:
-            return resolved
-        logger.warning(
-            "cupertino_events: date-shaped fragment did not resolve to a "
-            "self-consistent date, skipping: %r",
-            fragment,
-        )
-    return None
-
-
-def _resolve_match(match: re.Match[str], *, today: date) -> date | None:
-    weekday_name = match.group("weekday")  # None when the fragment has no weekday
-    month_name = match.group("month")
-    day = int(match.group("day"))
-    year_str = match.group("year")
-
-    if year_str is not None:
-        candidate = _build_date(int(year_str), month_name, day)
-        if candidate is None:
-            return None
-        if weekday_name is None:
-            # Year stated, no weekday to cross-check against (the real
-            # "July 4, 2027" shape) — nothing to validate it against, so
-            # trust it as-is, same as a year-bearing fragment always has
-            # been trusted here (even a past one — an upstream content
-            # question, not this parser's to silently correct).
-            return candidate
-        # Year AND weekday stated: cross-validate. A mismatch means the
-        # regex matched something that isn't really a self-consistent
-        # calendar date; don't guess which half is wrong.
-        return candidate if candidate.strftime("%A") == weekday_name else None
-
-    if weekday_name is None:
-        # No year, no weekday: no anchor at all to pick which year "July 4"
-        # means. Genuinely ambiguous — decline rather than guess, same
-        # anti-fabrication posture as everywhere else in this module.
+def _event_date(article: Tag) -> date | None:
+    day, month, year = (_text(article, c) for c in ("part-date", "part-month", "part-year"))
+    if not (day and month and year):
         return None
-
-    # No year stated (the real "Friday, December 4" shape). Try this year,
-    # then next, and take the first that's (a) not already in the past and
-    # (b) actually falls on the stated weekday — same "weekday math as a
-    # confirming cross-check" discipline `ingestion.service._resolve_
-    # relative_date` already uses for LLM-narrated dates, applied here to a
-    # scraped one instead.
-    for candidate_year in (today.year, today.year + 1):
-        candidate = _build_date(candidate_year, month_name, day)
-        if (
-            candidate is not None
-            and candidate >= today
-            and candidate.strftime("%A") == weekday_name
-        ):
-            return candidate
-    return None
-
-
-def _build_date(year: int, month_name: str, day: int) -> date | None:
     try:
-        month = datetime.strptime(month_name, "%B").month
-        return date(year, month, day)
+        return datetime.strptime(f"{day} {month[:3]} {year}", "%d %b %Y").date()
     except ValueError:
         return None
 
 
-def _body_text(soup: BeautifulSoup, *, max_chars: int = _MAX_CONTENT_CHARS) -> str:
-    """Trimmed real page prose for ``content``.
+def _more_dates(article: Tag) -> str | None:
+    text = _text(article, "published-on")
+    return f"Also on {text}" if text and "more date" in text else None
 
-    Loose, not templated — see docs/cupertino-events-source-design.md §1
-    decision #4. Pulled from ``<p>`` tags specifically: confirmed-noisy site-wide chrome
-    (nav menus, the language switcher, breadcrumbs) renders as link lists,
-    not paragraphs, on this site — real prose is reliably inside ``<p>``.
-    **Not verified against a specific "main content" container selector**
-    (no raw HTML was available to confirm one — see this module's own
-    docstring); sanity-check this heuristic once real HTML is available,
-    per docs/cupertino-events-source-design.md's own flagged gap.
+
+def _external_id(url: str) -> str:
+    """The event's path under ``/Events/``, lowercased — stable across runs.
+
+    A repeating event keeps one ``external_id`` as its next date rolls
+    forward, so it updates in place instead of piling up duplicates.
     """
-    paragraphs = [text for p in soup.find_all("p") if (text := p.get_text(" ", strip=True))]
-    combined = re.sub(r"\s+", " ", " ".join(paragraphs)).strip()
-    if len(combined) <= max_chars:
-        return combined
-    return combined[:max_chars].rsplit(" ", 1)[0] + "…"
+    path = urlsplit(url).path.rstrip("/").lower()
+    _, _, tail = path.partition(_EVENTS_PATH)
+    return tail or path
+
+
+def _text(article: Tag, css_class: str) -> str | None:
+    el = article.find(class_=css_class)
+    if not isinstance(el, Tag):
+        return None
+    text = re.sub(r"\s+", " ", el.get_text(" ", strip=True)).strip()
+    return text or None

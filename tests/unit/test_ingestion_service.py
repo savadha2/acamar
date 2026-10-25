@@ -9,6 +9,7 @@ import pytest
 
 from acamar.domain.enums import Category, Domain, Organization, SourceStatus
 from acamar.domain.models import Document, RawDocument, Source
+from acamar.ingestion import service as service_module
 from acamar.ingestion.service import IngestionService
 from acamar.ports.enricher import DocumentEnrichment, HolidayExtraction
 from acamar.ports.repositories import SourceNotFoundError
@@ -751,14 +752,44 @@ async def test_changed_gmail_content_does_call_the_enricher() -> None:
 
 
 # ---------------------------------------------------------------------------
-# enrichment — summary-only domains (cupertino_events, 2026-10-02)
+# enrichment — summary-only domains (built for cupertino_events, 2026-10-02)
 #
 # A narrower treatment than Gmail's: only headline/summary come from the
 # LLM. event_date/category/organization are never touched here — the
 # connector's own parser already set them deterministically, more reliably
 # than an LLM re-guess over messy scraped prose (see _DETERMINISTIC_
 # ORGANIZATION and _summarize_only's own docstring).
+#
+# _SUMMARY_ONLY_DOMAINS is empty since 2026-10-25 (Cupertino's calendar
+# listing has a clean description of its own), but the mechanism is kept for
+# the next scraped source — these tests opt Domain.CITY back in to cover it.
 # ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def _city_is_summary_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(service_module, "_SUMMARY_ONLY_DOMAINS", frozenset({Domain.CITY}))
+
+
+async def test_city_docs_skip_the_llm_and_keep_the_connectors_own_summary() -> None:
+    # Today's real behavior: no summary-only domains, so a city doc takes the
+    # fully deterministic branch — headline = title, the connector-set
+    # summary (the calendar listing's own description) untouched, no LLM.
+    source = _source(domain=Domain.CITY)
+    doc_repo = FakeDocumentRepository()
+    enricher = FakeEnricher()
+    raw = _city_raw("a").model_copy(update={"summary": "The listing's own description."})
+    service, _, _ = _service(
+        source=source, connector=FakeConnector([raw]), enricher=enricher, documents=doc_repo
+    )
+
+    await service.run(source.id)
+
+    assert enricher.summarize_calls == [] and enricher.calls == []
+    upserted_doc, _vector = doc_repo.upserts[0][1][0]
+    assert upserted_doc.headline == "Event a"
+    assert upserted_doc.summary == "The listing's own description."
+    assert upserted_doc.organization == Organization.CITY_RECREATION
 
 
 def _city_raw(external_id: str, *, event_date: date | None = date(2026, 9, 20)) -> RawDocument:
@@ -772,7 +803,7 @@ def _city_raw(external_id: str, *, event_date: date | None = date(2026, 9, 20)) 
     )
 
 
-async def test_city_docs_get_summarized_before_upsert() -> None:
+async def test_city_docs_get_summarized_before_upsert(_city_is_summary_only: None) -> None:
     source = _source(domain=Domain.CITY)
     doc_repo = FakeDocumentRepository()
     service, _, _ = _service(
@@ -786,7 +817,9 @@ async def test_city_docs_get_summarized_before_upsert() -> None:
     assert upserted_doc.summary is not None
 
 
-async def test_city_docs_keep_the_parsers_own_event_date_and_category_and_organization() -> None:
+async def test_city_docs_keep_the_parsers_own_event_date_and_category_and_organization(
+    _city_is_summary_only: None,
+) -> None:
     # The core guarantee of the "narrow" branch: unlike Gmail, the LLM's
     # own opinion (even if the fake enricher had one) is never consulted
     # for these fields at all — summarize() doesn't even return them.
@@ -804,7 +837,7 @@ async def test_city_docs_keep_the_parsers_own_event_date_and_category_and_organi
     assert upserted_doc.organization == Organization.CITY_RECREATION
 
 
-async def test_already_past_city_doc_skips_summarize_entirely() -> None:
+async def test_already_past_city_doc_skips_summarize_entirely(_city_is_summary_only: None) -> None:
     source = _source(domain=Domain.CITY)
     doc_repo = FakeDocumentRepository()
     enricher = FakeEnricher()
@@ -824,7 +857,9 @@ async def test_already_past_city_doc_skips_summarize_entirely() -> None:
     assert upserted_doc.is_relevant is True  # still relevant — just not shown (past date)
 
 
-async def test_summarize_failure_falls_back_and_does_not_abort_the_run() -> None:
+async def test_summarize_failure_falls_back_and_does_not_abort_the_run(
+    _city_is_summary_only: None,
+) -> None:
     source = _source(domain=Domain.CITY)
     doc_repo = FakeDocumentRepository()
     service, _, _ = _service(
@@ -843,7 +878,7 @@ async def test_summarize_failure_falls_back_and_does_not_abort_the_run() -> None
     assert docs["b"].headline == "headline: Event b"  # unaffected
 
 
-async def test_unchanged_city_content_reuses_prior_summary() -> None:
+async def test_unchanged_city_content_reuses_prior_summary(_city_is_summary_only: None) -> None:
     source = _source(domain=Domain.CITY)
     prior = Document(
         id=uuid4(),
@@ -878,7 +913,7 @@ async def test_unchanged_city_content_reuses_prior_summary() -> None:
     assert upserted_doc.summary == "Cached summary."
 
 
-async def test_changed_city_content_does_call_summarize() -> None:
+async def test_changed_city_content_does_call_summarize(_city_is_summary_only: None) -> None:
     source = _source(domain=Domain.CITY)
     prior = Document(
         id=uuid4(),

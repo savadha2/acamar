@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en-US">
+<!--<![endif]-->
+<head>
+	<!-- Published by OpenCities, 1.38.0.1 -->
+
+    
+        
+    
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="theme-color" content="#001F4E"/>
+    <title>Parks and Recreation Event Calendar Cupertino CA</title>
+	<meta name="generator" content="OpenCities - https://granicus.com/product/opencities" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Using mobile-web-app-capable for now to enable full-screen experience on supported platforms -->
+    <!-- Note: This tag works mainly on Android Chrome. It does NOT enable full-screen mode on iOS Safari. -->
+    <!-- For iOS, the correct tag is: <meta name="apple-mobile-web-app-capable" content="yes"> -->
+    <!-- TODO: Monitor for updated meta tag standards from Apple or other browser vendors -->
+    <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="description" content=" Upcoming Events" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar" />
+    <meta property="og:title" content="Parks and Recreation Event Calendar" />
+    <meta property="og:description" content=" Upcoming Events" />
+    <meta property="og:image" content="https://www.cupertino.gov/files/assets/city/v/2/parks-and-recreation/images/icons/landing_page_icons_events.png?w=1200" />
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:title" content="Parks and Recreation Event Calendar" />
+    <meta property="twitter:description" content=" Upcoming Events" />
+    <meta property="twitter:image" content="https://www.cupertino.gov/files/assets/city/v/2/parks-and-recreation/images/icons/landing_page_icons_events.png?w=1080" />
+    <meta name="google-site-verification" content="PGDgrLdQDMGO7jcCZQi4y8ufW4gQcuDD5IFm3pwVdLs" />
+    <meta name="id" content="d8d3c1cf-ac87-407f-8e3a-d1961068e279" />
+    <link rel="canonical" href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar" />
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/files/ocfavicon/City/apple-touch-icon.png?V=638398723784714705">
+<link rel="icon" type="image/png" sizes="32x32" href="/files/ocfavicon/City/favicon-32x32.png?V=638398723784714705">
+<link rel="icon" type="image/png" sizes="16x16" href="/files/ocfavicon/City/favicon-16x16.png?V=638398723784714705">
+<link rel="manifest" href="/files/ocfavicon/City/site.webmanifest?V=638398723784714705">
+<link rel="shortcut icon" href="/files/ocfavicon/City/favicon.ico?V=638398723784714705">
+<meta name="msapplication-TileColor" content="#000000">
+<meta name="msapplication-config" content="/files/ocfavicon/City/browserconfig.xml?V=638398723784714705">
+    <script>
+        (function () {
+            if (window.__UNLOAD_LAZY_PATCH__) return;
+            window.__UNLOAD_LAZY_PATCH__ = true;
+
+            var supportsPageHide = ("onpagehide" in window);
+            var mappedType = supportsPageHide ? "pagehide" : "beforeunload";
+            var nativeAdd = window.addEventListener;
+            var nativeRemove = window.removeEventListener;
+            var unloadMap = null;
+            var patched = false;
+
+            function ensurePatched() {
+                if (patched) return;
+                unloadMap = new WeakMap();
+
+                window.addEventListener = function (type, listener, options) {
+                    if (type === "unload") {
+                        var wrapped = function (evt) {
+                            if (supportsPageHide && evt.persisted) return;
+                            listener.call(this, evt);
+                        };
+                        unloadMap.set(listener, wrapped);
+                        return nativeAdd.call(this, mappedType, wrapped, options);
+                    }
+                    return nativeAdd.call(this, type, listener, options);
+                };
+
+                window.removeEventListener = function (type, listener, options) {
+                    if (type === "unload") {
+                        var wrapped = unloadMap.get(listener);
+                        if (wrapped) {
+                            nativeRemove.call(this, mappedType, wrapped, options);
+                            unloadMap.delete(listener);
+                        }
+                        return;
+                    }
+                    return nativeRemove.call(this, type, listener, options);
+                };
+
+                var orig = null;
+                Object.defineProperty(window, "onunload", {
+                    configurable: true, enumerable: true,
+                    get: function () { return orig; },
+                    set: function (h) {
+                        orig = h;
+                        if (typeof h === "function") window.addEventListener("unload", h);
+                    }
+                });
+                patched = true;
+            }
+
+            window.addEventListener = function (type, listener, options) {
+                if (type === "unload") {
+                    ensurePatched();
+                    return window.addEventListener(type, listener, options);
+                }
+                return nativeAdd.call(this, type, listener, options);
+            };
+
+            window.removeEventListener = function (type, listener, options) {
+                if (type === "unload" && !patched) {
+                    return;
+                }
+                return nativeRemove.call(this, type, listener, options);
+            };
+
+            function patchTelerik() {
+                ensurePatched();
+                var ns = window.RadAjaxNamespace;
+                if (!ns || !ns.EventManager || !ns.EventManager.Add || ns.EventManager.__UnloadPatched) return;
+                var origAdd = ns.EventManager.Add;
+                ns.EventManager.Add = function (el, evtName, handler, clientId) {
+                    if (el === window && evtName === "unload") {
+                        return window.addEventListener("unload", handler);
+                    }
+                    return origAdd.call(this, el, evtName, handler, clientId);
+                };
+                ns.EventManager.__UnloadPatched = true;
+            }
+
+            if (window.RadAjaxNamespace)
+                patchTelerik();
+            else (window.requestIdleCallback || function (cb)
+            {
+                setTimeout(cb, 120);
+            })(patchTelerik);
+        })();
+    </script>
+    <!-- Preconnecting to Google Fonts servers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Defer Roboto font loading to avoid render-blocking -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const robotoLink = document.createElement('link');
+            robotoLink.rel = 'stylesheet';
+            robotoLink.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap';
+            document.head.appendChild(robotoLink);
+        });
+    </script>
+
+    <style>
+        .gm-style, .gm-style * {
+            font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Arial, sans-serif !important;
+        }
+    </style>
+
+    <script>
+        document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, "js");
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href=" https://use.typekit.net/atm1nav.css ">
+    
+        
+            <script type="text/javascript">
+                window.__oc_flags_ImprovedBreakpointEventHandling = true;
+            </script>
+            
+        
+    
+    
+    
+        <script type="text/javascript">
+            var __metaQueryBreakpoints = {
+                'sc-size-4': '(max-width: 480px)',
+                'sc-size-3': '(min-width: 480px) and (max-width: 768px)',
+                'sc-size-2': '(min-width: 768px) and (max-width: 992px)',
+                'sc-size-1': '(min-width: 992px)'
+            }
+
+            var __ocSizePoints = [
+                { min: 0, name: 'sc-size-4' },
+                { min: 480, name: 'sc-size-3' },
+                { min: 768, name: 'sc-size-2' },
+                { min: 992, name: 'sc-size-1' }
+            ];
+
+        </script>
+    
+
+    <!-- Framework Section -->
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="/files/templates/00000000-0000-0000-0000-000000000000/25efd01e-661e-4dd9-82ad-037aa6ca2eaa/v/320/jquery-3.6.0.min.js?seamlessts=639263242781983448" ><\/script>')</script>
+
+    <!--Google Maps API Loader – Improved Version to avoid Warning
+    This script loads the Google Maps JavaScript API using a dynamic and async method.
+    It replaces the old static <script> tag to avoid performance warnings from Google.
+
+    Dynamically creates the <script> tag with loading = async for better performance
+    Builds the API URL with required libraries(places, geometry, marker, geocoding)
+    Uses a Promise and callback(google.maps.__ib__) to confirm when the script is ready
+
+    It Avoids Google’s warning about direct script loading
+    Improves page load speed by loading the API asynchronously-->
+
+    
+        <script>
+            (function (root) {
+                root.OpenCities = root.OpenCities || {};
+                if (!root.OpenCities.GoogleMapsLoader) {
+                    root.OpenCities.GoogleMapsLoader = {
+                        _cbs: [],
+                        _ready: false,
+                        onReady: function (cb) {
+                            if (this._ready) { try { cb(); } catch (e) { console.error(e); } }
+                            else if (typeof cb === 'function') this._cbs.push(cb);
+                        },
+                        _fire: function () {
+                            if (this._ready) return;
+                            this._ready = true;
+                            var q = this._cbs.splice(0);
+                            for (var i = 0; i < q.length; i++) {
+                                try { q[i](); } catch (e) { console.error(e); }
+                            }
+                        }
+                    };
+                }
+            })(window);
+
+            (g => {
+                var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__",
+                    m = document, b = window;
+                b = b[c] || (b[c] = {});
+                var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams,
+                    u = () => h || (h = new Promise(async (resolve, reject) => {
+                        a = m.createElement("script");
+                        e.set("libraries", [...r] + "");
+                        for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]);
+                        e.set("callback", c + ".maps." + q);
+                        a.src = "https://maps." + c + "apis.com/maps/api/js?" + e.toString();
+                        a.loading = "async";
+                        a.async = true;
+                        a.defer = true;
+                        d[q] = resolve;
+                        a.onerror = () => reject(Error(p + " could not load."));
+                        a.nonce = m.querySelector("script[nonce]")?.nonce || "";
+                        m.head.append(a);
+                    }));
+                if (d[l]) {
+                    console.warn(p + " only loads once. Ignoring duplicate load.");
+                } else {
+                    d[l] = (f, ...n) => (r.add(f), u().then(() => d[l](f, ...n)));
+                }
+            })({
+                key: "AIzaSyC1s1VzJlHPECJLqSY63487_DppbLeMx_8",
+                v: "3.65"
+            });
+
+            (async () => {
+                try {
+                    if (!google?.maps?.importLibrary) return;
+
+                    if (!window.OpenCities.__mapsLibsPromise) {
+                        window.OpenCities.__mapsLibsPromise = Promise.all([
+                            google.maps.importLibrary('maps'),
+                            google.maps.importLibrary('places'),
+                            google.maps.importLibrary('geocoding'),
+                            google.maps.importLibrary('marker'),
+                            google.maps.importLibrary('geometry')
+                        ]);
+                    }
+                    await window.OpenCities.__mapsLibsPromise;
+
+                    if (window.OpenCities?.GoogleMapsLoader) {
+                        window.OpenCities.GoogleMapsLoader._fire();
+                    }
+                } catch (err) {
+                    console.error('Google Maps failed to initialise', err);
+                }
+            })();
+        </script>
+    
+    <script src="/files/templates/00000000-0000-0000-0000-000000000000/25efd01e-661e-4dd9-82ad-037aa6ca2eaa/v/320/modernizr.custom.710f3bf.js?seamlessts=639263242781983448" defer></script>
+    
+    <!--// End Framework Section -->
+    <!-- OpenCities Section -->
+    <script>
+        var OpenCities = OpenCities || {};
+        OpenCities.Paths = {
+            SiteTemplate: '/files/templates/00000000-0000-0000-0000-000000000000/25efd01e-661e-4dd9-82ad-037aa6ca2eaa/v/320/',
+            ThemePath: '/files/templates/00000000-0000-0000-0000-000000000000/25efd01e-661e-4dd9-82ad-037aa6ca2eaa/v/320/'
+        };
+    </script>
+    <script src='/ocapi/d8d3c1cf-ac87-407f-8e3a-d1961068e279/en-US/websitesettings.js'></script>
+    <script src="/files/templates/00000000-0000-0000-0000-000000000000/25efd01e-661e-4dd9-82ad-037aa6ca2eaa/v/320/oc_head.js?applied=20260128083425"></script>
+    <!-- Script Combine. To enter debug mode for this browser session, enter OcScriptCombineDebug=true as a querystring -->
+<link href="/files/oc-templates/00000000-0000-0000-0000-000000000000/25efd01e-661e-4dd9-82ad-037aa6ca2eaa/v/320/oc_grid.css~oc_style.css~oc_wizard_style.css~oc_main.css~oc_forms.css~oc_wizard.css~oc_wizard_menu.css~oc_main_s1.css~oc_wizard_s1.css~oc_wizard_menu_s1.css~oc_grid_s1.css~OcScriptCombine_Minify0?uniqueid=20260128083425" rel="stylesheet" type="text/css">
+    <!-- Script Combine. To enter debug mode for this browser session, enter OcScriptCombineDebug=true as a querystring -->
+<link href="/files/oc-templates/00000000-0000-0000-0000-000000000000/25efd01e-661e-4dd9-82ad-037aa6ca2eaa/v/320/client_style.css~client.css~client_menu.css~client_s1.css~client_menu_s1.css~client_forms.css~OcScriptCombine_Minify0?uniqueid=20260128083425" rel="stylesheet" type="text/css">
+    <style type="text/css">.content-outer-container
+{
+    background-image:url('/files/assets/city/v/1/parks-and-recreation/images/background-images/quinlan-field.jpeg?w=480');
+    
+}
+
+@media (min-width: 480px)
+{
+    .content-outer-container
+    {
+      background-image:url('/files/assets/city/v/1/parks-and-recreation/images/background-images/quinlan-field.jpeg?w=768');
+    }
+}
+@media (min-width: 768px)
+{
+    .content-outer-container
+    {
+      background-image:url('/files/assets/city/v/1/parks-and-recreation/images/background-images/quinlan-field.jpeg?w=992');
+    }
+}
+@media (min-width: 992px)
+{
+    .content-outer-container
+    {
+      background-image:url('/files/assets/city/v/1/parks-and-recreation/images/background-images/quinlan-field.jpeg');
+    }
+}
+@media (min-width: 1280px)
+{
+    .content-outer-container
+    {
+      background-image:url('/files/assets/city/v/1/parks-and-recreation/images/background-images/quinlan-field.jpeg');
+    }
+}
+@media (min-width: 1920px)
+{
+    .content-outer-container
+    {
+      background-image:url('/files/assets/city/v/1/parks-and-recreation/images/background-images/quinlan-field.jpeg');
+    }
+}
+        </style><script>
+(function (BackgroundSettings, $, undefined) {
+    BackgroundSettings.initialise = function () {
+        this.Application = {"CSSSelector":".content-outer-container","EnableFade":false,"MediaType":"image"};
+    };
+} (OpenCities.BackgroundSettings = OpenCities.BackgroundSettings || {}, jQuery));
+OpenCities.BackgroundSettings.initialise();
+</script>
+    
+    <!-- Script Combine. To enter debug mode for this browser session, enter OcScriptCombineDebug=true as a querystring -->
+<link href="/files/oc-templates/00000000-0000-0000-0000-000000000000/25efd01e-661e-4dd9-82ad-037aa6ca2eaa/v/320/oc_print.css~client_print.css~OcScriptCombine_Minify0?uniqueid=20260128083425" rel="stylesheet" type="text/css" media="print">
+    <!-- Script Combine. To enter debug mode for this browser session, enter OcScriptCombineDebug=true as a querystring -->
+<script src="/files/oc-templates/00000000-0000-0000-0000-000000000000/25efd01e-661e-4dd9-82ad-037aa6ca2eaa/v/320/external_plugins.js~oc_form_helper.js~oc_main.js~plugins.js~oc_main_init.js~OcScriptCombine_Minify0?uniqueid=20260128083425" defer="true"></script>
+    
+    
+
+                                <script>!function(e){var n="https://s.go-mpulse.net/boomerang/";if("False"=="True")e.BOOMR_config=e.BOOMR_config||{},e.BOOMR_config.PageParams=e.BOOMR_config.PageParams||{},e.BOOMR_config.PageParams.pci=!0,n="https://s2.go-mpulse.net/boomerang/";if(window.BOOMR_API_key="DYTCK-JM9C8-ED4EP-C3GGK-Z575H",function(){function e(){if(!r){var e=document.createElement("script");e.id="boomr-scr-as",e.src=window.BOOMR.url,e.async=!0,o.appendChild(e),r=!0}}function t(e){r=!0;var n,t,a,i,d=document,O=window;if(window.BOOMR.snippetMethod=e?"if":"i",t=function(e,n){var t=d.createElement("script");t.id=n||"boomr-if-as",t.src=window.BOOMR.url,BOOMR_lstart=(new Date).getTime(),e=e||d.body,e.appendChild(t)},!window.addEventListener&&window.attachEvent&&navigator.userAgent.match(/MSIE [67]\./))return window.BOOMR.snippetMethod="s",void t(o,"boomr-async");a=document.createElement("IFRAME"),a.src="about:blank",a.title="",a.role="presentation",a.loading="eager",i=(a.frameElement||a).style,i.width=0,i.height=0,i.border=0,i.display="none",o.appendChild(a);try{O=a.contentWindow,d=O.document.open()}catch(_){n=document.domain,a.src="javascript:var d=document.open();d.domain='"+n+"';void 0;",O=a.contentWindow,d=O.document.open()}if(n)d._boomrl=function(){this.domain=n,t()},d.write("<bo"+"dy onload='document._boomrl();'>");else if(O._boomrl=function(){t()},O.addEventListener)O.addEventListener("load",O._boomrl,!1);else if(O.attachEvent)O.attachEvent("onload",O._boomrl);d.close()}function a(e){window.BOOMR_onload=e&&e.timeStamp||(new Date).getTime()}if(!window.BOOMR||!window.BOOMR.version&&!window.BOOMR.snippetExecuted){window.BOOMR=window.BOOMR||{},window.BOOMR.snippetStart=(new Date).getTime(),window.BOOMR.snippetExecuted=!0,window.BOOMR.snippetVersion=14,window.BOOMR.url=n+"DYTCK-JM9C8-ED4EP-C3GGK-Z575H";var i=document.currentScript||document.getElementsByTagName("script")[0],o=i.parentNode,r=!1,d=document.createElement("link");if(d.relList&&"function"==typeof d.relList.supports&&d.relList.supports("preload")&&"as"in d)window.BOOMR.snippetMethod="p",d.href=window.BOOMR.url,d.rel="preload",d.as="script",d.addEventListener("load",e),d.addEventListener("error",function(){t(!0)}),setTimeout(function(){if(!r)t(!0)},3e3),BOOMR_lstart=(new Date).getTime(),o.appendChild(d);else t(!1);if(window.addEventListener)window.addEventListener("load",a,!1);else if(window.attachEvent)window.attachEvent("onload",a)}}(),"".length>0)if(e&&"performance"in e&&e.performance&&"function"==typeof e.performance.setResourceTimingBufferSize)e.performance.setResourceTimingBufferSize();!function(){if(BOOMR=e.BOOMR||{},BOOMR.plugins=BOOMR.plugins||{},!BOOMR.plugins.AK){var n=""=="true"?1:0,t="",a="eyaqmr2eagccijqacqdduaaagnvn3jsp-f-ac1be4ea4-clienttons-s.akamaihd.net",i="false"=="true"?2:1,o={"ak.v":"41","ak.cp":"1713077","ak.ai":parseInt("1075935",10),"ak.ol":"0","ak.cr":12,"ak.ipv":6,"ak.proto":"http/1.1","ak.rid":"2da5883b","ak.r":53180,"ak.a2":n,"ak.m":"dscb","ak.n":"essl","ak.cport":61008,"ak.gh":"2.22.28.143","ak.quicv":"","ak.tlsv":"tls1.3","ak.0rtt":"","ak.0rtt.ed":"","ak.csrc":"-","ak.acc":"bbr","ak.t":"1792910927","ak.ak":"hOBiQwZUYzCg5VSAfCLimQ==Tn4ZfjfmVsxnMMsjB9XNmHQJCwsRDKyiI1cqo/vURmoJTSDFAkH9iHwLJ7j44ejk/QOYmtmNmdUNdKuXA78khIMTOj5AsMdYmDw9DD38tAUzJjjVoZCMq/UkmRqx+HOKmMxYfGOUOlVbquAYsJ9Y9JTtGu5zd8Ig/A93VCIYLIfHrlGquh7kadKHUag2p3GAonrJTIe5I7iUI+qlldmw5erBycp0X8PZ9JqJa/afy4pw+XTPcbXzUjOBcX3GfhV09EAiLzgxL2wjQ/dVJeua5VegOciW1kJxGDTqRUYpkKOcAYQc4q18W9glvNbxCxO3cypVNoLMgElm25vhaHOrSfo8TlGF/L3eEe/1O/TCbayrW7IPE7aSxWQHkKzT5Swxq9iulSVcZrvxr7hrAOkGW42gQZNQM9E2vjGVV60pbSs=","ak.pv":"358","ak.dpoabenc":"","ak.tf":i};if(""!==t)o["ak.ruds"]=t;var r={i:!1,av:function(n){var t="http.initiator";if(n&&(!n[t]||"spa_hard"===n[t]))o["ak.feo"]=void 0!==e.aFeoApplied?1:0,BOOMR.addVar(o)},rv:function(){var e=["ak.cport","ak.cr","ak.csrc","ak.gh","ak.ipv","ak.m","ak.n","ak.ol","ak.proto","ak.quicv","ak.tlsv","ak.0rtt","ak.0rtt.ed","ak.r","ak.acc","ak.t","ak.tf"];BOOMR.removeVar(e)}};BOOMR.plugins.AK={akVars:o,akDNSPreFetchDomain:a,init:function(){if(!r.i){var e=BOOMR.subscribe;e("before_beacon",r.av,null,null),e("onbeacon",r.rv,null,null),r.i=!0}return this},is_complete:function(){return!0}}}}()}(window);</script></head>
+<body class="body layout-modern  site-search-always-visble  content-type-oc-module-interface content-template-custom-pr-events-listing group-template-oc-full-width-with-default-header page-name-parks-and-recreation-event-calendar page-sequence-1 page-depth-3 page-section-4 website-type-primary device-desktop " id="body-top">
+    <div id="skip-to-content-container">
+        <a href="#main-content" class="visuallyhidden focusable" id="skip-to-content-link">Skip to main content</a>
+    </div>
+    <script>
+        // OCNOW-11988 (Cursor): Proactively focus skip link when returning from browser chrome.
+        // Must run inline (not deferred oc_main.js) so focus is intercepted before NVDA speaks footer.
+        (function () {
+            var awaitingReentry = false;
+            var inertSupported = 'inert' in HTMLElement.prototype;
+
+            function isExplicitlyOutsideDocument(node) {
+                return node != null && !document.documentElement.contains(node);
+            }
+
+            function getSkipContainer() {
+                return document.getElementById('skip-to-content-container');
+            }
+
+            function getSkipLink() {
+                return document.getElementById('skip-to-content-link');
+            }
+
+            function applyGuard() {
+                awaitingReentry = true;
+                if (!inertSupported) {
+                    return;
+                }
+                var skipContainer = getSkipContainer();
+                var children = document.body.children;
+                for (var i = 0; i < children.length; i++) {
+                    if (children[i] !== skipContainer) {
+                        children[i].setAttribute('inert', '');
+                    }
+                }
+            }
+
+            function clearGuard() {
+                awaitingReentry = false;
+                if (!inertSupported) {
+                    return;
+                }
+                var children = document.body.children;
+                for (var i = 0; i < children.length; i++) {
+                    children[i].removeAttribute('inert');
+                }
+            }
+
+            function isSkipLinkElement(target) {
+                if (!target) {
+                    return false;
+                }
+                var skipContainer = getSkipContainer();
+                return target.id === 'skip-to-content-link' ||
+                    (skipContainer && skipContainer.contains(target));
+            }
+
+            function focusSkipLink() {
+                var skipLink = getSkipLink();
+                if (!skipLink) {
+                    return;
+                }
+                if (window.scrollY > 0) {
+                    window.scrollTo(0, 0);
+                }
+                skipLink.focus({ preventScroll: true });
+            }
+
+            function scheduleGuardIfDocumentLostFocus() {
+                window.setTimeout(function () {
+                    if (!document.hasFocus()) {
+                        applyGuard();
+                    }
+                }, 0);
+            }
+
+            document.addEventListener('focusout', function (e) {
+                if (isExplicitlyOutsideDocument(e.relatedTarget)) {
+                    applyGuard();
+                }
+            }, true);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Tab') {
+                    scheduleGuardIfDocumentLostFocus();
+                } else if (e.key === 'F6' || (e.key === 'l' && e.ctrlKey)) {
+                    scheduleGuardIfDocumentLostFocus();
+                }
+            }, true);
+
+            window.addEventListener('focus', function () {
+                if (!awaitingReentry) {
+                    return;
+                }
+                applyGuard();
+                focusSkipLink();
+            }, true);
+
+            document.addEventListener('focusin', function (e) {
+                var reentryFromChrome = awaitingReentry || isExplicitlyOutsideDocument(e.relatedTarget);
+                if (!reentryFromChrome) {
+                    return;
+                }
+                if (isSkipLinkElement(e.target)) {
+                    clearGuard();
+                    return;
+                }
+                applyGuard();
+                focusSkipLink();
+                clearGuard();
+            }, true);
+        })();
+    </script>
+    <form name="mainForm" method="post" action="/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR%20Events%20Listing%20-%20Custom=(pageindex=2)" id="mainForm">
+<div>
+<input type="hidden" name="ctl04_seamless_script_manager_TSM" id="ctl04_seamless_script_manager_TSM" value="" />
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__SEAMLESSVIEWSTATE" id="__SEAMLESSVIEWSTATE" value="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" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['mainForm'];
+if (!theForm) {
+    theForm = document.mainForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/WebResource.axd?d=pynGkmcFUV13He1Qd6_TZEwxevNHYVPiVa1Imd_CfwV7Ab8FE1aS0qMo2VVt5LKJo2QwSrlAqlF7-BPzzVxibA2&amp;t=639190581332169432" type="text/javascript"></script>
+
+<link class='Telerik_stylesheet' type='text/css' rel='stylesheet' href='/WebResource.axd?d=bZQu9IErOfGRZdP9C3BB5WEYs1kXhya_p9tAmbn7VJ7_7hNsNFtX7P3CeFaRqBAvu8nfSHOFrwYVcSOuYt9JctQczmnCSlqFwQ6AY89n-o3MDUX0IIYSHU8sE4u_74ks0&amp;t=639258512240000000' /><link class='Telerik_stylesheet' type='text/css' rel='stylesheet' href='/WebResource.axd?d=EkHr37SACCjvnXcRDMYA5QDHffoPB5zqqkTl3zO5GFecPyxIlVRTpdPdwWihPg07U43zWUamz0KFoC6JMJ0xsre5rLX9FEj7SSiPFzjo-li9yJH9qauR1AtwadanXj--2tqfRBZMRb0YR02QtHivDA2&amp;t=639258512240000000' /><link class='Telerik_stylesheet' type='text/css' rel='stylesheet' href='/WebResource.axd?d=AvBWCtbpLXYjyyNienFv2CMw156KfXHTYNClOKzLazQZPw-ImEsGVroTkgjM1mqynbNiPJBaXdPE1tUQ9lE248S76drBgzTdxypswG_gbOIFh-HHu5Hpa4YXbDKkZbnOWQWmNy_e1-k5AqZxSggxOA2&amp;t=639258512240000000' /><link class='Telerik_stylesheet' type='text/css' rel='stylesheet' href='/WebResource.axd?d=QioIuMiTvakjAw8Q44fnHqwFzWqLw469V7gTNrk2cvLvjuhyUg0JfUserrKyYAbRGpgN_lEgN4GXYxarh15lie502tG3A0ekaugu4sNjl91_XQ_rw6tEtWBWr6X7dbobxtfjGrOSAEzehpBTcOsZ015hS6-okwSmha5nVkqbEyM1&amp;t=639258512240000000' />
+<script src="/Telerik.Web.UI.WebResource.axd?_TSM_HiddenField_=ctl04_seamless_script_manager_TSM&amp;compress=1&amp;_TSM_CombinedScripts_=%3b%3bSystem.Web.Extensions%2c+Version%3d4.0.0.0%2c+Culture%3dneutral%2c+PublicKeyToken%3d31bf3856ad364e35%3aen-GB%3add3ac3d5-1e29-4112-8fed-529caffa8f24%3aea597d4b%3ab25378d2" type="text/javascript"></script>
+<script src="/ScriptResource.axd?d=EYVjNsQ7oYmzBqCI0dkEyYe0LYmPcVFL4WPcQCXhKfQwUqkAT7lLra0za-OLMuUUcCyPINdTVMHIWti96-8R_oN-trjXUUZnJRzckxTjid4ecctwwEJyNI-05jZYvXHBRiEKL0MUQMEyEJ2FXanyE1uBk88RxZ1wVK6AUn9D4v8rW-LNx2OOtB8vE3hC8P0jk4XZt7GAPiCeYQolxUlwFZA8cuOfgd4u08OASxFdh8mChz3A0YHhuwRrXGVlulfs9SJVkAvulhjdHYIIp1SRohDxt9acTwxUQrOlxuxC847b00zOOWg9SlpwD_iBuQQ1rOK9WH9O_wN9c2TXm4GeXaQHHT4yQ9IlzZXw6th8ch3f-k_n1yYeeurDMbwChXW1Vh_7rpu00kgmegsg9w2J3ququXIPfy2Gq8IscVTmtwouupfmUzAOicU_yESgQ-dG0" type="text/javascript"></script>
+<script src="/Telerik.Web.UI.WebResource.axd?_TSM_HiddenField_=ctl04_seamless_script_manager_TSM&amp;compress=1&amp;_TSM_CombinedScripts_=%3b%3bOpenCities.CustomControls%3aen-GB%3a7197b077-b068-4a69-9481-a6cf2e7718f9%3a8e1d32bf%3bTelerik.Web.UI%2c+Version%3d2020.1.114.45%2c+Culture%3dneutral%2c+PublicKeyToken%3d121fae78165ba3d4%3aen-GB%3a40a36146-6362-49db-b4b5-57ab81f34dac%3a16e4e7cd%3a365331c3%3a33715776%3a88144a7a%3a7c926187%3a8674cba1%3ab7778d6c%3ac08e9f8a%3aa51ee93e%3a59462f1" type="text/javascript"></script>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl04$seamless_script_manager', 'mainForm', [], [], [], 90, '');
+//]]>
+</script>
+
+<script type="text/javascript">
+    try{
+        function SeamlessEndRequestHandler(sender, args) {
+            try {
+                var dataItems = args.get_dataItems();
+                if(dataItems.ctl04_seamless_script_manager)
+                    document.getElementById('__SEAMLESSVIEWSTATE').value = dataItems.ctl04_seamless_script_manager;
+            }
+            catch (e) { }
+        }
+
+        Sys.WebForms.PageRequestManager.getInstance().add_endRequest(SeamlessEndRequestHandler);
+    }
+    catch (e) { }
+</script>
+
+    <div class="unsupported-browser-warning js-element"></div>
+    
+    <div hidden>
+        <span id="new-window-0">opens in new tab or window </span>
+    </div>
+    <div class="overlay-container"></div>
+    
+    <div class="background-container">
+        <div class="page-container">
+            <!-- OC Layout Element GROUP TEMPLATE -->
+            <!--groupTemplateStart--><header>
+            <div class="toolbar-outer-container">
+  <div class="toolbar-inner-container clearfix">
+    <div class="toolbar-item toolbar-quicklinks toolbar-display-dropdown">
+	<button type="button" aria-controls="toolbar-quicklinks-drop-down" aria-expanded="false" class="toolbar-button toolbar-button-quicklinks js-element"><span>Quick Links</span><i aria-hidden="true"></i></button>	
+	<div id="toolbar-quicklinks-drop-down" class="toolbar-drop-down toolbar-quicklinks-drop-down clearfix">
+		<ul>
+		  <li><a href="https://www.cupertino.gov/Meetings/Cupertino-Calendar" class="oc-icon-b oc-i--none link-type-internal"><span>Calendar</span></a></li><li><a href="https://www.cupertino.gov/Residents/Cupertino-311" class="oc-icon-b oc-i--none link-type-internal"><span>Report an Issue</span></a></li><li><a href="https://codehub.gridics.com/us/ca/cupertino" class="oc-icon-b oc-i--none link-type-external"><span>Municipal Code</span></a></li><li><a href="https://www.cupertino.gov/Your-City/Divisions/Communications/Social-Media" class="oc-icon-b oc-i--none link-type-internal"><span>Get Social</span></a></li><li><a href="https://www.governmentjobs.com/careers/cupertino" class="oc-icon-b oc-i--none link-type-external"><span>Jobs</span></a></li><li><a href="mailto:webmaster@cupertino.gov?subject=Email" class="oc-icon-b oc-i--none link-type-email"><span>Contact Us</span></a></li><li><a href="https://www.cupertino.gov/Residents/Records-Search" class="oc-icon-b oc-i--none link-type-internal"><span>Records</span></a></li>
+		</ul>
+	</div>
+</div><div class="toolbar-item toolbar-language notranslate toolbar-display-dropdown"><div class="no-js-element">
+		  <ul>
+		    <li id="toolbar-language-option-en-us-noscript"><a href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=en-US" class="lang-item lang-en-us" data-translate-to="en-us" lang="en-US">English<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li id="toolbar-language-option-es-noscript"><a href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=es" class="lang-item lang-es" data-translate-to="es" lang="en">Spanish<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li id="toolbar-language-option-zh-cn-noscript"><a href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=zh-CN" class="lang-item lang-zh-cn" data-translate-to="zh-cn" lang="en">Chinese (Simplified)<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li id="toolbar-language-option-zh-tw-noscript"><a href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=zh-TW" class="lang-item lang-zh-tw" data-translate-to="zh-tw" lang="en">Chinese (Traditional)<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li id="toolbar-language-option-it-noscript"><a href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=it" class="lang-item lang-it" data-translate-to="it" lang="en">Italian<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li id="toolbar-language-option-hi-noscript"><a href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=hi" class="lang-item lang-hi" data-translate-to="hi" lang="en">Hindi<span class="visuallyhidden"> Select this as your preferred language</span></a></li>
+          </ul>
+		</div>
+	<button type="button" role="combobox" aria-controls="toolbar-language-drop-down" aria-expanded="false" aria-haspopup="listbox" aria-autocomplete="none" aria-labelledby="toolbar-language-label" class="toolbar-button toolbar-button-language js-element">  
+        <span class="toolbar-language-globe-icon" aria-hidden="true"></span>
+        <span id="toolbar-language-label" class="current-language">
+            Select a language to translate to
+		</span>
+		<i aria-hidden="true"></i>
+	</button>
+	<div id="toolbar-language-drop-down" role="listbox" aria-label="Available languages" class="toolbar-drop-down toolbar-language-drop-down js-element clearfix">
+		<ul role="group">
+		    <li role="presentation"><a id="toolbar-language-option-en-us" role="option" aria-selected="true" href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=en-US" class="lang-item lang-en-us" data-translate-to="en-us" lang="en-US">English<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li role="presentation"><a id="toolbar-language-option-es" role="option" aria-selected="false" href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=es" class="lang-item lang-es" data-translate-to="es" lang="en">Spanish<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li role="presentation"><a id="toolbar-language-option-zh-cn" role="option" aria-selected="false" href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=zh-CN" class="lang-item lang-zh-cn" data-translate-to="zh-cn" lang="en">Chinese (Simplified)<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li role="presentation"><a id="toolbar-language-option-zh-tw" role="option" aria-selected="false" href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=zh-TW" class="lang-item lang-zh-tw" data-translate-to="zh-tw" lang="en">Chinese (Traditional)<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li role="presentation"><a id="toolbar-language-option-it" role="option" aria-selected="false" href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=it" class="lang-item lang-it" data-translate-to="it" lang="en">Italian<span class="visuallyhidden"> Select this as your preferred language</span></a></li><li role="presentation"><a id="toolbar-language-option-hi" role="option" aria-selected="false" href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar?dlv_PR+Events+Listing+-+Custom=(pageindex%3d2)&oc_lang=hi" class="lang-item lang-hi" data-translate-to="hi" lang="en">Hindi<span class="visuallyhidden"> Select this as your preferred language</span></a></li>
+        </ul>
+	</div></div>
+  </div>
+</div>
+            <div class="header-outer-container">
+    <div class="header-container header-layout-2  clearfix">
+			<div class="header-site-logo">
+				<a href="https://www.cupertino.gov/Home" lang="en-US" aria-label="Cupertino CA - Home - Logo">
+				</a>
+			</div>
+		    <div class="header-website-settings">
+                <button id="btn-mob-nav" type="button" aria-expanded="false" aria-controls="nav">
+                    <i aria-hidden="true"></i><span class="side-menu-btn-text">Menu</span>
+                </button>
+        	</div>
+			
+			<div class="header-search-control-container" id="header-search">
+				<div class="search-inner-container">
+					<div class="sc-search-panel" onkeypress="javascript:return WebForm_FireDefaultButton(event, &#39;ctl07_btnSearch&#39;)">
+	<label for="ctl07_txtSearch" id="ctl07_lblSearch" class="sc-search-label">Search</label><input name="ctl07$txtSearch" type="text" id="ctl07_txtSearch" class="sc-search-text" placeholder="What are you looking for?" /><input type="submit" name="ctl07$btnSearch" value="Search" id="ctl07_btnSearch" class="sc-search-button" />
+</div>
+					<div role="status" id="predictiveResults"></div>
+				</div>
+			</div>
+    </div>
+</div>
+<div class="navigation-outer-container">
+	<div id="nav" role="navigation" class="navigation-container navigation-container-option-1" data-menu-type="horizontal" aria-label="primary">
+        <div class="grid">
+            <div class="col-xs-12">                
+                <ul class="sf-menu mega-menu" id="sc-main-menu"><li class="nav-section-quarters-1   first-item nav-item-seq-1">
+<a href="https://www.cupertino.gov/Residents" class="nav-level-1 nav-has-children"  target="">
+	<i class="item-icon" aria-hidden="true"></i><span class="item-text">Residents</span>
+</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-1" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-1" class="second-level-container ch-12">
+
+          
+            <li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Cupertino-311" class="nav-has-children"  target="">Report an Issue</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-1" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-1" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Cupertino-311/How-to-Use-311"  target="">How to Use 311</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Cupertino-311/Service-Finder"  target="_blank">Service Finder</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Cupertino-311/Who-do-I-call-for..."  target="_self">Who do I call for...</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Online-Services" class=""  target="_self">Online Services</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Permits-and-Licenses" class=""  target="">Permits and Licenses</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Emergency-Management" class="nav-has-children"  target="_self">Emergency Management</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-4" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-4" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Emergency-Management/Be-Prepared"  target="_self">Be Prepared</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Emergency-Management/Genasys"  target="_blank">Genasys Protect</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Emergency-Management/Alert-SCC"  target="_blank">Alert SCC</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Emergency-Management/El-Niño-Preparedness"  target="_self">El Niño Preparedness</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Pay-Online" class="nav-has-children"  target="">Pay Online</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-5" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-5" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Pay-Online/Parking"  target="_blank">Parking</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Pay-Online/Recreation-Classes-and-City-Facilities"  target="_self">Recreation Classes and City Facilities</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Pay-Online/Business-License"  target="_self">Business License</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Utilities" class="nav-has-children"  target="">Utilities</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-6" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-6" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Utilities/Water"  target="">Water</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Utilities/Street-Sweeping-Notifications"  target="_blank">Street Sweeping Notifications</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Utilities/Redirect-for-Compost"  target="_self">Compost</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Resources" class="nav-has-children"  target="">Resources</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-7" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-7" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Resources/Environment-Sustainability-for-Residents"  target="_self">Green for Residents</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Resources/Mental-Health"  target="">Mental Health</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Resources/Resources-for-Teens"  target="">Resources for Teens</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Resources/New-Residents-Information"  target="">New Residents Information</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Resources/Resources-for-Seniors"  target="_self">Resources for Seniors</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Resources/Muni-Code"  target="_blank">Muni Code</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Cupertino-SCENE-Newsletter" class=""  target="_self">Cupertino SCENE Newsletter</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Housing" class=""  target="_self">Housing</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Maps-and-GIS" class="nav-has-children"  target="">Maps and GIS (Geographic Information System)</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-1-nav-item-seq-10" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-1-nav-item-seq-10" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Maps-and-GIS/Interactive-Map-Applications"  target="">Interactive Map  Applications</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Residents/Maps-and-GIS/PDF-Maps"  target="">PDF Maps</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Public-Safety-Programs" class=""  target="_self">Public Safety Programs</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Residents/Records-Search" class=""  target="">Records Search</a></li></ul></li>
+          
+            <li class="nav-section-quarters-1   nav-item-seq-2">
+<a href="https://www.cupertino.gov/Our-Community" class="nav-level-1 nav-has-children"  target="">Our Community</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-2" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-2" class="second-level-container ch-11">
+
+          
+            <li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/Events-Calendar" class=""  target="_self">Events Calendar</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/Annual-Events" class="nav-has-children"  target="">Annual Events</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-2-nav-item-seq-2" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-2-nav-item-seq-2" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Annual-Events/Winter"  target="">Winter</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Annual-Events/Spring"  target="">Spring</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Annual-Events/Summer"  target="">Summer</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Annual-Events/Fall"  target="">Fall</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/Cupertino-Library1" class=""  target="_self">Cupertino Library</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/Arts" class="nav-has-children"  target="">Arts</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-2-nav-item-seq-4" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-2-nav-item-seq-4" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Arts/ARTour"  target="">ARTour</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/Transportation-Mobility" class="nav-has-children"  target="_self">Transportation & Mobility</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-2-nav-item-seq-5" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-2-nav-item-seq-5" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Transportation-Mobility/Safe-Routes-to-School-SR2S"  target="_self">Safe Routes to School SR2S</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Transportation-Mobility/Citywide-Active-Transportation-Plan"  target="_self">Citywide Active Transportation Plan</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/Get-Involved" class="nav-has-children"  target="">Get Involved</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-2-nav-item-seq-6" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-2-nav-item-seq-6" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Get-Involved/Engage-Cupertino"  target="_blank">Engage Cupertino</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Get-Involved/Join-a-Commission"  target="_self">Join a Commission</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Get-Involved/Climate-Action"  target="_self">Climate Action</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Get-Involved/Volunteer"  target="">Volunteer</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Get-Involved/Attend-City-Meetings-and-Events"  target="_self">Attend City Meetings and Events</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/Visit-Cupertino" class=""  target="_self">Visit Cupertino</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/Water-and-Drought" class=""  target="_self">Water and Drought</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/Environment-Sustainability" class=""  target="_self">Environment & Sustainability</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/City-Facilities" class=""  target="_self">City Facilities</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services" class="nav-has-children"  target="">Online Services</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-2-nav-item-seq-11" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-2-nav-item-seq-11" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services/City-Code-Permits-Inspections-Licenses"  target="">City Code, Permits, Inspections & Licenses</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services/City-Opportunities"  target="">City Opportunities</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services/Notifications-News-Social-Media"  target="">Notifications, News & Social Media</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services/Parking"  target="">Parking</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services/Recreation-Classes"  target="_blank">Recreation Classes</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services/Agendas-Meetings"  target="_blank">Agendas & Meetings</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services/Laserfiche"  target="_blank">City Records</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services/Property-Information-Map"  target="_blank">Property Information Map</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services/OpenGov"  target="_blank">Budget Dashboard</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Our-Community/Online-Services/Open-Government-Data"  target="_self">Open Government & Data</a></li></ul></li></ul></li>
+          
+            <li class="nav-section-quarters-2 nav-active-path  nav-item-seq-3">
+<a href="https://www.cupertino.gov/Parks-Recreation" class="nav-level-1 nav-has-children"  target="">Parks & Recreation</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-3" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-3" class="second-level-container ch-9">
+
+          
+            <li class="second-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Activities" class="nav-has-children"  target="">Activities</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-3-nav-item-seq-1" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-3-nav-item-seq-1" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Activities/Recreation-Schedule"  target="">Recreation Schedule</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Activities/Camps"  target="">Camps</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Activities/Teens"  target="">Teens</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Activities/Softball-League"  target="">Softball League</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Activities/Teach-A-Class"  target="">Teach A Class</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Activities/Cupertino-Preschool"  target="">Cupertino Preschool</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Activities/Recreation-Schedule-and-eNewsletter-Archive"  target="">Recreation Schedule and eNewsletter Archive</a></li></ul></li><li class="second-level-item nav-active-path "><a href="https://www.cupertino.gov/Parks-Recreation/Events" class="nav-has-children"  target="">Events</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-3-nav-item-seq-2" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-3-nav-item-seq-2" class="third-level-container">
+          
+            <li  class="third-level-item nav-active-path nav-active-page"><a href="https://www.cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar"  target="">Parks and Recreation Event Calendar</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Events/Festival-Information"  target="">Event and Community Festival Information</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Events/Sponsorship-Opportunities"  target="_blank">Sponsorship Opportunities</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Events/FootGolf-Tournament"  target="">FootGolf Tournament</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Events/Free-Shakespeare-in-the-Park"  target="_self">Free Shakespeare in the Park</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Events/Senior-Center-Birthday-Bash"  target="_self">Senior Center Birthday Bash</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Events/Senior-Center-Lunch-with-Friends"  target="_self">Senior Center Lunch with Friends</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Parks-and-Facilities" class="nav-has-children"  target="">Parks and Facilities</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-3-nav-item-seq-3" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-3-nav-item-seq-3" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Parks-and-Facilities/Picnic-Area-Rentals"  target="">Picnic Area Rentals</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Parks-and-Facilities/Indoor-Facilities"  target="">Indoor Facilities</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Parks-and-Facilities/Outdoor-Facilities"  target="">Outdoor Facilities</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Parks-and-Facilities/Find-a-Park"  target="">Find a Park</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Parks-and-Facilities/Athletic-Fields-and-Courts"  target="">Athletic Fields and Courts</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Parks-and-Facilities/Dog-Parks"  target="">Dog Parks</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Parks-and-Facilities/Community-Gardens"  target="_self">Community Gardens</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Parks-and-Facilities/Recreation-Fees"  target="">Recreation Fees</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Parks-and-Facilities/Activity-and-Facility-Dashboards"  target="">Activity and Facility Dashboards</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Sports-Center" class="nav-has-children"  target="">Sports Center</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-3-nav-item-seq-4" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-3-nav-item-seq-4" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Sports-Center/Become-a-Passholder"  target="_blank">Become a Passholder</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Sports-Center/Basketball-League"  target="_blank">Basketball League</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Sports-Center/Registration-for-sports-classes-camps-and-tennis-lessons"  target="_blank">Registration for sports classes, camps, and tennis lessons</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Senior-Center" class="nav-has-children"  target="">Senior Center</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-3-nav-item-seq-5" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-3-nav-item-seq-5" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Senior-Center/Register-for-Classes"  target="_self">Register for Classes</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Senior-Center/The-50-Scene"  target="_self">The 50+ Scene</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Senior-Center/Bi-Monthly-Calendar"  target="_self">Bi-Monthly Calendar</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Senior-Center/Membership"  target="">Membership</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Senior-Center/Volunteer"  target="">Volunteer</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Senior-Center/Socials"  target="">Socials</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Senior-Center/Travel"  target="">Travel</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Senior-Center/Events"  target="">Events</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Senior-Center/Resources-for-Seniors"  target="">Resources for Seniors</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/McClellan-Ranch-Preserve" class="nav-has-children"  target="">McClellan Ranch Preserve</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-3-nav-item-seq-6" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-3-nav-item-seq-6" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/McClellan-Ranch-Preserve/Community-Gardens"  target="">Community Gardens</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/McClellan-Ranch-Preserve/AR-Tour"  target="">AR Tour</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/McClellan-Ranch-Preserve/Our-Partners"  target="">Our Partners</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Aquatics-and-Golf" class="nav-has-children"  target="">Aquatics and Golf</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-3-nav-item-seq-7" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-3-nav-item-seq-7" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Aquatics-and-Golf/Blackberry-Farm"  target="">Blackberry Farm</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Aquatics-and-Golf/Blackberry-Farm-Golf-Course"  target="_self">Blackberry Farm Golf Course</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Community-Resources" class="nav-has-children"  target="">Community Resources</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-3-nav-item-seq-8" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-3-nav-item-seq-8" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Community-Resources/Master-Plans"  target="">Master Plans</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Community-Resources/Commissions"  target="_self">Commissions</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Community-Resources/Community-Funding"  target="_self">Community Funding</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Community-Resources/Youth-and-Scout-Projects"  target="">Youth and Scout Projects</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Parks-Recreation/Contact-Us" class=""  target="">Contact Us</a></li></ul></li>
+          
+            <li class="nav-section-quarters-2   nav-item-seq-4">
+<a href="https://www.cupertino.gov/Business-and-Development" class="nav-level-1 nav-has-children"  target="">Business & Development</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-4" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-4" class="second-level-container ch-4">
+
+          
+            <li class="second-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business" class="nav-has-children"  target="_self">Business</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-4-nav-item-seq-1" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-4-nav-item-seq-1" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business/Business-eNewsletter"  target="_blank">Business eNewsletter</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business/Explore-Cupertino"  target="_self">Explore Cupertino</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business/Shop-Local-Campaign"  target="_self">Shop Local Campaign</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business/Business-License-User-Guide"  target="">Business License</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business/Business-Resource-Hub"  target="_self">Business Resource Hub</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business/Business-License-Search"  target="_self">Business License Search</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business/Economic-Development-Committee"  target="_self">Economic Development Committee</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business/Green-Business"  target="_self">Green Business</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business/Minimum-Wage"  target="_self">Minimum Wage</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Business/Permits-and-Fees"  target="_self">Permits and Fees</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Bids-Proposals-and-Qualifications" class="nav-has-children"  target="">Bids, Proposals, and Qualifications</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-4-nav-item-seq-2" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-4-nav-item-seq-2" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Bids-Proposals-and-Qualifications/Open-Bids-RFPs-and-RFQs"  target="_blank">Open Bids, RFPs and RFQs</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Public-Works" class="nav-has-children"  target="_self">Public Works</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-4-nav-item-seq-3" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-4-nav-item-seq-3" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Public-Works/Fees-Deposits-and-Bonds"  target="_self">Fees, Deposits and Bonds</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Public-Works/Small-Cell-Information"  target="_self">Small Cell Information</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Public-Works/Permit-Applications"  target="_self">Permit Applications</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Public-Works/Engineering"  target="_self">Engineering</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development" class="nav-has-children"  target="_self">Community Development</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-4-nav-item-seq-4" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-4-nav-item-seq-4" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/Block-Grant-Program"  target="_self">Block Grant Program</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/City-Projects"  target="">City Projects</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/Building-Forms-and-Fees"  target="_self">Building Forms and Fees</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/Building-Code-Standard"  target="_self">Building Code Standards</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/FAQs"  target="_self">Building FAQs</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/Building-Inspections"  target="_self">Building Inspections</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/Schedule-an-Inspection"  target="_blank">Schedule an Inspection</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/Online-Services"  target="_self">Online Services</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/Building-Inspection-Feedback"  target="_self">Building Inspection Feedback Survey</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/Green-Development"  target="_self">Green Development</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Business-and-Development/Community-Development/Development-Activity-Report"  target="">Development Activity Report</a></li></ul></li></ul></li>
+          
+            <li class="nav-section-quarters-3   nav-item-seq-5">
+<a href="https://www.cupertino.gov/Your-City" class="nav-level-1 nav-has-children"  target="">Your City</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-5" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-5" class="second-level-container ch-14">
+
+          
+            <li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/About-Cupertino" class="nav-has-children"  target="">About Cupertino</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-1" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-1" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/About-Cupertino/History"  target="">History</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/About-Cupertino/Community-Survey"  target="">Community Survey</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/About-Cupertino/External-Agencies"  target="">External Agencies</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/About-Cupertino/Sister-Cities-Friendship-Cities"  target="">Sister Cities & Friendship Cities</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/About-Cupertino/CREST-Awards"  target="_self">Cupertino Community Service Awards</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/About-Cupertino/Cupertino-Observed-Holidays"  target="">Cupertino Observed Holidays for 2026</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Administrative-Officials" class=""  target="_self">City Administrative Officials</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/News-and-Updates" class="nav-has-children"  target="_self">News and Updates</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-3" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-3" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/News-and-Updates/Press-Release"  target="_self">Press Releases</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council" class="nav-has-children"  target="">City Council</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-4" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-4" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Agenda-Minutes"  target="_blank">Agenda & Minutes</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/City-Council-Actions-Newsletter"  target="">City Council Actions Newsletter</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Attending-and-Participating-in-City-Council-Meetings"  target="">Attending and Participating in City Council Meetings</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/City-Strategic-Vision-and-Council-Goals"  target="">City Strategic Vision and Council Goals</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Legislative-Activity"  target="">Legislative Activity</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/City-Work-Program"  target="">City Work Program</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Town-Hall"  target="">Town Hall</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/State-of-the-City"  target="">State of the City</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Council-Informational-Memos"  target="">Council Informational Memos</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Organizational-Chart"  target="">Organizational Chart</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Elections"  target="_self">Elections</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Monthly-Chat-with-Mayor-Moore"  target="">Monthly Chat with Mayor Moore</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Mayors-Initiative"  target="">Mayor's Initiative</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Centenarian-Recognition-Program"  target="">Centenarian Recognition Program</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Council/Cupertino-Mayors"  target="">The Mayors Through the Years</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/Meetings" class="nav-has-children"  target="_self">Meetings</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-5" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-5" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Meetings/Watch"  target="">Watch</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/Commissions-and-Committees" class="nav-has-children"  target="">Commissions and Committees</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-6" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-6" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Commissions-and-Committees/Commissions"  target="">Commissions</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Commissions-and-Committees/Committees"  target="">Committees</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Commissions-and-Committees/Commission-Vacancies"  target="">Commission Vacancies</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Commissions-and-Committees/Hybrid-Meetings"  target="">Hybrid Meetings</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/Departments" class="nav-has-children"  target="">Departments</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-7" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-7" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Departments/City-Managers-Office"  target="">City Manager's Office</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Departments/City-Attorney"  target="">City Attorney</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Departments/City-Clerk"  target="">City Clerk</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Departments/Community-Development"  target="">Community Development</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Departments/Finance"  target="">Finance</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Departments/Innovation-Technology"  target="">Innovation & Technology</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Departments/Parks-Recreation"  target="_self">Parks & Recreation</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Departments/Public-Works"  target="">Public Works</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/Divisions" class="nav-has-children"  target="_self">Divisions</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-8" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-8" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Divisions/Building"  target="_self">Building</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Divisions/Communications"  target="">Communications</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Divisions/Economic-Development"  target="">Economic Development</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Divisions/Environment-Sustainability"  target="">Environment & Sustainability</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Divisions/Human-Resources"  target="">Human Resources</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Divisions/Housing"  target="_self">Housing</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Divisions/Planning"  target="_self">Planning</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Divisions/Public-Safety"  target="">Public Safety</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Divisions/Transportation-Mobility"  target="_self">Transportation & Mobility</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Directory" class="nav-has-children"  target="">City Directory</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-9" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-9" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/City-Directory/Service-Providers"  target="">Service Providers</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/Transparent-Cupertino" class="nav-has-children"  target="">Transparent Cupertino</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-10" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-10" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Transparent-Cupertino/Codes-and-Ordinances"  target="">Codes & Ordinances</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Transparent-Cupertino/Digital-Policies"  target="">Digital Policies</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Transparent-Cupertino/Campaign-Finance"  target="_blank">Campaign Finance</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Transparent-Cupertino/Ethics-and-Fiscal-Training-Records"  target="">Ethics and Fiscal Training Records</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/Explore-Cupertino" class="nav-has-children"  target="">Explore Cupertino</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-11" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-11" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Explore-Cupertino/Retail-Shopping"  target="">Retail Shopping</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Explore-Cupertino/Public-Art-Recreation"  target="">Public Art & Recreation</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Explore-Cupertino/Wine-Country"  target="">Wine Country</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Explore-Cupertino/Staying-in-Cupertino"  target="">Staying in Cupertino</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Explore-Cupertino/Getting-Around"  target="">Getting Around</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Explore-Cupertino/Cupertino-History"  target="_self">Cupertino History</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Explore-Cupertino/Events"  target="_blank">Events</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/Work-for-the-City" class="nav-has-children"  target="">Work for the City</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-5-nav-item-seq-12" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-5-nav-item-seq-12" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Work-for-the-City/Current-City-Jobs"  target="_blank">Current City Jobs</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Work-for-the-City/MOUS-AND-COMPENSATION-PROGRAMS"  target="_self">MOU'S Compensation Programs</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/Your-City/Work-for-the-City/Benefits"  target="_self">Benefits</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/Frequently-Asked-Questions" class=""  target="">Frequently Asked Questions</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/Your-City/Facts-and-Figures" class=""  target="">Facts and Figures</a></li></ul></li>
+          
+            <li class="nav-section-quarters-3   nav-item-seq-6">
+<a href="https://www.cupertino.gov/I-Want-To" class="nav-level-1 nav-has-children"  target="">I Want To...</a>
+<button aria-label="Expand" aria-controls="sc-menu-second-level-nav-item-seq-6" aria-haspopup="true" class="mobnav-subarrow" ><i aria-hidden="true"></i></button>
+<ul id="sc-menu-second-level-nav-item-seq-6" class="second-level-container ch-11">
+
+          
+            <li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For" class="nav-has-children"  target="">Apply For</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-1" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-1" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Building-Permits"  target="_self">Building Permits</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Cupertino-Volunteer"  target="_self">Cupertino Volunteer</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Commissions"  target="_self">Commissions</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Cupertino-Poet-Laureate"  target="_blank">Cupertino Poet Laureate</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Dog-Cat-Licenses"  target="">Dog & Cat Licenses</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Job-Openings"  target="_blank">Job Openings</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Public-Records-Request"  target="_blank">Public Records Request</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Senior-Citizen-Utility-Tax-Exemption"  target="_blank">Senior Citizen Utility Tax Exemption</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Short-Term-Rentals"  target="_self">Short-Term Rentals</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Water-Cost-Share-Rebate"  target="_blank">Water Cost Share Rebate</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Apply-For/Permit-Parking"  target="_blank">Permit Parking</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Bids-RFPsRFQs" class=""  target="_self">Bids RFPs/RFQs</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Contact-the-City" class="nav-has-children"  target="">Contact the City</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-3" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-3" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Contact-the-City/City-of-Cupertino-Directory"  target="_self">City of Cupertino Directory</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Develop-My-Property" class="nav-has-children"  target="">Develop My Property</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-4" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-4" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Develop-My-Property/Residential-Development"  target="_self">Residential Development</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Develop-My-Property/Non-Residential-Mixed-Use-Development"  target="_self">Non-Residential & Mixed Use Development</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Know-More-About" class="nav-has-children"  target="">Know More About</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-5" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-5" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Know-More-About/Emergency-Preparedness"  target="_self">Emergency Preparedness</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Know-More-About/Neighborhood-Block-Leader"  target="_self">Neighborhood Block Leader</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Know-More-About/Neighborhood-Watch"  target="_self">Neighborhood Watch</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Know-More-About/National-Night-Out-2026"  target="">National Night Out 2026</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Know-More-About/Mortgage-Counseling"  target="_blank">Mortgage Counseling</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Know-More-About/Safe-Routes-to-School"  target="_self">Safe Routes to School</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Know-More-About/Tenant-Landlord-Issues"  target="_blank">Tenant / Landlord Issues</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Know-More-About/Climate-Action"  target="_self">Climate Action</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Pay-For" class="nav-has-children"  target="">Pay For</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-6" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-6" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Pay-For/Parking-Tickets"  target="_blank">Parking Tickets</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Report" class="nav-has-children"  target="">Report Issues</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-7" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-7" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Report/Website-Feedback"  target="">Website Feedback</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Report/Code-Violation"  target="_self">Code Violation</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Report/Traffic-Enforcement-Issue"  target="_self">Traffic Enforcement Issue</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Report/Tree-Issue"  target="_self">Tree Issue</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Report/Street-Issue"  target="_self">Street Issue</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Report/Illegal-Dumping"  target="">Illegal Dumping</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Search" class="nav-has-children"  target="">Search</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-8" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-8" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Search/A-Property"  target="_blank">A Property</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Search/Municipal-Code"  target="_blank">Municipal Code</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Search/Public-Records"  target="_blank">Public Records</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Search/Recreational-Programs"  target="_blank">Recreational Programs</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Sign-Up-For" class="nav-has-children"  target="">Sign Up For Notifications</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-9" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-9" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Sign-Up-For/Recreational-Programs"  target="_blank">Recreational Programs</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Sign-Up-For/Cupertino-Facebook"  target="_blank">Cupertino Facebook</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Sign-Up-For/Email-Notification"  target="_self">Email Notification</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Sign-Up-For/Cupertino-Twitter"  target="_blank">Cupertino Twitter</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Sign-Up-For/Street-Sweeping-Notification"  target="_self">Street Sweeping Notification</a></li></ul></li><li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/Download-Mobile-Apps" class=""  target="_self">Download Mobile Apps</a></li><li class="second-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data" class="nav-has-children"  target="_self">View City Data</a><button aria-label="Expand" aria-controls="sc-menu-third-level-nav-item-seq-6-nav-item-seq-11" class="mobnav-subarrow-child"><i aria-hidden="true"></i>
+              </button>
+<ul  id="sc-menu-third-level-nav-item-seq-6-nav-item-seq-11" class="third-level-container">
+          
+            <li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data/City-Council-Agenda"  target="_blank">City Council Agenda</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data/All-Meeting-Agendas"  target="_blank">All Meeting Agendas</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data/Live-Meeting-Agenda"  target="_self">Live Meeting Agenda</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data/Building-Permits"  target="_self">Building Permits</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data/Building-Forms-Fees"  target="_self">Building Forms & Fees</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data/Tax-Revenue-Sharing-Agreements"  target="_blank">Tax Revenue Sharing Agreements</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data/City-Calendar"  target="_self">City Calendar</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data/Citys-Press-Releases"  target="_self">City's Press Releases</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data/City-Newsletter"  target="_self">City Newsletter</a></li><li  class="third-level-item  "><a href="https://www.cupertino.gov/I-Want-To/View-City-Data/Public-Records"  target="_blank">Public Records</a></li></ul></li></ul></li>
+          
+            </ul>
+            </div>
+        </div>
+    </div>
+</div>
+            </header>
+            <div class="content-outer-container">
+                <div id="main" role="main" class="main-outer-container clearfix">
+                        
+                        <div class="content-main-container">
+                            <div class="grid">
+					            <div class="col-xs-12">
+						            <nav id="breadcrumbs-container" aria-label="You Are Here :">
+							            <span role="list">
+<span role="listitem">
+	<a href="https://www.cupertino.gov/Home"  lang="en-US">Home</a>
+	<span class="nav-separator" aria-hidden="true" role="presentation">/</span>
+</span>
+          <span role="listitem"><a href="https://www.cupertino.gov/Parks-Recreation" >Parks & Recreation</a><span class='nav-separator' aria-hidden="true" role="presentation">/</span></span><span role="listitem">
+	<a href="https://www.cupertino.gov/Parks-Recreation/Events" >
+		Events
+	</a>
+	<span class='nav-separator' aria-hidden="true" role="presentation">/</span>
+</span>
+<span class="current-page" role="listitem" aria-current="page" >Parks and Recreation Event Calendar</span>
+          </span>
+						            </nav>
+					            </div>
+                      
+					            <div class="col-xs-12">
+						            <div class="main-inner-container">
+							            <div id="main-content" class="main-container clearfix">
+							              
+                            <!-- OC Layout Element Conent Template -->
+							              <!--normalTemplateStart--><h1 class='oc-page-title '>Parks and Recreation Event Calendar</h1>
+
+<div><div data-entity-id='d533b0d4-9829-4032-bcb3-6ef5bf7ebaee' data-entity-type=combinedCalendar id=e8ad529c-2cc9-4878-b12e-60dac0b7df43 class='oc-calendar'><span class='no-js-element'>This element requires javascript to be enabled.</span><div class='calendar-loading-message'><p>Please wait while we load this calendar...</p></div></div></div>
+<h1><span style="font-size: 100%;"><br>
+Upcoming Events</span></h1>
+
+<div class="grid">
+
+<div class="col-xs-12 col-lg-8">
+<div class="listing-results">
+8 Result(s) Found
+</div>
+
+<div class="list-container events-list-container left">
+<div class="list-item-container homepage-show ">	
+	<article>
+		<a href="https://www.cupertino.gov/Parks-Recreation/Events/Breakfast-with-Santa/Breakfast-with-Santa-Event" >
+			<h2 class="list-item-title">Breakfast with Santa</h2>		
+			<p class='oc-thumbnail-image'>
+       <picture>
+  <source media="(min-width: 992px)" srcset="/files/assets/city/v/1/parks-and-recreation/images/events/breakfast-with-santa/breakfast-with-santa-family.jpg?dimension=smallthumbnail&w=100&h=94">
+  <source media="(min-width: 768px)" srcset="/files/assets/city/v/1/parks-and-recreation/images/events/breakfast-with-santa/breakfast-with-santa-family.jpg?dimension=smallthumbnail&w=100&h=94">
+  <source srcset="/files/assets/city/v/1/parks-and-recreation/images/events/breakfast-with-santa/breakfast-with-santa-family.jpg?dimension=smallthumbnail&w=100&h=94">
+  <img class="thumbnail-image right" src="/files/assets/city/v/1/parks-and-recreation/images/events/breakfast-with-santa/breakfast-with-santa-family.jpg?dimension=smallthumbnail&w=100&h=94"  alt=""/>
+</picture> 
+      </p>
+			<p class="clearfix">
+				<span class="list-item-block-date"><span class="part-date">05</span>
+<span class="part-month">Dec</span>
+<span class="part-year">2026</span></span>
+				<span class="list-item-block-desc">
+				You and your family are invited to a festive breakfast celebration with Santa! Enjoy delicious North Pole pancakes prepared by Santa’s elves, take photos with Santa, and explore a holiday workshop filled with crafts and activities for children.
+				</span>
+			</p>
+			<p class="list-item-address">Quinlan Community Center,&nbsp;10185 North Stelling Road,&nbsp;&nbsp;95014</p>
+			
+			<p class="tagged-as-list">
+	<span class='label'>Tagged as:&nbsp;</span><span class="text"><span class="separator">,&nbsp;</span>Community events & fundraisers<span class="separator">,&nbsp;</span>Kids & family<span class="separator">,&nbsp;</span>Major events<span class="separator">,&nbsp;</span>City Wide Events</span></p>
+		</a>
+	</article>
+</div><div class="list-item-container homepage-show ">	
+	<article>
+		<a href="https://www.cupertino.gov/Parks-Recreation/Events/Signing-Santa/Signing-Santa-Event" >
+			<h2 class="list-item-title">Signing Santa</h2>		
+			<p class='oc-thumbnail-image'>
+       <picture>
+  <source media="(min-width: 992px)" srcset="/files/assets/city/v/1/parks-and-recreation/images/events/signing-santa/signing_santa_5.png?dimension=smallthumbnail&w=100&h=94">
+  <source media="(min-width: 768px)" srcset="/files/assets/city/v/1/parks-and-recreation/images/events/signing-santa/signing_santa_5.png?dimension=smallthumbnail&w=100&h=94">
+  <source srcset="/files/assets/city/v/1/parks-and-recreation/images/events/signing-santa/signing_santa_5.png?dimension=smallthumbnail&w=100&h=94">
+  <img class="thumbnail-image right" src="/files/assets/city/v/1/parks-and-recreation/images/events/signing-santa/signing_santa_5.png?dimension=smallthumbnail&w=100&h=94"  alt=""/>
+</picture> 
+      </p>
+			<p class="clearfix">
+				<span class="list-item-block-date"><span class="part-date">12</span>
+<span class="part-month">Dec</span>
+<span class="part-year">2026</span></span>
+				<span class="list-item-block-desc">
+				Deaf and hard of hearing children, along with their families, are invited to spend time with a Santa who understands sign language! Santa only communicates using sign language but an interpreter will be on-site to help translate for friends and family.
+				</span>
+			</p>
+			<p class="list-item-address">Quinlan Community Center,&nbsp;10185 North Stelling Road,&nbsp;&nbsp;95014</p>
+			
+			<p class="tagged-as-list">
+	<span class='label'>Tagged as:&nbsp;</span><span class="text"><span class="separator">,&nbsp;</span>Kids & family<span class="separator">,&nbsp;</span>City Wide Events</span></p>
+		</a>
+	</article>
+</div>
+</div>
+<div class="seamless-pagination left seamless-pagination-count-2">
+	<div class="seamless-pagination-controls">
+		<span class="button-previous"><input type="submit" name="ctl10$ctl00$ctl05" value="Previous" title="Previous page" class="btn_scPagingNonJS_enabled" /></span>
+	    <div class="seamless-pagination-data" aria-label='Pagination' role='navigation'>
+        Page <select name="ctl10$ctl00$ctl07" title="Please select the page here." class="scSearchInputBox">
+	<option value="1">1</option>
+	<option selected="selected" value="2">2</option>
+
+</select><input type="submit" name="ctl10$ctl00$ctl08" value="Go" title="Change page" class="btn_scPagingNonJS_enabled" />
+	    </div>
+	    <span class="button-next"><input type="submit" name="ctl10$ctl00$ctl09" value="Next" disabled="disabled" title="Next page" class="btn_scPagingNonJS_disabled" /></span>
+    </div>
+    <div class="seamless-pagination-pages" aria-label="Pagination" role="navigation">
+    </div>
+</div>
+<div class="seamless-pagination-info right" role="status">
+  Page 2 of 2
+</div>
+
+</div>
+<div class="col-xs-12 col-lg-4">
+	<div class="search-filter">
+		<div class="search-filter-header">
+			<h2 class="filter-title">Search Events</h2>
+				<span class="accordion-trigger search-filter-trigger" data-accordion-body="#eventsListBody" data-open="false" data-accordion-all-device="false">
+					<i aria-hidden="true"></i>
+				</span>
+		</div>
+		<div class="search-filter-body accordion-panel clearfix" id="eventsListBody">
+			<label for="ctl10_ctl00_ctl13">
+				By Phrase or Keyword
+			</label>
+			<span class='sc-search-box'><input name="ctl10$ctl00$ctl13" type="text" id="ctl10_ctl00_ctl13" class="inputBox" /></span>		
+			<label for="ctl10_ctl00_ctl16_ctl00_eventDateFrom_NoJsDatePicker" data-swap-label-id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_dateInput">
+				By Date
+				<span class="visuallyhidden">
+					MM/DD/YYYY
+				</span>
+			</label>
+			<div id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_wrapper" class="RadPicker RadPicker_Default sys-gen-raddatepicker" style="display:inline-block;width:130px;">
+	<!-- 2020.1.114.45 --><input style="visibility:hidden;display:block;float:right;margin:0 0 -1px -1px;width:1px;height:1px;overflow:hidden;border:0;padding:0;" id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker" name="ctl10$ctl00$ctl16$ctl00$eventDateFrom$JsDatePicker" type="text" class="rdfd_ radPreventDecorate" value="2026-10-24" title="Visually hidden input created for functionality purposes." /><table cellspacing="0" class="rcTable rcSingle" style="width:100%;">
+		<caption style="display:none;">
+			RadDatePicker
+		</caption><thead style="display:none;">
+			<tr>
+				<th scope="col">RadDatePicker</th>
+			</tr>
+		</thead><tbody>
+			<tr>
+				<td class="rcInputCell" style="width:100%;"><span id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_dateInput_wrapper" class="riSingle RadInput RadInput_Default" style="display:block;width:100%;"><input id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_dateInput" name="ctl10$ctl00$ctl16$ctl00$eventDateFrom$JsDatePicker$dateInput" class="riTextBox riEnabled" placeholder="MM/DD/YYYY" value="10/24/2026" type="text" /><input id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_dateInput_ClientState" name="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_dateInput_ClientState" type="hidden" /></span></td><td><a title="Open the calendar popup." href="#" id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_popupButton" class="rcCalPopup">Open the calendar popup.</a><div id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_wrapper" style="display:none;">
+					<table id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar" cellspacing="0" class="RadCalendar RadCalendar_Default" border="0" role="dialog" aria-modal="true" aria-label="Choose Date">
+						<caption>
+							<span style='display:none;'>Calendar</span>
+						</caption><thead>
+							<tr>
+								<td class="rcTitlebar" aria-live="polite"><table cellspacing="0" border="0">
+									<caption>
+										<span style='display:none;'>Title and navigation</span>
+									</caption><thead>
+										<tr style="display:none;">
+											<th scope="col">Title and navigation</th>
+										</tr>
+									</thead><tbody>
+	<tr>
+		<td><a id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_FNP" class="t-button rcFastPrev" title="&lt;&lt;" href="#">&lt;&lt;</a></td><td><a id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_NP" class="t-button rcPrev" title="&lt;" href="#">&lt;</a></td><td id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Title" class="rcTitle" aria-live="polite">October 2026</td><td><a id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_NN" class="t-button rcNext" title=">" href="#">&gt;</a></td><td><a id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_FNN" class="t-button rcFastNext" title=">>" href="#">&lt;&lt;</a></td>
+	</tr>
+</tbody>
+								</table></td>
+							</tr>
+						</thead><tbody>
+	<tr>
+		<td class="rcMain"><table id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top" class="rcMainTable" cellspacing="0" border="0" role="grid">
+	<caption>
+		<span style='display:none;'>October 2026</span>
+	</caption><thead>
+		<tr class="rcWeek">
+			<th class="rcViewSel" scope="col">&nbsp;</th><th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_1" title="Sunday" scope="col">S</th><th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_2" title="Monday" scope="col">M</th><th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_3" title="Tuesday" scope="col">T</th><th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_4" title="Wednesday" scope="col">W</th><th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_5" title="Thursday" scope="col">T</th><th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_6" title="Friday" scope="col">F</th><th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_7" title="Saturday" scope="col">S</th>
+		</tr>
+	</thead><tbody>
+		<tr class="rcRow">
+			<th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_rs_1" scope="row">40</th><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_1" title="Sunday, September 27, 2026"><a href="#">27</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_2" title="Monday, September 28, 2026"><a href="#">28</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_3" title="Tuesday, September 29, 2026"><a href="#">29</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_4" title="Wednesday, September 30, 2026"><a href="#">30</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_5" title="Thursday, October 01, 2026"><a href="#">1</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_6" title="Friday, October 02, 2026"><a href="#">2</a></td><td class="rcWeekend" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_7" title="Saturday, October 03, 2026"><a href="#">3</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_rs_2" scope="row">41</th><td class="rcWeekend" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_1" title="Sunday, October 04, 2026"><a href="#">4</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_2" title="Monday, October 05, 2026"><a href="#">5</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_3" title="Tuesday, October 06, 2026"><a href="#">6</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_4" title="Wednesday, October 07, 2026"><a href="#">7</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_5" title="Thursday, October 08, 2026"><a href="#">8</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_6" title="Friday, October 09, 2026"><a href="#">9</a></td><td class="rcWeekend" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_7" title="Saturday, October 10, 2026"><a href="#">10</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_rs_3" scope="row">42</th><td class="rcWeekend" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_1" title="Sunday, October 11, 2026"><a href="#">11</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_2" title="Monday, October 12, 2026"><a href="#">12</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_3" title="Tuesday, October 13, 2026"><a href="#">13</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_4" title="Wednesday, October 14, 2026"><a href="#">14</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_5" title="Thursday, October 15, 2026"><a href="#">15</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_6" title="Friday, October 16, 2026"><a href="#">16</a></td><td class="rcWeekend" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_7" title="Saturday, October 17, 2026"><a href="#">17</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_rs_4" scope="row">43</th><td class="rcWeekend" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_1" title="Sunday, October 18, 2026"><a href="#">18</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_2" title="Monday, October 19, 2026"><a href="#">19</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_3" title="Tuesday, October 20, 2026"><a href="#">20</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_4" title="Wednesday, October 21, 2026"><a href="#">21</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_5" title="Thursday, October 22, 2026"><a href="#">22</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_6" title="Friday, October 23, 2026"><a href="#">23</a></td><td class="rcWeekend" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_7" title="Saturday, October 24, 2026"><a href="#">24</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_rs_5" scope="row">44</th><td class="rcWeekend" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_1" title="Sunday, October 25, 2026"><a href="#">25</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_2" title="Monday, October 26, 2026"><a href="#">26</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_3" title="Tuesday, October 27, 2026"><a href="#">27</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_4" title="Wednesday, October 28, 2026"><a href="#">28</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_5" title="Thursday, October 29, 2026"><a href="#">29</a></td><td headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_6" title="Friday, October 30, 2026"><a href="#">30</a></td><td class="rcWeekend" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_7" title="Saturday, October 31, 2026"><a href="#">31</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_rs_6" scope="row">45</th><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_1" title="Sunday, November 01, 2026"><a href="#">1</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_2" title="Monday, November 02, 2026"><a href="#">2</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_3" title="Tuesday, November 03, 2026"><a href="#">3</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_4" title="Wednesday, November 04, 2026"><a href="#">4</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_5" title="Thursday, November 05, 2026"><a href="#">5</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_6" title="Friday, November 06, 2026"><a href="#">6</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top_cs_7" title="Saturday, November 07, 2026"><a href="#">7</a></td>
+		</tr>
+	</tbody>
+</table></td>
+	</tr>
+</tbody>
+					</table><input type="hidden" name="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_SD" id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_SD" value="[]" /><input type="hidden" name="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_AD" id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_AD" value="[[1,1,1],[9999,12,31],[2026,10,24]]" />
+				</div></td>
+			</tr>
+		</tbody>
+	</table><input id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_ClientState" name="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_ClientState" type="hidden" />
+</div>
+
+<input name="ctl10$ctl00$ctl16$ctl00$eventDateFrom$NoJsDatePicker" type="text" value="10/24/2026" id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_NoJsDatePicker" class="sys-gen-date-input " />
+<input type="hidden" name="ctl10$ctl00$ctl16$ctl00$eventDateFrom$JavascriptEnabled" id="ctl10_ctl00_ctl16_ctl00_eventDateFrom_JavascriptEnabled" value="False" />
+
+<script type="text/javascript">
+  if (window.addEventListener) // W3C standard
+  {
+    window.addEventListener('load', SetJSStatus, false); // NB **not** 'onload'
+  }
+  else if (document.attachEvent) // Microsoft
+  {
+    window.attachEvent('onload', SetJSStatus);
+  }
+
+  function SetJSStatus() {
+    document.getElementById("ctl10_ctl00_ctl16_ctl00_eventDateFrom_JavascriptEnabled").value = "True";
+  }
+</script>
+<style type='text/css'> 
+  .sys-gen-date-input { display:none !important; }
+</style>
+<noscript>
+  <style type='text/css'> 
+    .sys-gen-date-input { display:block !important; }
+    .sys-gen-raddatepicker { display:none !important; }
+  </style>
+</noscript>
+			<label class="short-label" for="ctl10_ctl00_ctl19_ctl00_eventDateTo_NoJsDatePicker" data-swap-label-id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_dateInput">
+				To
+				<span class="visuallyhidden">
+					MM/DD/YYYY
+				</span>        
+			</label><div class="clearfix"></div>
+			<div id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_wrapper" class="RadPicker RadPicker_Default sys-gen-raddatepicker" style="display:inline-block;width:130px;">
+	<input style="visibility:hidden;display:block;float:right;margin:0 0 -1px -1px;width:1px;height:1px;overflow:hidden;border:0;padding:0;" id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker" name="ctl10$ctl00$ctl19$ctl00$eventDateTo$JsDatePicker" type="text" class="rdfd_ radPreventDecorate" value="" title="Visually hidden input created for functionality purposes." /><table cellspacing="0" class="rcTable rcSingle" style="width:100%;">
+		<caption style="display:none;">
+			RadDatePicker
+		</caption><thead style="display:none;">
+			<tr>
+				<th scope="col">RadDatePicker</th>
+			</tr>
+		</thead><tbody>
+			<tr>
+				<td class="rcInputCell" style="width:100%;"><span id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_dateInput_wrapper" class="riSingle RadInput RadInput_Default" style="display:block;width:100%;"><input id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_dateInput" name="ctl10$ctl00$ctl19$ctl00$eventDateTo$JsDatePicker$dateInput" class="riTextBox riEnabled" placeholder="MM/DD/YYYY" type="text" /><input id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_dateInput_ClientState" name="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_dateInput_ClientState" type="hidden" /></span></td><td><a title="Open the calendar popup." href="#" id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_popupButton" class="rcCalPopup">Open the calendar popup.</a><div id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_wrapper" style="display:none;">
+					<table id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar" cellspacing="0" class="RadCalendar RadCalendar_Default" border="0" role="dialog" aria-modal="true" aria-label="Choose Date">
+						<caption>
+							<span style='display:none;'>Calendar</span>
+						</caption><thead>
+							<tr>
+								<td class="rcTitlebar" aria-live="polite"><table cellspacing="0" border="0">
+									<caption>
+										<span style='display:none;'>Title and navigation</span>
+									</caption><thead>
+										<tr style="display:none;">
+											<th scope="col">Title and navigation</th>
+										</tr>
+									</thead><tbody>
+	<tr>
+		<td><a id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_FNP" class="t-button rcFastPrev" title="&lt;&lt;" href="#">&lt;&lt;</a></td><td><a id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_NP" class="t-button rcPrev" title="&lt;" href="#">&lt;</a></td><td id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Title" class="rcTitle" aria-live="polite">October 2026</td><td><a id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_NN" class="t-button rcNext" title=">" href="#">&gt;</a></td><td><a id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_FNN" class="t-button rcFastNext" title=">>" href="#">&lt;&lt;</a></td>
+	</tr>
+</tbody>
+								</table></td>
+							</tr>
+						</thead><tbody>
+	<tr>
+		<td class="rcMain"><table id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top" class="rcMainTable" cellspacing="0" border="0" role="grid">
+	<caption>
+		<span style='display:none;'>October 2026</span>
+	</caption><thead>
+		<tr class="rcWeek">
+			<th class="rcViewSel" scope="col">&nbsp;</th><th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_1" title="Sunday" scope="col">S</th><th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_2" title="Monday" scope="col">M</th><th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_3" title="Tuesday" scope="col">T</th><th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_4" title="Wednesday" scope="col">W</th><th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_5" title="Thursday" scope="col">T</th><th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_6" title="Friday" scope="col">F</th><th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_7" title="Saturday" scope="col">S</th>
+		</tr>
+	</thead><tbody>
+		<tr class="rcRow">
+			<th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_rs_1" scope="row">40</th><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_1" title="Sunday, September 27, 2026"><a href="#">27</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_2" title="Monday, September 28, 2026"><a href="#">28</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_3" title="Tuesday, September 29, 2026"><a href="#">29</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_4" title="Wednesday, September 30, 2026"><a href="#">30</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_5" title="Thursday, October 01, 2026"><a href="#">1</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_6" title="Friday, October 02, 2026"><a href="#">2</a></td><td class="rcWeekend" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_7" title="Saturday, October 03, 2026"><a href="#">3</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_rs_2" scope="row">41</th><td class="rcWeekend" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_1" title="Sunday, October 04, 2026"><a href="#">4</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_2" title="Monday, October 05, 2026"><a href="#">5</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_3" title="Tuesday, October 06, 2026"><a href="#">6</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_4" title="Wednesday, October 07, 2026"><a href="#">7</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_5" title="Thursday, October 08, 2026"><a href="#">8</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_6" title="Friday, October 09, 2026"><a href="#">9</a></td><td class="rcWeekend" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_7" title="Saturday, October 10, 2026"><a href="#">10</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_rs_3" scope="row">42</th><td class="rcWeekend" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_1" title="Sunday, October 11, 2026"><a href="#">11</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_2" title="Monday, October 12, 2026"><a href="#">12</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_3" title="Tuesday, October 13, 2026"><a href="#">13</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_4" title="Wednesday, October 14, 2026"><a href="#">14</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_5" title="Thursday, October 15, 2026"><a href="#">15</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_6" title="Friday, October 16, 2026"><a href="#">16</a></td><td class="rcWeekend" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_7" title="Saturday, October 17, 2026"><a href="#">17</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_rs_4" scope="row">43</th><td class="rcWeekend" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_1" title="Sunday, October 18, 2026"><a href="#">18</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_2" title="Monday, October 19, 2026"><a href="#">19</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_3" title="Tuesday, October 20, 2026"><a href="#">20</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_4" title="Wednesday, October 21, 2026"><a href="#">21</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_5" title="Thursday, October 22, 2026"><a href="#">22</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_6" title="Friday, October 23, 2026"><a href="#">23</a></td><td class="rcWeekend" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_7" title="Saturday, October 24, 2026"><a href="#">24</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_rs_5" scope="row">44</th><td class="rcWeekend" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_1" title="Sunday, October 25, 2026"><a href="#">25</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_2" title="Monday, October 26, 2026"><a href="#">26</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_3" title="Tuesday, October 27, 2026"><a href="#">27</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_4" title="Wednesday, October 28, 2026"><a href="#">28</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_5" title="Thursday, October 29, 2026"><a href="#">29</a></td><td headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_6" title="Friday, October 30, 2026"><a href="#">30</a></td><td class="rcWeekend" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_7" title="Saturday, October 31, 2026"><a href="#">31</a></td>
+		</tr><tr class="rcRow">
+			<th id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_rs_6" scope="row">45</th><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_1" title="Sunday, November 01, 2026"><a href="#">1</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_2" title="Monday, November 02, 2026"><a href="#">2</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_3" title="Tuesday, November 03, 2026"><a href="#">3</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_4" title="Wednesday, November 04, 2026"><a href="#">4</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_5" title="Thursday, November 05, 2026"><a href="#">5</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_6" title="Friday, November 06, 2026"><a href="#">6</a></td><td class="rcOtherMonth" headers="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top_cs_7" title="Saturday, November 07, 2026"><a href="#">7</a></td>
+		</tr>
+	</tbody>
+</table></td>
+	</tr>
+</tbody>
+					</table><input type="hidden" name="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_SD" id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_SD" value="[]" /><input type="hidden" name="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_AD" id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_AD" value="[[1,1,1],[9999,12,31],[2026,10,24]]" />
+				</div></td>
+			</tr>
+		</tbody>
+	</table><input id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_ClientState" name="ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_ClientState" type="hidden" />
+</div>
+
+<input name="ctl10$ctl00$ctl19$ctl00$eventDateTo$NoJsDatePicker" type="text" id="ctl10_ctl00_ctl19_ctl00_eventDateTo_NoJsDatePicker" class="sys-gen-date-input " />
+<input type="hidden" name="ctl10$ctl00$ctl19$ctl00$eventDateTo$JavascriptEnabled" id="ctl10_ctl00_ctl19_ctl00_eventDateTo_JavascriptEnabled" value="False" />
+
+<script type="text/javascript">
+  if (window.addEventListener) // W3C standard
+  {
+    window.addEventListener('load', SetJSStatus, false); // NB **not** 'onload'
+  }
+  else if (document.attachEvent) // Microsoft
+  {
+    window.attachEvent('onload', SetJSStatus);
+  }
+
+  function SetJSStatus() {
+    document.getElementById("ctl10_ctl00_ctl19_ctl00_eventDateTo_JavascriptEnabled").value = "True";
+  }
+</script>
+<style type='text/css'> 
+  .sys-gen-date-input { display:none !important; }
+</style>
+<noscript>
+  <style type='text/css'> 
+    .sys-gen-date-input { display:block !important; }
+    .sys-gen-raddatepicker { display:none !important; }
+  </style>
+</noscript>
+			<label for="ctl10_ctl00_ctl21_ctl00_ctl00">
+				By Neighborhood
+			</label>	
+			<select size="4" name="ctl10$ctl00$ctl21$ctl00$ctl00" multiple="multiple" id="ctl10_ctl00_ctl21_ctl00_ctl00" class="scSearchInputBox">
+	<option value="Cupertino, CA">Cupertino, CA</option>
+
+</select>
+			<label for="ctl10_ctl00_ctl23_ctl00_ctl00">
+				By Category
+			</label>			
+			<select size="4" name="ctl10$ctl00$ctl23$ctl00$ctl00" multiple="multiple" id="ctl10_ctl00_ctl23_ctl00_ctl00" class="scSearchInputBox">
+	<option value="Meetings">Meetings</option>
+	<option value="Community events &amp; fundraisers">Community events &amp; fundraisers</option>
+	<option value="Exhibitions &amp; festivals">Exhibitions &amp; festivals</option>
+	<option value="Kids &amp; family">Kids &amp; family</option>
+	<option value="Major events">Major events</option>
+	<option value="Markets &amp; popup shops">Markets &amp; popup shops</option>
+	<option value="Music &amp; arts">Music &amp; arts</option>
+	<option value="Sports">Sports</option>
+	<option value="Talks &amp; workshops">Talks &amp; workshops</option>
+	<option value="Youth events">Youth events</option>
+	<option value="Community Engagement Meetings">Community Engagement Meetings</option>
+	<option value="City Wide Events">City Wide Events</option>
+	<option value="Environmental Events">Environmental Events</option>
+
+</select>
+			<table id="ctl10_ctl00_ctl24_ctl00_ctl00" class="scSearchInputOption" border="0">
+	<tr>
+		<td><input id="ctl10_ctl00_ctl24_ctl00_ctl00_0" type="checkbox" name="ctl10$ctl00$ctl24$ctl00$ctl00$0" /><label for="ctl10_ctl00_ctl24_ctl00_ctl00_0">Free</label></td>
+	</tr>
+</table>
+			<input type="submit" name="ctl10$ctl00$ctl25" value="Search" />
+		</div>
+	</div>
+</div>
+</div>
+
+
+
+
+
+<!--normalTemplateEnd-->
+                            
+                            
+                            
+							            </div>
+						            </div>
+					            </div>
+                        
+                            </div>
+                        </div>
+                        <div class="back-to-top-container text-center">
+                            <a href="#body-top" id="back-to-top"><i aria-hidden="true"></i><span class="js-visuallyhidden">Back to top</span></a>
+                        </div>
+                </div>
+            </div><!--groupTemplateEnd-->
+            <footer>
+                
+                    <div class="footer-outer-container footer-first-row">
+                        <div class="footer-container clearfix">
+                            <div class="grid grid-pad">
+                                <div class="col-xs-12 col-s-6 col-m-6 col-lg-3 footer-logo" >
+	
+	<p><img src="/files/assets/city/v/2/dev/logo-footer.png" style="width: 152px; height: 158px;" alt="Cupertino logo EST. 1955" /></p>
+
+
+	
+	
+</div><div class="col-xs-12 col-s-6 col-m-6 col-lg-3 contact-us-footer-widget" >
+	
+			<h2 class="visuallyhidden">Site Footer</h2>
+			<h3 class="footer-title">Contact Us</h3>
+			
+	
+	
+	<p>10300 Torre Ave</p>
+<p>Cupertino, CA 95014</p>
+<p><a href="https://maps.app.goo.gl/Ykj4zFcSxLEkHJa27" target="_blank">View on Map</a></p>
+<p><a href="tel:">Phone: 408.777.3200</a></p>
+<p><a href="https://www.cupertino.gov/Your-City/City-Directory">City Directory</a></p>
+
+
+</div><div class="col-xs-12 col-s-6 col-m-6 col-lg-3 quick-links-footer-widget" >
+	
+			<h2 class="visuallyhidden">Site Footer</h2>
+			<h3 class="footer-title">Quick Links</h3>
+			
+	
+	<ul class="footer-links without-icons ">  <li>
+<a href="https://www.cupertino.gov/Your-City/Departments/City-Clerk/City-Records" target="_self"  >City Records</a>
+</li>
+          <li>
+<a href="https://codehub.gridics.com/us/ca/cupertino" target="_blank"  >Municipal Code</a>
+</li>
+          <li>
+<a href="https://www.governmentjobs.com/careers/cupertino" target="_blank"  >City Jobs</a>
+</li>
+          <li>
+<a href="https://www.cupertino.gov/Meetings/Cupertino-Calendar" target="_self"  >City Calendar</a>
+</li>
+          <li>
+<a href="https://us.openforms.com/Form/7cb2c2a4-7c51-4037-8e97-87d04310f7ae" target="_blank"  >Website Feedback Form</a>
+</li>
+          <li>
+<a href="https://www.cupertino.gov/Your-City/Departments/Innovation-Technology/Accessibility" target="_self"  >Accessibility</a>
+</li>
+           </ul>
+	
+</div><div class="col-xs-12 col-s-6 col-m-6 col-lg-3" >
+	
+			<h2 class="visuallyhidden">Site Footer</h2>
+			<h3 class="footer-title">Get Social</h3>
+			
+	
+	<ul class="footer-links with-icons social-media-links">  <li class="footer-link-facebook">
+	<a href="https://www.facebook.com/cityofcupertino/" target="_blank"  >
+<i aria-hidden="true"></i>Facebook
+</a>
+</li>
+          <li class="footer-link-instagram">
+	<a href="https://www.instagram.com/cityofcupertino/?hl=en" target="_blank"  >
+<i aria-hidden="true"></i>Instagram
+</a>
+</li>
+          <li class="footer-link-x">
+	<a href="https://twitter.com/cityofcupertino" target="_blank"  >
+<i aria-hidden="true"></i>X
+</a>
+</li>
+          <li class="footer-link-youtube">
+	<a href="https://www.youtube.com/user/cupertinocitychannel" target="_blank"  >
+<i aria-hidden="true"></i>YouTube
+</a>
+</li>
+          <li class="footer-link-linkedin">
+	<a href="https://www.linkedin.com/company/cityofcupertino" target="_blank"  >
+<i aria-hidden="true"></i>LinkedIn
+</a>
+</li>
+          <li class="footer-link-nextdoor">
+	<a href="https://nextdoor.com/city/cupertino--ca/" target="_blank"  >
+<i aria-hidden="true"></i>Nextdoor
+</a>
+</li>
+           </ul>
+	
+</div>
+                            </div>
+                        </div>
+                    </div>
+                
+                <div class="footer-outer-container footer-second-row">
+                    <div class="footer-container clearfix">
+                        <div class="grid grid-pad footer-secondary-links">
+                            <div class="col-xs-12 col-m-7">
+                                
+                                    <div><a href="https://www.cupertino.gov/Your-City/Transparent-Cupertino/Digital-Policies" target="_self"  >Policies & Disclaimer</a>&nbsp;| <a href="https://www.cupertino.gov/Your-City/Site-Map" target="_self"  >Sitemap</a></div>
+                                
+                            </div>
+                            <div class="col-xs-12 col-m-5 powered-by">
+                                <div class="right">
+                                    &copy; 2026 Cupertino CA&nbsp;|&nbsp;<span class="powered-by">Powered by <a href="https://granicus.com/solution/govaccess/opencities/" target="_blank">Granicus</a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="/files/oc-resources/b9015858-988c-48a4-9473-7c193df083e4/JsTextSnippets.js?ocsvclang=en-US" type="text/javascript"></script><script>OpenCitiesResourceStrings["Sys Js Tell me more about"] = "Meeting Details:";</script>
+    
+    <script async src="https://siteimproveanalytics.com/js/siteanalyze_21043.js"></script>
+
+<script>
+  window.fasttrackAssistReady = function () {
+    FT.init({
+      orgId: "d1a77df1df0a4bcaaf2bff20bc8c5cd2"
+    });
+  };
+</script>
+<!-- Start of HubSpot Embed Code -->
+<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/244554268.js"></script>
+<!-- End of HubSpot Embed Code -->
+
+<!-- Start of Readly Embed Code -->
+<script>
+window.fasttrackAssistReady = function() {
+  FT.init({
+    orgId: "d1a77df1df0a4bcaaf2bff20bc8c5cd2",
+    widgetOffset: { vertical: 50 }
+  });
+};
+(function() {
+  var s = document.createElement("script");
+  s.src = "https://chatsdk.readyly.app/assist-v2-min.js";
+  s.async = true;
+  s.setAttribute("data-fasttrack-assist-sdk", "true");
+  var e = document.getElementsByTagName("script")[0];
+  e.parentNode.insertBefore(s, e);
+})();
+</script>
+<!-- End of Readyly Embed Code -->
+
+<!-- Start of Silktide Embed Code -->
+<script defer src="https://analytics.silktide.com/7cdb39b85ba5b9cb47d55e68cd243136.js"></script>
+<script>
+  (function (s,i,l,k,y) {
+    s[i] = s[i] || y;
+    s[l] = s[l] || [];
+    s[k] = function(e, p) { p = p || {}; p.event = e; p.time = Date.now(); s[l].push(p); };
+    s[k]('page_load');
+  })(window, 'stConfig', 'stEvents', 'silktide', {});
+</script>
+<!-- End of Silktide Embed Code -->
+
+<!-- Start of Lazy Loading Script for Fields webpage -->
+
+<style>
+.pbi-schedule { margin: 12px 0; }
+.pbi-btn {
+  display: inline-block; padding: 12px 18px; margin: 0;
+  background: #001F4E; color: #fff; border: 2px solid #001F4E;
+  border-radius: 6px; font-weight: 600; font-size: 1rem;
+  font-family: inherit; cursor: pointer; line-height: 1.3;
+}
+.pbi-btn:hover { background: #003a91; border-color: #003a91; }
+.pbi-btn:focus-visible { outline: 3px solid #b35c00; outline-offset: 2px; }
+.pbi-alt {
+  display: inline-block; margin-left: 12px; font-size: .95rem;
+  text-decoration: underline;
+}
+.pbi-frame-wrap {
+  position: relative; width: 100%; max-width: 1400px;
+  padding-bottom: 75%; height: 0; overflow: hidden; margin-top: 12px;
+}
+.pbi-frame-wrap iframe {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
+}
+.pbi-note { display: block; margin-top: 8px; font-size: .9rem; }
+@media (max-width: 768px) { .pbi-frame-wrap { padding-bottom: 130%; } }
+</style>
+ 
+<script>
+(function () {
+  'use strict';
+ 
+  // Only run on the athletic fields page.
+  var p = location.pathname.toLowerCase();
+  if (p.indexOf('athletic-fields-and-courts') === -1 && p.indexOf('/fields') === -1) return;
+ 
+  // Set to true ONLY if a single Power BI report, opened alone in a fresh
+  // Safari tab, still crashes the phone. Then mobile gets a link instead
+  // of an embed. Leave false until that test proves otherwise.
+  var LINK_ONLY_ON_MOBILE = false;
+ 
+  var BASE = 'https://app.powerbi.com/view?r=';
+  var openPanel = null; // the one placeholder currently holding an iframe
+ 
+  function isMobile() {
+    return window.matchMedia('(max-width: 768px)').matches;
+  }
+ 
+  // Whitelist base64url characters. Do NOT use a blacklist here - a
+  // character class like /["'&quot;%22]/ strips q, u, o, t, 2 and
+  // silently corrupts every token.
+  function cleanToken(t) {
+    return (t || '').replace(/[^A-Za-z0-9_=-]/g, '');
+  }
+ 
+  function unload(panel) {
+    if (!panel) return;
+    var wrap = panel.querySelector('.pbi-frame-wrap');
+    if (wrap) wrap.parentNode.removeChild(wrap);
+    var btn = panel.querySelector('.pbi-btn');
+    if (btn) {
+      btn.setAttribute('aria-expanded', 'false');
+      btn.textContent = 'Show ' + panel.getAttribute('data-title') + ' permit schedule';
+    }
+    if (openPanel === panel) openPanel = null;
+  }
+ 
+  function load(panel) {
+    if (openPanel === panel) { unload(panel); return; }
+    unload(openPanel); // hard cap: only one embed alive at a time
+ 
+    var name = panel.getAttribute('data-title');
+    var wrap = document.createElement('div');
+    wrap.className = 'pbi-frame-wrap';
+ 
+    var f = document.createElement('iframe');
+    f.title = name + ' permit schedule';
+    f.setAttribute('allowfullscreen', '');
+    f.setAttribute('loading', 'eager');
+    f.src = panel.__url;
+ 
+    wrap.appendChild(f);
+    panel.appendChild(wrap);
+ 
+    var btn = panel.querySelector('.pbi-btn');
+    btn.setAttribute('aria-expanded', 'true');
+    btn.textContent = 'Hide ' + name + ' permit schedule';
+    openPanel = panel;
+  }
+ 
+  function build(panel) {
+    var token = cleanToken(panel.getAttribute('data-token'));
+    var name = panel.getAttribute('data-title') || 'permit';
+    if (!token) return;
+ 
+    var url = BASE + token;
+    panel.__url = url;
+ 
+    // Always present: a plain link that works with no JS embed at all.
+    var alt = document.createElement('a');
+    alt.href = url;
+    alt.target = '_blank';
+    alt.rel = 'noopener';
+    alt.className = 'pbi-alt';
+    alt.textContent = 'Open ' + name + ' schedule in a new tab';
+ 
+    if (LINK_ONLY_ON_MOBILE && isMobile()) {
+      alt.className = 'pbi-btn';
+      alt.style.textDecoration = 'none';
+      alt.textContent = 'View ' + name + ' permit schedule';
+      panel.appendChild(alt);
+      return;
+    }
+ 
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pbi-btn';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.textContent = 'Show ' + name + ' permit schedule';
+    btn.addEventListener('click', function () { load(panel); });
+ 
+    panel.appendChild(btn);
+    panel.appendChild(alt);
+ 
+    
+  }
+ 
+  function init() {
+    var nodes = document.querySelectorAll('.pbi-schedule');
+    for (var i = 0; i < nodes.length; i++) build(nodes[i]);
+  }
+ 
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+<!-- End of Lazy Loading Pages Script -->
+    <!-- Global site tag (gtag.js) - Google Analytics -->>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SY2QFPT6ST"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SY2QFPT6ST');
+</script>
+
+<script async src="https://docaccess.com/docbox.js"></script>
+    
+    
+
+<script type="text/javascript">
+//<![CDATA[
+window.__TsmHiddenField = $get('ctl04_seamless_script_manager_TSM');Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadDateInput, {"_displayText":"10/24/2026","_focused":false,"_initialValueAsText":"2026-10-24-00-00-00","_postBackEventReferenceScript":"__doPostBack(\u0027ctl10$ctl00$ctl16$ctl00$eventDateFrom$JsDatePicker\u0027,\u0027\u0027)","_skin":"Default","_validationText":"2026-10-24-00-00-00","clientStateFieldID":"ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_dateInput_ClientState","dateFormat":"MM/dd/yyyy","dateFormatInfo":{"DayNames":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"MonthNames":["January","February","March","April","May","June","July","August","September","October","November","December",""],"AbbreviatedDayNames":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],"AbbreviatedMonthNames":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",""],"AMDesignator":"AM","PMDesignator":"PM","DateSeparator":"/","TimeSeparator":":","FirstDayOfWeek":0,"DateSlots":{"Day":1,"Year":2,"Month":0},"ShortYearCenturyEnd":2029,"TimeInputOnly":false,"MonthYearOnly":false},"displayDateFormat":"MM/dd/yyyy","enabled":true,"incrementSettings":{InterceptArrowKeys:true,InterceptMouseWheel:true,Step:1},"maxDate":"9999-12-31-00-00-00","minDate":"0001-01-01-00-00-00","styles":{HoveredStyle: ["width:100%;", "riTextBox riHover"],InvalidStyle: ["width:100%;", "riTextBox riError"],DisabledStyle: ["width:100%;", "riTextBox riDisabled"],FocusedStyle: ["width:100%;", "riTextBox riFocused"],EmptyMessageStyle: ["width:100%;", "riTextBox riEmpty"],ReadOnlyStyle: ["width:100%;", "riTextBox riRead"],EnabledStyle: ["width:100%;", "riTextBox riEnabled"]}}, null, null, $get("ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_dateInput"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadCalendar, {"_DayRenderChangedDays":{},"_FormatInfoArray":[["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],["January","February","March","April","May","June","July","August","September","October","November","December",""],["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",""],"dddd, MMMM d, yyyy h:mm:ss tt","dddd, MMMM d, yyyy","h:mm:ss tt","MMMM d","ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","M/d/yyyy","h:mm tt","yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","MMMM yyyy","AM","PM","/",":",0],"_ViewRepeatableDays":{},"_ViewsHash":{"ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_Top" : [[2026,10,1], 1]},"_calendarWeekRule":0,"_culture":"en-US","_enableKeyboardNavigation":true,"_enableViewSelector":false,"_firstDayOfWeek":7,"_postBackCall":"__doPostBack(\u0027ctl10$ctl00$ctl16$ctl00$eventDateFrom$JsDatePicker$calendar\u0027,\u0027@@\u0027)","_rangeSelectionMode":0,"_showRowHeaders":true,"clientStateFieldID":"ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar_ClientState","enableMultiSelect":false,"enabled":true,"fastNavigationStep":12,"monthYearNavigationSettings":["Today","OK","Cancel","Date is out of range.","False","True","300","1","300","1","False"],"skin":"Default","specialDaysArray":[],"stylesHash":{"DayStyle": ["", ""],"CalendarTableStyle": ["", "rcMainTable"],"OtherMonthDayStyle": ["", "rcOtherMonth"],"TitleStyle": ["", ""],"SelectedDayStyle": ["", "rcSelected"],"SelectorStyle": ["", ""],"DisabledDayStyle": ["", "rcDisabled"],"OutOfRangeDayStyle": ["", "rcOutOfRange"],"WeekendDayStyle": ["", "rcWeekend"],"DayOverStyle": ["", "rcHover"],"FastNavigationStyle": ["", "RadCalendarMonthView RadCalendarMonthView_Default"],"ViewSelectorStyle": ["", "rcViewSel"]},"useColumnHeadersAsSelectors":false,"useRowHeadersAsSelectors":false}, null, null, $get("ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadDatePicker, {"_PopupButtonSettings":{ ResolvedImageUrl : "", ResolvedHoverImageUrl : ""},"_animationSettings":{ShowAnimationDuration:300,ShowAnimationType:1,HideAnimationDuration:300,HideAnimationType:1},"_enableKeyboardNavigation":false,"_popupControlID":"ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_popupButton","clientStateFieldID":"ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_ClientState","focusedDate":"2026-10-24-00-00-00","maxDate":"9999-12-31-00-00-00","minDate":"0001-01-01-00-00-00"}, null, {"calendar":"ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_calendar","dateInput":"ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker_dateInput"}, $get("ctl10_ctl00_ctl16_ctl00_eventDateFrom_JsDatePicker"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadDateInput, {"_displayText":"","_focused":false,"_initialValueAsText":"","_postBackEventReferenceScript":"__doPostBack(\u0027ctl10$ctl00$ctl19$ctl00$eventDateTo$JsDatePicker\u0027,\u0027\u0027)","_skin":"Default","_validationText":"","clientStateFieldID":"ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_dateInput_ClientState","dateFormat":"MM/dd/yyyy","dateFormatInfo":{"DayNames":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"MonthNames":["January","February","March","April","May","June","July","August","September","October","November","December",""],"AbbreviatedDayNames":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],"AbbreviatedMonthNames":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",""],"AMDesignator":"AM","PMDesignator":"PM","DateSeparator":"/","TimeSeparator":":","FirstDayOfWeek":0,"DateSlots":{"Day":1,"Year":2,"Month":0},"ShortYearCenturyEnd":2029,"TimeInputOnly":false,"MonthYearOnly":false},"displayDateFormat":"MM/dd/yyyy","enabled":true,"incrementSettings":{InterceptArrowKeys:true,InterceptMouseWheel:true,Step:1},"maxDate":"9999-12-31-00-00-00","minDate":"0001-01-01-00-00-00","styles":{HoveredStyle: ["width:100%;", "riTextBox riHover"],InvalidStyle: ["width:100%;", "riTextBox riError"],DisabledStyle: ["width:100%;", "riTextBox riDisabled"],FocusedStyle: ["width:100%;", "riTextBox riFocused"],EmptyMessageStyle: ["width:100%;", "riTextBox riEmpty"],ReadOnlyStyle: ["width:100%;", "riTextBox riRead"],EnabledStyle: ["width:100%;", "riTextBox riEnabled"]}}, null, null, $get("ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_dateInput"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadCalendar, {"_DayRenderChangedDays":{},"_FormatInfoArray":[["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],["January","February","March","April","May","June","July","August","September","October","November","December",""],["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",""],"dddd, MMMM d, yyyy h:mm:ss tt","dddd, MMMM d, yyyy","h:mm:ss tt","MMMM d","ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","M/d/yyyy","h:mm tt","yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","MMMM yyyy","AM","PM","/",":",0],"_ViewRepeatableDays":{},"_ViewsHash":{"ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_Top" : [[2026,10,1], 1]},"_calendarWeekRule":0,"_culture":"en-US","_enableKeyboardNavigation":true,"_enableViewSelector":false,"_firstDayOfWeek":7,"_postBackCall":"__doPostBack(\u0027ctl10$ctl00$ctl19$ctl00$eventDateTo$JsDatePicker$calendar\u0027,\u0027@@\u0027)","_rangeSelectionMode":0,"_showRowHeaders":true,"clientStateFieldID":"ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar_ClientState","enableMultiSelect":false,"enabled":true,"fastNavigationStep":12,"monthYearNavigationSettings":["Today","OK","Cancel","Date is out of range.","False","True","300","1","300","1","False"],"skin":"Default","specialDaysArray":[],"stylesHash":{"DayStyle": ["", ""],"CalendarTableStyle": ["", "rcMainTable"],"OtherMonthDayStyle": ["", "rcOtherMonth"],"TitleStyle": ["", ""],"SelectedDayStyle": ["", "rcSelected"],"SelectorStyle": ["", ""],"DisabledDayStyle": ["", "rcDisabled"],"OutOfRangeDayStyle": ["", "rcOutOfRange"],"WeekendDayStyle": ["", "rcWeekend"],"DayOverStyle": ["", "rcHover"],"FastNavigationStyle": ["", "RadCalendarMonthView RadCalendarMonthView_Default"],"ViewSelectorStyle": ["", "rcViewSel"]},"useColumnHeadersAsSelectors":false,"useRowHeadersAsSelectors":false}, null, null, $get("ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar"));
+});
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadDatePicker, {"_PopupButtonSettings":{ ResolvedImageUrl : "", ResolvedHoverImageUrl : ""},"_animationSettings":{ShowAnimationDuration:300,ShowAnimationType:1,HideAnimationDuration:300,HideAnimationType:1},"_enableKeyboardNavigation":false,"_popupControlID":"ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_popupButton","clientStateFieldID":"ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_ClientState","focusedDate":"2026-10-24-00-00-00","maxDate":"9999-12-31-00-00-00","minDate":"0001-01-01-00-00-00"}, null, {"calendar":"ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_calendar","dateInput":"ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker_dateInput"}, $get("ctl10_ctl00_ctl19_ctl00_eventDateTo_JsDatePicker"));
+});
+//]]>
+</script>
+</form>
+</body>
+</html>

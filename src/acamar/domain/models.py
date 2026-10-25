@@ -60,10 +60,13 @@ class RawDocument(BaseModel):
     """
 
     summary: str | None = None
-    """One/two-sentence LLM gloss of ``content``, for dashboard cards.
+    """One/two-sentence gloss of ``content``, for dashboard cards.
 
-    Never set by a connector — the ingestion pipeline fills this in after
-    ``fetch()`` returns, so connectors stay unaware of the enricher.
+    Usually filled in by the ingestion pipeline's LLM enrichment after
+    ``fetch()`` returns. The one exception: a connector whose source already
+    publishes a clean description of its own (``cupertino_events``' calendar
+    listing) sets it directly, and the deterministic enrichment branch keeps
+    it as-is.
     """
 
     is_relevant: bool = True

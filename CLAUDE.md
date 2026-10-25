@@ -46,33 +46,31 @@ community one added 2026-10-01:**
    ParentSquare emails that carry an event or a deadline (reminder) are also
    in scope, via the same Gmail connector, not a separate integration.
 4. **Cupertino Parks & Rec events** (`sources/cupertino_events/`,
-   `(Domain.CITY, Category.EVENT)`) — scrapes
-   `cupertino.gov/Parks-Recreation/Events`: the index page for a list of
-   event links, then each event's own page for its date (if one is
-   currently posted — several events have nothing scheduled at any given
-   time, which is expected, not an error). `Domain.CITY` is new, deliberately
-   the broadest fit for any future non-school municipal/community source,
-   not named after parks & rec specifically. Full design + real findings:
-   docs/cupertino-events-source-design.md. Two things this connector needed
-   that `faria_events` never did, both confirmed live, not guessed: a
-   **per-URL** `robots.txt` check (the index page and most events are
-   allowed, but several individual event paths are explicitly disallowed —
-   see the robots.txt wildcard gotcha below), and per-event fault isolation
-   (one broken/disallowed/undated event must never abort the other two
-   dozen). Shares `adapters.polite_http.PoliteFetcher` with `faria_events`
-   (extracted from it, not duplicated) and `IngestionService._enrich`'s
-   `_DETERMINISTIC_ORGANIZATION` mapping for its `Organization.CITY_RECREATION`
-   tag. Also carries a `documents.url` (generic, nullable — any source can
-   set it) so the dashboard can link straight to the real event page, and
-   uses a *third*, narrower `IngestionService._enrich` treatment
-   (`_SUMMARY_ONLY_DOMAINS`, `Enricher.summarize()`) for a clean dashboard
-   `headline`/`summary` — its scraped `content` is too unstructured to show
-   as-is (unlike Faria's own clean titles), but unlike Gmail's full
-   enrichment, its `event_date`/`category`/`organization` stay exactly what
-   the parser already determined, never an LLM re-guess. Dashboard: a
-   "Show: All / School / Parks & City" filter (`st.pills`), a 🌳 icon, and a
-   distinct green left-border, all keyed off `organization ==
-   "city_recreation"`.
+   `(Domain.CITY, Category.EVENT)`) — scrapes the city's **Event Calendar
+   listing**, `cupertino.gov/Parks-Recreation/Events/Parks-and-Recreation-Event-Calendar`
+   (paged via a `pageindex` query parameter). **Rebuilt 2026-10-25**: the
+   original index-page + per-event-detail-page scrape only followed links
+   one level under `/Events/` and so missed most dated events (4 stored
+   vs. 8 listed). The listing has title, explicit day/month/year,
+   description, venue and link per event, so no event page is ever fetched
+   (~2 requests/run) and **no LLM is involved**: the connector sets
+   `summary` from the listing's own description and the source takes
+   `IngestionService._enrich`'s deterministic branch (`_SUMMARY_ONLY_DOMAINS`
+   is now empty, kept for a future unstructured source). **Runs from the
+   household Mac only**, writing to both local Postgres and Cloud SQL
+   (`scripts/run_cupertino_events_ingestion.sh`, which starts its own
+   `cloud-sql-proxy`): cupertino.gov's Akamai WAF 403s Google Cloud egress
+   (see gotchas). The launchd job fires hourly + at login and only works
+   when a target hasn't succeeded since the latest 07:00, so it catches up
+   after sleep/shutdown/a failed run; the cloud `cupertino-events` job and
+   trigger stay PAUSED. Still shares `PoliteFetcher` (per-URL robots.txt
+   check) with `faria_events`, carries `documents.url` for the dashboard
+   link, and keeps `reconcile_grace_hours: 48` (a later listing page can
+   fail while page 1 succeeds). `Domain.CITY` is deliberately the broadest
+   fit for any future municipal source. Design history:
+   docs/cupertino-events-source-design.md. Dashboard: a "Show: All /
+   School / Parks & City" filter (`st.pills`), a 🌳 icon, and a distinct
+   green left-border, all keyed off `organization == "city_recreation"`.
 
 Son's daycare, financial, and product-manual domains: **out of scope until
 the daughter's MVP is working end-to-end.** The schema and architecture
