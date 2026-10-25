@@ -60,7 +60,7 @@ community one added 2026-10-01:**
    household Mac only**, writing to both local Postgres and Cloud SQL
    (`scripts/run_cupertino_events_ingestion.sh`, which starts its own
    `cloud-sql-proxy`): cupertino.gov's Akamai WAF 403s Google Cloud egress
-   (see gotchas). The launchd job fires hourly + at login and only works
+   (see gotchas). The launchd job fires every 4 hours + at login and only works
    when a target hasn't succeeded since the latest 07:00, so it catches up
    after sleep/shutdown/a failed run; the cloud `cupertino-events` job and
    trigger stay PAUSED. Still shares `PoliteFetcher` (per-URL robots.txt

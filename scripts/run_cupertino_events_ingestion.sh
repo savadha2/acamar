@@ -8,12 +8,12 @@
 # a hard dependency on this Mac are accepted for this one source.
 #
 # Catch-up, not a fixed slot: launchd (com.acamar.ingest-cupertino-events.plist)
-# fires this every hour on the hour, at login (RunAtLoad), and right after
-# wake if an hourly firing was missed while asleep. Each firing is cheap: a
+# fires this every 4 hours (03/07/11/15/19/23:00), at login (RunAtLoad), and
+# right after wake if a firing was missed while asleep. Each firing is cheap: a
 # target only actually runs if it hasn't SUCCEEDED since the most recent
 # 07:00, so a sleeping, shut-down, or offline-at-07:00 Mac catches up at the
 # next firing, and a failed run (e.g. Wi-Fi not back yet right at wake) is
-# retried an hour later instead of waiting a whole day.
+# retried at the next 4-hourly check instead of waiting a whole day.
 #
 # The "last success" marker is a local file, deliberately not
 # sources.last_run_at — a FAILED run updates last_run_at too, so reading it
@@ -38,7 +38,10 @@ log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 last_slot_epoch() {
     local today slot
     today=$(date +%Y-%m-%d)
-    slot=$(date -j -f "%Y-%m-%d %H:%M" "$today $DAILY_SLOT" +%s)
+    # Seconds spelled out on purpose: BSD `date -j -f` fills any field the
+    # format omits from the CURRENT time, so "%H:%M" alone gave 07:00:<now's
+    # seconds> — making a run at 07:00:12 look stale to a check at hh:00:46.
+    slot=$(date -j -f "%Y-%m-%d %H:%M:%S" "$today $DAILY_SLOT:00" +%s)
     if [ "$(date +%s)" -lt "$slot" ]; then
         slot=$((slot - 86400))
     fi
@@ -106,7 +109,7 @@ for target in local cloud; do
         continue  # already succeeded since the last 07:00 — the common, silent case
     fi
     if ! wait_for_network; then
-        log "$target: no network after ~2 min — will retry next hour"
+        log "$target: no network after ~2 min — will retry at the next check"
         overall=1
         break
     fi
@@ -115,7 +118,7 @@ for target in local cloud; do
         mark_success "$target"
         log "$target: ok"
     else
-        log "$target: FAILED — will retry next hour"
+        log "$target: FAILED — will retry at the next check"
         overall=1
     fi
 done

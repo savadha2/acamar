@@ -4,12 +4,14 @@
 <dict>
     <!-- Cupertino Parks & Rec events, once a day, from this Mac, into both
          local Postgres and GCP Cloud SQL (2026-10-25 — cupertino.gov's
-         Akamai WAF blocks Google Cloud, see CLAUDE.md). Fires every hour on
-         the hour, plus at load/login; launchd also fires a missed hourly
-         check right after wake. The script only does real work when a
-         target hasn't succeeded since the most recent 07:00 — see
+         Akamai WAF blocks Google Cloud, see CLAUDE.md). Fires every 4 hours
+         (03/07/11/15/19/23:00 — aligned so one firing is the 07:00 daily
+         slot), plus at load/login; launchd also fires a missed check right
+         after wake. The script only does real work when a target hasn't
+         succeeded since the most recent 07:00 — see
          run_cupertino_events_ingestion.sh — so this is a daily run with
-         catch-up after sleep, shutdown, or a failed attempt. -->
+         catch-up after sleep or shutdown, and a failed attempt is retried
+         at the next 4-hourly check. -->
     <key>Label</key>
     <string>com.acamar.ingest-cupertino-events</string>
 
@@ -22,10 +24,14 @@
     <string>/Users/kavitha/Projects/acamar</string>
 
     <key>StartCalendarInterval</key>
-    <dict>
-        <key>Minute</key>
-        <integer>0</integer>
-    </dict>
+    <array>
+        <dict><key>Hour</key><integer>3</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Hour</key><integer>11</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Hour</key><integer>15</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Hour</key><integer>19</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Hour</key><integer>23</integer><key>Minute</key><integer>0</integer></dict>
+    </array>
 
     <key>StandardOutPath</key>
     <string>/Users/kavitha/Projects/acamar/logs/ingest-cupertino-events.log</string>
