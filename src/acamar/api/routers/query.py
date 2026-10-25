@@ -12,6 +12,7 @@ from acamar.api.auth import CurrentSubscriber
 from acamar.api.dependencies import get_clock, get_cockpit_state, get_reasoning_graph
 from acamar.api.middleware import CockpitState, QueryRecord
 from acamar.api.schemas import QueryRequest, QueryResponse, QuerySource
+from acamar.config import get_settings
 from acamar.ports.clock import Clock
 from acamar.reasoning.state import QueryState
 
@@ -34,7 +35,15 @@ async def query(
     Fails loud (502) on any graph error — a live person is watching this
     request, unlike ingestion's fail-open posture. See docs/reasoning-
     pipeline-design.md NF1/§5.3.
+
+    503 when `settings.query_enabled` is off (GCP without a GPU — see
+    `config.py`), before the graph is ever invoked.
     """
+    if not get_settings().query_enabled:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "chat isn't available in this deployment (no GPU-backed LLM yet)",
+        )
     state = QueryState(question=body.question, today=clock.today())
     try:
         result = await graph.ainvoke(state)

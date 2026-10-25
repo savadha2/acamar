@@ -27,6 +27,15 @@ class Settings(BaseSettings):
     theoretical one. Meant to be flipped back to `false` (or unset) when
     done; not a permanent setting."""
 
+    query_enabled: bool = True
+    """Whether `POST /query` (and the dashboard's chat bar) is available.
+    Off on GCP (2026-10-24): no GPU there, and `llama3` on Cloud Run CPU
+    measured 156-225s per question (8 vCPU benchmark, 2026-10-24) — too
+    slow for someone waiting. Re-enable once GPU quota is granted. Default
+    on, so bare-metal/docker compose keep the chat bar. `scripts/run_eval.py`
+    builds the graph directly and never reads this — the judge always runs
+    on whatever `ollama_base_url` points at (the Mac's Metal Ollama)."""
+
     api_base_url: str = "http://localhost:8000"
     """Where the Streamlit dashboard reaches the API."""
 
@@ -103,6 +112,12 @@ class Settings(BaseSettings):
     """OAuth client secret downloaded from Google Cloud Console. Gitignored."""
     gmail_token_path: str = "secrets/gmail_token.json"  # noqa: S105 - a file path, not a secret
     """Cached OAuth refresh token, written after the first local-browser consent."""
+    gmail_interactive_auth: bool = True
+    """Whether a missing/revoked token may fall back to the local-browser
+    consent flow. Set false anywhere headless (the GCP ingestion job, launchd)
+    — there the flow can never complete and just hangs the run (backlog item
+    48: a launchd run sat hung 16 days on exactly this). Off, a dead token
+    fails the run loudly instead, visible as the source's `last_status`."""
 
     gmail_menu_search_query: str | None = None
     """The real Gmail search query for the menu subscription (e.g.

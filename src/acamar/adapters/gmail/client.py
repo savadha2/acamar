@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import binascii
+import logging
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -21,6 +22,8 @@ from acamar.ports.mail_client import MailError, RawEmail
 
 _SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
+logger = logging.getLogger(__name__)
+
 
 class GoogleGmailClient:
     """Reads a Gmail inbox via the Gmail API v1.
@@ -30,6 +33,10 @@ class GoogleGmailClient:
     secret downloaded from Google Cloud Console) and caches a refresh token at
     ``token_path``. Later runs load and silently refresh that token — no
     repeated logins. Both paths are gitignored; never in source.
+
+    ``interactive=False`` (``settings.gmail_interactive_auth``, off on the GCP
+    ingestion job) never opens the consent flow: a missing or revoked token
+    raises ``MailError`` instead of hanging a headless run.
 
     The Gmail client library is synchronous, so every call is wrapped in
     ``asyncio.to_thread`` to keep this port's ``search`` async, consistent
@@ -41,10 +48,14 @@ class GoogleGmailClient:
         *,
         credentials_path: str | None = None,
         token_path: str | None = None,
+        interactive: bool | None = None,
     ) -> None:
         settings = get_settings()
         self._credentials_path = Path(credentials_path or settings.gmail_credentials_path)
         self._token_path = Path(token_path or settings.gmail_token_path)
+        self._interactive = (
+            settings.gmail_interactive_auth if interactive is None else interactive
+        )
         self._service: Any | None = None
 
     async def search(self, query: str, *, max_results: int = 20) -> list[RawEmail]:
@@ -108,6 +119,12 @@ class GoogleGmailClient:
                 self._save_token(creds)
                 return creds
 
+        if not self._interactive:
+            raise MailError(
+                f"Gmail token at {self._token_path} is missing, expired or revoked, and "
+                "interactive consent is off (headless run) — re-run scripts/gmail_auth.py "
+                "locally, then upload the new token as a gmail-token secret version"
+            )
         if not self._credentials_path.exists():
             raise MailError(
                 f"no Gmail OAuth client secret at {self._credentials_path} "
@@ -119,8 +136,15 @@ class GoogleGmailClient:
         return creds
 
     def _save_token(self, creds: Credentials) -> None:
-        self._token_path.parent.mkdir(parents=True, exist_ok=True)
-        self._token_path.write_text(creds.to_json())
+        # Best-effort: on GCP the token is a read-only Secret Manager mount.
+        # Not persisting a *refreshed* token loses nothing — Google doesn't
+        # rotate the refresh token on refresh, so the next run just refreshes
+        # the short-lived access token again from the same one.
+        try:
+            self._token_path.parent.mkdir(parents=True, exist_ok=True)
+            self._token_path.write_text(creds.to_json())
+        except OSError as exc:
+            logger.warning("couldn't cache Gmail token at %s: %s", self._token_path, exc)
 
 
 def _to_raw_email(message: dict[str, Any]) -> RawEmail:

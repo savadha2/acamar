@@ -5,8 +5,10 @@ from __future__ import annotations
 from datetime import UTC, date, datetime
 from typing import Any
 
+import ollama
 import pytest
 
+from acamar.adapters import cloud_run_auth
 from acamar.adapters.enrichment.ollama_enricher import OllamaEnricher
 from acamar.domain.enums import Category, Domain, Organization
 from acamar.domain.models import RawDocument
@@ -201,3 +203,61 @@ async def test_summarize_blank_summary_becomes_enrichment_error() -> None:
     client = _FakeClient(_FakeResponse('{"headline": "A title", "summary": ""}'))
     with pytest.raises(EnrichmentError, match="unparseable"):
         await _enricher(client).summarize(_CITY_DOC)
+
+
+# 2026-10-24: the GCP ingestion jobs call the private Ollama service for
+# llama3, same as the API already did for embeddings -- an identity token
+# must attach for *.run.app, and nothing else may ever attempt that fetch.
+
+
+async def test_cloud_run_host_attaches_an_identity_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+
+    async def _fake_token(audience: str) -> str:
+        captured["audience"] = audience
+        return "fake-id-token"
+
+    class _FakeAsyncClient(_FakeClient):
+        def __init__(self, *, host: str, headers: dict[str, str]) -> None:
+            super().__init__(_FakeResponse(_VALID_JSON))
+            captured["headers"] = headers
+
+    monkeypatch.setattr(cloud_run_auth, "identity_token", _fake_token)
+    monkeypatch.setattr(ollama, "AsyncClient", _FakeAsyncClient)
+
+    enricher = OllamaEnricher(base_url="https://ollama-embed-abc123-uc.a.run.app", model="m")
+    await enricher.enrich(_DOC)
+
+    assert captured["audience"] == "https://ollama-embed-abc123-uc.a.run.app"
+    assert captured["headers"] == {"Authorization": "Bearer fake-id-token"}
+
+
+async def test_local_host_never_attempts_a_token_fetch(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def _should_not_be_called(audience: str) -> str:
+        raise AssertionError("metadata server must never be hit outside GCP")
+
+    class _FakeAsyncClient(_FakeClient):
+        def __init__(self, *, host: str, headers: dict[str, str]) -> None:
+            super().__init__(_FakeResponse(_VALID_JSON))
+            assert headers == {}
+
+    monkeypatch.setattr(cloud_run_auth, "identity_token", _should_not_be_called)
+    monkeypatch.setattr(ollama, "AsyncClient", _FakeAsyncClient)
+
+    await OllamaEnricher(base_url="http://localhost:11434", model="m").enrich(_DOC)
+
+
+async def test_token_fetch_failure_is_an_enrichment_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # IngestionService only catches EnrichmentError -- a raw httpx error here
+    # would abort the whole run instead of costing one document its polish.
+    async def _metadata_down(audience: str) -> str:
+        raise RuntimeError("metadata server unreachable")
+
+    monkeypatch.setattr(cloud_run_auth, "identity_token", _metadata_down)
+
+    with pytest.raises(EnrichmentError, match="metadata server unreachable"):
+        await OllamaEnricher(base_url="https://x-uc.a.run.app", model="m").summarize(_DOC)

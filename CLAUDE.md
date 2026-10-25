@@ -244,7 +244,18 @@ conventions that keep those green: `docs/coding-standards.md`.
   once) — so this is confirmed *inconsistent/path-dependent*, not a
   reliable block. Don't assume either way; if a real run ever fails with a
   403 against this host, check this gotcha before assuming the connector
-  itself regressed.
+  itself regressed. **From GCP it's a consistent block (2026-10-24):** the
+  `cupertino-events` Cloud Run Job got 403 on `robots.txt` *and* the index
+  page, 2 of 2 attempts — Akamai evidently treats Google datacenter egress
+  as a bot. Inconsistent from a home connection, blocked from GCP.
+- **Re-running `scripts/gmail_auth.py` locally makes the cloud's
+  `gmail-token` secret stale** — real, 2026-10-24: the first cloud
+  `gmail-school` run failed with an old refresh token (past the OAuth app's
+  7-day "Testing" cap) while the local, newer one refreshed fine. After any
+  local re-auth, upload `secrets/gmail_token.json` as a new `gmail-token`
+  version (`gcloud secrets versions add`). The job runs with
+  `GMAIL_INTERACTIVE_AUTH=false`, so a dead token fails the run in seconds
+  with that instruction, rather than hanging (backlog item 48).
 - **A schema column every source's read path touches is not safely
   deferred as "a step for the user to apply later"** — real incident,
   2026-10-02: `documents.url` was added to `schema.sql` and the shared

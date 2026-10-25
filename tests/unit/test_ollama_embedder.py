@@ -7,8 +7,9 @@ from typing import Any
 import ollama
 import pytest
 
-from acamar.adapters.embedding import ollama_embedder as ollama_embedder_module
-from acamar.adapters.embedding.ollama_embedder import OllamaEmbedder, _is_cloud_run_host
+from acamar.adapters import cloud_run_auth
+from acamar.adapters.cloud_run_auth import is_cloud_run_host
+from acamar.adapters.embedding.ollama_embedder import OllamaEmbedder
 from acamar.ports.embedder import EmbeddingError
 
 
@@ -72,15 +73,15 @@ async def test_wrong_dimension_raises() -> None:
 
 
 def test_is_cloud_run_host_true_for_a_run_app_url() -> None:
-    assert _is_cloud_run_host("https://ollama-embed-abc123-uc.a.run.app") is True
+    assert is_cloud_run_host("https://ollama-embed-abc123-uc.a.run.app") is True
 
 
 def test_is_cloud_run_host_false_for_localhost() -> None:
-    assert _is_cloud_run_host("http://localhost:11434") is False
+    assert is_cloud_run_host("http://localhost:11434") is False
 
 
 def test_is_cloud_run_host_false_for_an_unrelated_host() -> None:
-    assert _is_cloud_run_host("https://example.com") is False
+    assert is_cloud_run_host("https://example.com") is False
 
 
 async def test_cloud_run_host_fetches_and_attaches_an_identity_token(
@@ -100,7 +101,7 @@ async def test_cloud_run_host_fetches_and_attaches_an_identity_token(
         async def embed(self, *, model: str, input: list[str]) -> object:
             return _FakeResponse([[0.1, 0.2, 0.3]])
 
-    monkeypatch.setattr(ollama_embedder_module, "_cloud_run_identity_token", _fake_token)
+    monkeypatch.setattr(cloud_run_auth, "identity_token", _fake_token)
     monkeypatch.setattr(ollama, "AsyncClient", _FakeAsyncClient)
 
     embedder = OllamaEmbedder(base_url="https://ollama-embed-abc123-uc.a.run.app", expected_dim=3)
@@ -129,7 +130,7 @@ async def test_local_host_never_attempts_a_token_fetch(monkeypatch: pytest.Monke
         async def embed(self, *, model: str, input: list[str]) -> object:
             return _FakeResponse([[0.1, 0.2, 0.3]])
 
-    monkeypatch.setattr(ollama_embedder_module, "_cloud_run_identity_token", _should_not_be_called)
+    monkeypatch.setattr(cloud_run_auth, "identity_token", _should_not_be_called)
     monkeypatch.setattr(ollama, "AsyncClient", _FakeAsyncClient)
 
     embedder = OllamaEmbedder(base_url="http://localhost:11434", expected_dim=3)

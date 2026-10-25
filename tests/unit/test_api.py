@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 
 from acamar.api import dependencies
 from acamar.api.app import create_app
+from acamar.config import get_settings
 from acamar.domain.enums import Category, Domain, OutOfScopeReason, QueryIntent, SourceStatus
 from acamar.domain.models import Document, Source, Subscriber
 from acamar.reasoning.graph import build_graph
@@ -279,3 +280,21 @@ def test_query_graph_failure_is_502(client: TestClient) -> None:
     resp = client.post("/query", json={"question": "what's today?"}, headers=_auth())
 
     assert resp.status_code == 502
+
+
+def test_query_is_503_and_never_invokes_the_graph_when_chat_is_disabled(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # _BrokenGraph raises if invoked — a 502 here would mean the graph ran anyway.
+    monkeypatch.setenv("QUERY_ENABLED", "false")
+    get_settings.cache_clear()  # the client fixture already cached settings
+    client.app.dependency_overrides[dependencies.get_reasoning_graph] = _BrokenGraph  # type: ignore[attr-defined]
+
+    resp = client.post("/query", json={"question": "what's today?"}, headers=_auth())
+
+    assert resp.status_code == 503
+    assert "no GPU" in resp.json()["detail"]
+
+
+def test_query_is_enabled_by_default() -> None:
+    assert get_settings().query_enabled is True

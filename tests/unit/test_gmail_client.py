@@ -266,3 +266,65 @@ def test_missing_client_secret_raises_a_clear_mail_error(tmp_path: Any) -> None:
     )
     with pytest.raises(MailError, match="no Gmail OAuth client secret"):
         gmail_client._credentials_sync()
+
+
+def _flow_that_must_not_run(*a: Any, **k: Any) -> Any:
+    raise AssertionError("interactive consent must never start in a headless run")
+
+
+def test_headless_revoked_token_raises_instead_of_opening_consent(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Any
+) -> None:
+    # Backlog item 48: a launchd run hung 16 days in run_local_server. On the
+    # GCP job (interactive=False) a dead token must fail the run, not hang it.
+    token_path = tmp_path / "token.json"
+    token_path.write_text("{}")
+    refresh_error = RefreshError("invalid_grant")  # type: ignore[no-untyped-call]
+    dead_creds = _FakeCreds(
+        valid=False, expired=True, refresh_token="rt", refresh_error=refresh_error
+    )
+    monkeypatch.setattr(
+        Credentials, "from_authorized_user_file", lambda *a, **k: dead_creds
+    )
+    monkeypatch.setattr(InstalledAppFlow, "from_client_secrets_file", _flow_that_must_not_run)
+    gmail_client = GoogleGmailClient(token_path=str(token_path), interactive=False)
+
+    with pytest.raises(MailError, match="gmail_auth"):
+        gmail_client._credentials_sync()
+
+
+def test_headless_missing_token_raises_instead_of_opening_consent(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Any
+) -> None:
+    monkeypatch.setattr(InstalledAppFlow, "from_client_secrets_file", _flow_that_must_not_run)
+    gmail_client = GoogleGmailClient(
+        token_path=str(tmp_path / "missing.json"), interactive=False
+    )
+
+    with pytest.raises(MailError, match="interactive consent is off"):
+        gmail_client._credentials_sync()
+
+
+def test_interactive_auth_defaults_on_from_settings() -> None:
+    assert GoogleGmailClient()._interactive is True
+
+
+def test_refresh_still_succeeds_when_the_token_file_is_read_only(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Any
+) -> None:
+    # On GCP the token is a read-only Secret Manager mount, and the stored
+    # access token is always expired by the time a job starts — so every run
+    # refreshes, and a failed write-back must not abort the run.
+    token_path = tmp_path / "token.json"
+    token_path.write_text('{"original": true}')
+    token_path.chmod(0o444)
+    creds = _FakeCreds(valid=False, expired=True, refresh_token="rt")
+    monkeypatch.setattr(
+        Credentials, "from_authorized_user_file", lambda *a, **k: creds
+    )
+    gmail_client = GoogleGmailClient(token_path=str(token_path), interactive=False)
+
+    result = gmail_client._credentials_sync()
+
+    assert result is creds  # type: ignore[comparison-overlap]
+    assert token_path.read_text() == '{"original": true}'

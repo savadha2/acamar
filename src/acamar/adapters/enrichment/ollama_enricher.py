@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ollama
 
+from acamar.adapters import cloud_run_auth
 from acamar.config import get_settings
 from acamar.domain.models import RawDocument
 from acamar.ports.enricher import ContentSummary, DocumentEnrichment, EnrichmentError
@@ -103,15 +104,22 @@ class OllamaEnricher:
     ) -> None:
         settings = get_settings()
         self._model = model or settings.ollama_summary_model
-        self._client = client or ollama.AsyncClient(
-            host=base_url or settings.ollama_base_url
-        )
+        self._base_url = base_url or settings.ollama_base_url
+        self._injected_client = client
+
+    async def _client_for_this_call(self) -> ollama.AsyncClient:
+        # Per call, same as OllamaEmbedder: on GCP the ingestion job calls the
+        # private Ollama service, which needs a fresh identity token each time.
+        if self._injected_client is not None:
+            return self._injected_client
+        return await cloud_run_auth.ollama_client(self._base_url)
 
     async def enrich(self, doc: RawDocument) -> DocumentEnrichment:
         received_at = doc.published_at.date().isoformat() if doc.published_at else "unknown"
         prompt = _PROMPT.format(subject=doc.title, body=doc.content, received_at=received_at)
         try:
-            response = await self._client.chat(
+            client = await self._client_for_this_call()
+            response = await client.chat(
                 model=self._model,
                 messages=[{"role": "user", "content": prompt}],
                 format=DocumentEnrichment.model_json_schema(),
@@ -141,7 +149,8 @@ class OllamaEnricher:
     async def summarize(self, doc: RawDocument) -> ContentSummary:
         prompt = _SUMMARY_PROMPT.format(body=doc.content)
         try:
-            response = await self._client.chat(
+            client = await self._client_for_this_call()
+            response = await client.chat(
                 model=self._model,
                 messages=[{"role": "user", "content": prompt}],
                 format=ContentSummary.model_json_schema(),

@@ -4,6 +4,12 @@ question, then a separate Judge call scores the generated answer against
 the reference. Run on demand - not wired into pytest/CI (the corpus is
 tiny; a hard pass/fail gate on 10 examples would be noise, not signal).
 
+Local-only by design: builds the graph directly (never calls the API's
+`/query`), so `QUERY_ENABLED=false` on GCP doesn't affect it — every model
+here runs on whatever `OLLAMA_BASE_URL` points at (the Mac's Metal Ollama).
+To grade the real cloud data, point only `DATABASE_URL` at Cloud SQL (via
+the proxy) and keep `OLLAMA_BASE_URL` local.
+
     uv run python -m scripts.run_eval
 """
 

@@ -797,26 +797,29 @@ def _render(data: dict[str, Any], *, token: str, days: int) -> None:
     # behavior to fight, and `key=` is Streamlit's own documented,
     # version-stable way to get a real CSS hook (`.st-key-<key>`) — unlike
     # the internal `data-testid` names the previous attempt guessed at.
-    with st.container(key="ask_row"):
-        question = st.text_input(
-            "Ask",
-            key="ask_question",
-            placeholder="Ask ACAMAR anything",
-            label_visibility="collapsed",
-        )
-        asked = st.button("→", key="ask_button")
+    # Hidden entirely (not greyed out) when chat is off — GCP has no GPU
+    # yet, see `Settings.query_enabled`. The API 503s /query on its own too.
+    if _SETTINGS.query_enabled:
+        with st.container(key="ask_row"):
+            question = st.text_input(
+                "Ask",
+                key="ask_question",
+                placeholder="Ask ACAMAR anything",
+                label_visibility="collapsed",
+            )
+            asked = st.button("→", key="ask_button")
 
-    if asked and question:
-        with st.spinner("Thinking…"):
-            try:
-                st.session_state["ask_answer"] = _query(token, question)
-            except requests.RequestException as exc:
-                st.session_state["ask_answer"] = None
-                st.error(f"Couldn't get an answer: {exc}")
+        if asked and question:
+            with st.spinner("Thinking…"):
+                try:
+                    st.session_state["ask_answer"] = _query(token, question)
+                except requests.RequestException as exc:
+                    st.session_state["ask_answer"] = None
+                    st.error(f"Couldn't get an answer: {exc}")
 
-    answer = st.session_state.get("ask_answer")
-    if answer:
-        st.markdown(_answer_card(answer), unsafe_allow_html=True)
+        answer = st.session_state.get("ask_answer")
+        if answer:
+            st.markdown(_answer_card(answer), unsafe_allow_html=True)
 
     # 2026-09-29: the old card-list "Menu" section (label + _row_html per
     # item, including a fallback-to-next-available-date message) was

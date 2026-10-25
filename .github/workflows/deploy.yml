@@ -18,23 +18,25 @@
 # cockpit_token check regardless of this setting (a different code path
 # in api/auth.py, unaffected by disable_auth).
 #
-# OLLAMA_BASE_URL points at `ollama-embed` (2026-10-24) -- a separate,
-# locked-down (no --allow-unauthenticated), CPU-only Cloud Run service,
-# NOT deployed by this workflow (a static base image + one pre-pulled
-# model, provisioned once by hand, not rebuilt on every app push -- see
-# ollama/Dockerfile). Interim: Cloud Run GPU quota for this project came
-# back explicitly REJECTED in both zonal-redundancy modes (not just
-# "ungranted" -- a live deploy attempt was tried and denied), so this
-# isn't "swap when quota clears" on a known timeline, it's the real path
-# until further notice. Scoped to embeddings only (`nomic-embed-text`,
-# confirmed OllamaEmbedder.__init__ in adapters/embedding/ollama_embedder.py
-# attaches a Cloud-Run identity token automatically for any *.run.app
-# host) -- `/query` and enrichment (Gmail/Cupertino, both need real
-# llama3 chat calls) are NOT covered by this and stay unaddressed here;
-# see backlog for the local-launchd-cron-against-Cloud-SQL plan for those.
+# OLLAMA_BASE_URL points at `ollama-embed` -- the project's private
+# (no --allow-unauthenticated), CPU-only Ollama on Cloud Run, NOT deployed by
+# this workflow (big static model image, provisioned by hand -- see
+# ollama/Dockerfile). Cloud Run GPU quota was REJECTED (2026-10-24), so CPU is
+# the real path until further notice. It serves nomic-embed-text (api) and,
+# since 2026-10-24, llama3 for the ingestion jobs' enrichment.
 #
-# The ingestion-jobs update step still legitimately fails/warns until those
-# Cloud Run Jobs exist (Day 4) -- expected, not a bug.
+# api + dashboard run with QUERY_ENABLED=false (2026-10-24, user decision):
+# llama3 on Cloud Run CPU measured 156-225s per /query question (8 vCPU
+# benchmark, 2026-10-24), so the chat bar is hidden and /query 503s.
+# Local (bare-metal/docker compose) and scripts/run_eval.py's judge are
+# unaffected -- they use the Mac's Metal Ollama. Re-enable = flip to true here
+# once ollama-embed is on a GPU.
+#
+# Ingestion runs as 3 Cloud Run Jobs (gmail-school, faria-events,
+# cupertino-events), started by Cloud Scheduler, created by hand once
+# (runtime SA acamar-ingestion) -- this workflow only rolls their image.
+# cupertino-events' trigger is PAUSED (2026-10-24): cupertino.gov's Akamai
+# WAF 403s Cloud Run egress, so Cupertino stays on the local launchd job.
 
 name: test-build-deploy
 
@@ -96,7 +98,7 @@ jobs:
             --allow-unauthenticated \
             --add-cloudsql-instances="${{ env.PROJECT_ID }}:${{ env.REGION }}:acamar-db" \
             --set-secrets="DATABASE_URL=database-url:latest,COCKPIT_TOKEN=cockpit-token:latest" \
-            --set-env-vars="DISABLE_AUTH=true,OLLAMA_BASE_URL=https://ollama-embed-86020187429.us-central1.run.app" \
+            --set-env-vars="DISABLE_AUTH=true,QUERY_ENABLED=false,OLLAMA_BASE_URL=https://ollama-embed-86020187429.us-central1.run.app" \
             --quiet
 
       - name: deploy dashboard + cockpit (need api's URL, so they deploy after it)
@@ -109,7 +111,7 @@ jobs:
             --image="$dashboard_image" \
             --region="${{ env.REGION }}" \
             --allow-unauthenticated \
-            --set-env-vars="API_BASE_URL=$api_url,DISABLE_AUTH=true" \
+            --set-env-vars="API_BASE_URL=$api_url,DISABLE_AUTH=true,QUERY_ENABLED=false" \
             --quiet
 
           # MANUAL_MENU_SOURCE_ID pre-fills the Cockpit's "Source id" upload
@@ -122,11 +124,10 @@ jobs:
             --set-env-vars="API_BASE_URL=$api_url,MANUAL_MENU_SOURCE_ID=765248f6-2883-43be-801c-4ada9e0cf3ce" \
             --quiet
 
-      - name: update the 2 ingestion Cloud Run Jobs' image
+      - name: update the 3 ingestion Cloud Run Jobs' image
         run: |
           set -euo pipefail
           image="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/ingestion:${{ github.sha }}"
-          for job in gmail-school cupertino-events; do
-            gcloud run jobs update "$job" --image="$image" --region="${{ env.REGION }}" --quiet \
-              || echo "::warning::job $job not deployed yet (Day 4) — skipping, not failing the run"
+          for job in gmail-school faria-events cupertino-events; do
+            gcloud run jobs update "$job" --image="$image" --region="${{ env.REGION }}" --quiet
           done
