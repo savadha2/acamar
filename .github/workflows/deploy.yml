@@ -108,10 +108,16 @@ jobs:
           api_url=$(gcloud run services describe api --region="${{ env.REGION }}" --format="value(status.url)")
 
           dashboard_image="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/dashboard:${{ github.sha }}"
+          # --session-affinity: a reconnecting browser goes back to the same
+          # instance, which holds its Streamlit session (and sign-in).
+          # --timeout=3600: Cloud Run cuts the live websocket at the request
+          # timeout (was 300 s), forcing a reconnect — far less often now.
           gcloud run deploy dashboard \
             --image="$dashboard_image" \
             --region="${{ env.REGION }}" \
             --allow-unauthenticated \
+            --session-affinity \
+            --timeout=3600 \
             --set-env-vars="API_BASE_URL=$api_url,QUERY_ENABLED=false" \
             --quiet
 

@@ -5,3 +5,9 @@
 # setting, so it looks the same on every LAN device (iPad, laptop)
 # regardless of that device's own dark/light preference.
 base = "dark"
+
+[server]
+# Keep a session (and the dashboard sign-in in it) for 15 min after its
+# browser connection drops, not Streamlit's default 2 min — a phone that
+# locks or switches apps briefly shouldn't sign you out (2026-11-02).
+disconnectedSessionTTL = 900
