@@ -33,6 +33,14 @@ COPY --from=ghcr.io/astral-sh/uv:0.12.10 /uv /usr/local/bin/uv
 
 WORKDIR /app
 
+# Precompile every installed package to .pyc at build time (2026-11-02). Without
+# it the image shipped 5,344 .py files and zero .pyc, so EVERY Cloud Run cold
+# start compiled FastAPI/pydantic/LangGraph/psycopg… bytecode from scratch on
+# 1 vCPU before uvicorn could start — the API's first request after idle took
+# 9–14 s (logs), past the dashboard's 10 s timeout. Measured locally at 1 CPU:
+# cold `import acamar.api.app` 1.55 s → 0.59 s. Costs ~130 MB of image size.
+ENV UV_COMPILE_BYTECODE=1
+
 # Dependency layer first, separate from the source copy below, so editing
 # application code doesn't invalidate this (slow) layer on every rebuild.
 # --no-install-project: install only the third-party dependencies here,
