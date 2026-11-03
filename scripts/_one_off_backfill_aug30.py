@@ -24,6 +24,7 @@ from acamar.adapters.embedding.ollama_embedder import OllamaEmbedder
 from acamar.adapters.enrichment.ollama_enricher import OllamaEnricher
 from acamar.config import get_settings
 from acamar.domain.models import Source
+from acamar.ingestion.redaction import build_redactor
 from acamar.ingestion.service import IngestionService
 from acamar.ports.source_connector import SourceConnector
 from acamar.sources.gmail_school.connector import GmailSchoolConnector
@@ -53,6 +54,7 @@ async def main() -> None:
             enricher=OllamaEnricher(),
             connector_factory=_connector_factory,
             clock=SystemClock(),
+            redactor=build_redactor(),
         )
         report = await service.run(UUID(_SOURCE_ID))
     print(report.model_dump_json(indent=2))

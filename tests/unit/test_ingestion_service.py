@@ -10,6 +10,7 @@ import pytest
 from acamar.domain.enums import Category, Domain, Organization, SourceStatus
 from acamar.domain.models import Document, RawDocument, Source
 from acamar.ingestion import service as service_module
+from acamar.ingestion.redaction import TextRedactor
 from acamar.ingestion.service import IngestionService
 from acamar.ports.enricher import DocumentEnrichment, HolidayExtraction
 from acamar.ports.repositories import SourceNotFoundError
@@ -47,6 +48,20 @@ def _raw(external_id: str, *, domain: Domain = Domain.SCHOOL) -> RawDocument:
     )
 
 
+class _IdentityRedactor:
+    """Most tests here aren't about redaction — leave text exactly as given."""
+
+    def redact(self, text: str) -> str:
+        return text
+
+
+class _ChalmersRedactor:
+    """Deterministic stand-in for the real (spaCy) redactor in wiring tests."""
+
+    def redact(self, text: str) -> str:
+        return text.replace("Chalmers", "[name]")
+
+
 def _service(
     *,
     source: Source,
@@ -55,6 +70,7 @@ def _service(
     enricher: FakeEnricher | None = None,
     documents: FakeDocumentRepository | None = None,
     sources: FakeSourceRepository | None = None,
+    redactor: TextRedactor | None = None,
 ) -> tuple[IngestionService, FakeSourceRepository, FakeDocumentRepository]:
     src_repo = sources or FakeSourceRepository(source)
     doc_repo = documents or FakeDocumentRepository()
@@ -65,6 +81,7 @@ def _service(
         enricher=enricher or FakeEnricher(),
         connector_factory=lambda _s: connector,
         clock=FrozenClock(NOW),
+        redactor=redactor or _IdentityRedactor(),
     )
     return service, src_repo, doc_repo
 
@@ -1015,3 +1032,115 @@ async def test_unknown_source_raises() -> None:
     )
     with pytest.raises(SourceNotFoundError):
         await service.run(uuid4())
+
+
+# ---------------------------------------------------------------------------
+# redaction (backlog item 51, 2026-11-02): Gmail text is redacted BEFORE the
+# LLM sees it and before anything is stored; other sources are untouched.
+# ---------------------------------------------------------------------------
+
+
+def _gmail_raw(external_id: str) -> RawDocument:
+    return RawDocument(
+        external_id=external_id,
+        title="Note from Mrs. Chalmers",
+        content="Mrs. Chalmers says the field trip is on Friday.",
+        domain=Domain.GMAIL,
+        category=Category.EVENT,
+        event_date=date(2026, 9, 20),
+    )
+
+
+async def test_gmail_text_is_redacted_before_enrichment_and_storage() -> None:
+    source = _source(domain=Domain.GMAIL)
+    doc_repo = FakeDocumentRepository()
+    service, _, _ = _service(
+        source=source,
+        connector=FakeConnector([_gmail_raw("a")]),
+        documents=doc_repo,
+        redactor=_ChalmersRedactor(),
+    )
+
+    await service.run(source.id)
+
+    stored, _vector = doc_repo.upserts[0][1][0]
+    assert "Chalmers" not in stored.title + stored.content
+    assert stored.title == "Note from Mrs. [name]"
+    # FakeEnricher builds its summary from the content it was handed — so
+    # this proves the LLM step only ever saw the redacted text.
+    assert stored.summary == "summary of: Mrs. [name] says the"
+
+
+async def test_a_name_the_enricher_itself_produces_is_redacted_too() -> None:
+    source = _source(domain=Domain.GMAIL)
+    doc_repo = FakeDocumentRepository()
+    enricher = FakeEnricher(
+        responses={
+            "a": DocumentEnrichment(
+                headline="Chalmers trip Friday",
+                summary="Chalmers is collecting slips.",
+                is_relevant=True,
+                organization=Organization.CLASSROOM,
+            )
+        }
+    )
+    service, _, _ = _service(
+        source=source,
+        connector=FakeConnector([_gmail_raw("a")]),
+        enricher=enricher,
+        documents=doc_repo,
+        redactor=_ChalmersRedactor(),
+    )
+
+    await service.run(source.id)
+
+    stored, _vector = doc_repo.upserts[0][1][0]
+    assert stored.headline == "[name] trip Friday"
+    assert stored.summary == "[name] is collecting slips."
+
+
+async def test_a_holiday_derived_from_an_email_is_redacted_too() -> None:
+    source = _source(domain=Domain.GMAIL)
+    doc_repo = FakeDocumentRepository()
+    enricher = FakeEnricher(
+        responses={
+            "a": DocumentEnrichment(
+                headline="No school",
+                summary="No school.",
+                is_relevant=True,
+                organization=Organization.FARIA_ADMIN,
+                holiday=HolidayExtraction(label="Chalmers Day", event_date=date(2026, 9, 25)),
+            )
+        }
+    )
+    service, _, _ = _service(
+        source=source,
+        connector=FakeConnector([_gmail_raw("a")]),
+        enricher=enricher,
+        documents=doc_repo,
+        redactor=_ChalmersRedactor(),
+    )
+
+    await service.run(source.id)
+
+    docs = {d.external_id: d for d, _v in doc_repo.upserts[0][1]}
+    holiday = docs["a::holiday"]
+    assert "Chalmers" not in holiday.title + holiday.content + (holiday.headline or "")
+
+
+async def test_non_gmail_sources_are_never_redacted() -> None:
+    # Faria's calendar, menus and Cupertino are published, not private mail.
+    source = _source(domain=Domain.SCHOOL)
+    doc_repo = FakeDocumentRepository()
+    raw = _raw("a").model_copy(update={"title": "Chalmers Hall open house"})
+    service, _, _ = _service(
+        source=source,
+        connector=FakeConnector([raw]),
+        documents=doc_repo,
+        redactor=_ChalmersRedactor(),
+    )
+
+    await service.run(source.id)
+
+    stored, _vector = doc_repo.upserts[0][1][0]
+    assert stored.title == "Chalmers Hall open house"

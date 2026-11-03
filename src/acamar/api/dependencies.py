@@ -21,6 +21,7 @@ from acamar.adapters.weather.open_meteo import OpenMeteoProvider
 from acamar.api.middleware import CockpitState
 from acamar.config import get_settings
 from acamar.ingestion.connector_factory import connector_for
+from acamar.ingestion.redaction import build_redactor
 from acamar.ingestion.service import IngestionService
 from acamar.ports.chat_model import ChatModel
 from acamar.ports.clock import Clock
@@ -123,6 +124,7 @@ def get_ingestion_service(
         enricher=enricher,
         connector_factory=connector_for,
         clock=clock,
+        redactor=build_redactor(),
     )
 
 

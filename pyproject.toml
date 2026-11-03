@@ -49,6 +49,13 @@ dev = [
     "respx>=0.22.0",          # httpx request mocking
     "pre-commit>=4.0.0",
 ]
+# Gmail name redaction (backlog item 51): ~360 MB of spaCy + model, needed only
+# by ingestion. A group, not a main dependency, so the Docker build can keep it
+# out of the api/dashboard/cockpit images (their cold start) — see Dockerfile.
+redaction = [
+    "spacy>=3.8",
+    "en-core-web-md",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -167,3 +174,10 @@ markers = [
 [tool.coverage.run]
 source = ["src/acamar"]
 omit = ["src/acamar/dashboard/*"]
+
+[tool.uv]
+# Plain `uv sync` (local dev, CI tests) installs both groups.
+default-groups = ["dev", "redaction"]
+
+[tool.uv.sources]
+en-core-web-md = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.8.0/en_core_web_md-3.8.0-py3-none-any.whl" }

@@ -120,6 +120,16 @@ scratch. Key design decisions, so they aren't accidentally undone:
 - **`documents.external_id` + `UNIQUE (source_id, external_id)`** is the
   dedup key. Every ingestion path must set this to something stable, or
   re-running ingestion inserts duplicates.
+- **No people's names, email addresses or phone numbers are stored from
+  Gmail** (backlog item 51, 2026-11-02). `IngestionService` redacts Gmail
+  title/content *before* enrichment (the LLM never sees a name) and the
+  headline/summary after, replacing them with `[name]`/`[email]`/`[phone]`
+  (`ingestion/redaction.py`: a titled-name pattern, a name-before-`<email>`
+  pattern, spaCy's `en_core_web_md` PERSON entities, an allowlist of known
+  non-names, and `REDACT_EXTRA_NAMES` for names the model misses).
+  Deterministic, so a re-fetched email still matches its stored row. Other
+  sources (school-published calendar/menus, public city events) are not
+  redacted. Existing rows were scrubbed with `scripts/redact_stored.py`.
 - **`domain`/`category` are denormalized onto `documents`** (not only
   reachable via a join through `sources`) because the Router/Retrieval
   agents filter on them on every query.

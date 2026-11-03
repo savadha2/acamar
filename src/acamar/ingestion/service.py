@@ -11,6 +11,7 @@ from uuid import UUID
 
 from acamar.domain.enums import Category, Domain, Organization, SourceStatus
 from acamar.domain.models import Document, IngestionReport, RawDocument, Source
+from acamar.ingestion.redaction import TextRedactor
 from acamar.ports.clock import Clock
 from acamar.ports.embedder import Embedder
 from acamar.ports.enricher import ContentSummary, Enricher, EnrichmentError, HolidayExtraction
@@ -69,6 +70,7 @@ class IngestionService:
         enricher: Enricher,
         connector_factory: ConnectorFactory,
         clock: Clock,
+        redactor: TextRedactor,
     ) -> None:
         self._sources = sources
         self._documents = documents
@@ -76,6 +78,7 @@ class IngestionService:
         self._enricher = enricher
         self._connector_factory = connector_factory
         self._clock = clock
+        self._redactor = redactor
 
     async def run(self, source_id: UUID) -> IngestionReport:
         """Ingest one source: fetch, enrich, embed, upsert, reconcile, record."""
@@ -105,9 +108,12 @@ class IngestionService:
 
     async def _ingest(self, source: Source, started_at: datetime) -> IngestionReport:
         connector = self._connector_factory(source)
-        raw = await connector.fetch()
+        raw = [self._redact(doc) for doc in await connector.fetch()]
         fetched = len(raw)
         enriched = await self._enrich(source.id, raw, today=self._clock.today())
+        # Second pass: the LLM never saw a name, but its own headline/summary
+        # (and any holiday doc derived from the email) are checked anyway.
+        enriched = [self._redact(doc) for doc in enriched]
 
         vectors = await self._embedder.embed([doc.embedding_text for doc in enriched])
         upserted = await self._documents.upsert(
@@ -128,6 +134,29 @@ class IngestionService:
             fetched=fetched,
             upserted=upserted,
             deleted=deleted,
+        )
+
+    def _redact(self, doc: RawDocument) -> RawDocument:
+        """Strip names/emails/phones from Gmail-derived text (backlog item 51).
+
+        Gmail only: it's the one source carrying private correspondence. The
+        Faria calendar and menus are school-published, and Cupertino's are
+        public city listings whose performer/event names aren't private (and
+        the NER model would mangle titles like "Breakfast with Santa").
+        Runs before enrichment, so names never reach the LLM, the embedding,
+        or the database. Deterministic, so a re-fetched email still matches
+        its stored (already redacted) content and reuses its enrichment.
+        """
+        if doc.domain != Domain.GMAIL:
+            return doc
+        r = self._redactor.redact
+        return doc.model_copy(
+            update={
+                "title": r(doc.title) or doc.title,
+                "content": r(doc.content) or doc.content,
+                "headline": r(doc.headline) if doc.headline else doc.headline,
+                "summary": r(doc.summary) if doc.summary else doc.summary,
+            }
         )
 
     @staticmethod

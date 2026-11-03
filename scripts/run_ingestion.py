@@ -23,6 +23,7 @@ from acamar.adapters.enrichment.ollama_enricher import OllamaEnricher
 from acamar.config import get_settings
 from acamar.domain.enums import SourceStatus
 from acamar.ingestion.connector_factory import connector_for
+from acamar.ingestion.redaction import build_redactor
 from acamar.ingestion.service import IngestionService
 
 
@@ -37,6 +38,7 @@ async def run(source_id: UUID) -> SourceStatus:
             enricher=OllamaEnricher(),
             connector_factory=connector_for,
             clock=SystemClock(),
+            redactor=build_redactor(),
         )
         report = await service.run(source_id)
     print(report.model_dump_json(indent=2))

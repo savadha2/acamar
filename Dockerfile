@@ -52,7 +52,7 @@ ENV UV_COMPILE_BYTECODE=1
 # dependencies all work fine, which is what made this easy to miss
 # without actually building and running the image.
 COPY pyproject.toml uv.lock README.md ./
-RUN uv sync --locked --no-dev --no-install-project
+RUN uv sync --locked --no-default-groups --no-install-project
 # --locked (not a bare `uv sync`): fails loudly if uv.lock and
 # pyproject.toml have drifted, instead of silently re-resolving and
 # producing a different lock than the one actually committed — this
@@ -87,7 +87,7 @@ COPY .streamlit/ .streamlit/
 # `import acamar` failed despite the package "being installed" by every
 # metadata check. --no-editable installs a real copy into site-packages,
 # sidestepping whatever caching path produced that broken editable link.
-RUN uv sync --locked --no-dev --no-editable
+RUN uv sync --locked --no-default-groups --no-editable
 
 ENV PATH="/app/.venv/bin:${PATH}"
 
@@ -122,6 +122,10 @@ CMD ["sh", "-c", "exec streamlit run src/acamar/dashboard/cockpit_app.py --serve
 
 # ---------------------------------------------------------------------------
 FROM base AS ingestion
+# spaCy + en_core_web_md (~360 MB) only here: Gmail name redaction (backlog
+# item 51) runs only in ingestion. `--no-default-groups` above keeps it (and
+# dev tools) out of api/dashboard/cockpit, protecting their cold starts.
+RUN uv sync --locked --no-default-groups --group redaction --no-editable
 # No default CMD — the source id is supplied at `docker run`/Cloud Run Job
 # execution time (`docker compose run ingestion --source <id>`), matching
 # this connector's real one-shot-per-source nature, not baked into the

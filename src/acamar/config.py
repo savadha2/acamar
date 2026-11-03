@@ -124,6 +124,11 @@ class Settings(BaseSettings):
     """OAuth client secret downloaded from Google Cloud Console. Gitignored."""
     gmail_token_path: str = "secrets/gmail_token.json"  # noqa: S105 - a file path, not a secret
     """Cached OAuth refresh token, written after the first local-browser consent."""
+    redact_extra_names: list[str] = []
+    """Names always redacted from Gmail-derived text, on top of what the
+    titled-name pattern and spaCy model find (backlog item 51) — for a name
+    the model keeps missing. JSON list in env, e.g. ``["Jennifer"]``. Kept
+    out of the repo on GCP (env/secret), since the list is itself personal."""
     gmail_interactive_auth: bool = True
     """Whether a missing/revoked token may fall back to the local-browser
     consent flow. Set false anywhere headless (the GCP ingestion job, launchd)
