@@ -6,6 +6,12 @@
 # `$status` still reflects whether *any* source failed for launchd's exit code).
 set -uo pipefail
 cd "$(dirname "$0")/.."
+# Headless: a dead Gmail token must fail the run, never open a browser
+# consent prompt that waits forever. Real repeat of backlog item 48: this job
+# sat hung from 2026-10-31 22:00 to 2026-11-02 on exactly that prompt, and
+# launchd won't start a new run while one is still running, so Faria and
+# Gmail both stopped locally. Same setting the cloud job already uses.
+export GMAIL_INTERACTIVE_AUTH=false
 
 PYTHON=.venv/bin/python
 SOURCES=(
