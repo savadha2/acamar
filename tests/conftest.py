@@ -33,3 +33,12 @@ def _isolate_settings() -> Iterator[None]:
     get_settings.cache_clear()
     yield
     get_settings.cache_clear()
+
+
+@pytest.fixture(autouse=True)
+def _no_failed_auth_delay(monkeypatch: pytest.MonkeyPatch) -> None:
+    """`require_subscriber` pauses 1s before a wrong-credential 401 — not in tests.
+
+    `test_auth.py` re-enables it explicitly to check the pause really happens.
+    """
+    monkeypatch.setattr("acamar.api.auth.FAILED_AUTH_DELAY_SECONDS", 0.0)

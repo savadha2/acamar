@@ -773,6 +773,14 @@ def _day_card_fragment(token: str, days: int) -> None:
     )
 
 
+_HEADER_HTML = (
+    '<div class="acamar-header">'
+    f'<img class="acamar-logo" src="{_LOGO_DATA_URI}" alt="acamar">'
+    '<div class="acamar-wordmark">ac<span class="acamar-wordmark-a">a</span>mar</div>'
+    "</div>"
+)
+
+
 def _render(data: dict[str, Any], *, token: str, days: int) -> None:
     st.markdown(_STYLE, unsafe_allow_html=True)
     as_of = date.fromisoformat(data["as_of"])
@@ -786,13 +794,7 @@ def _render(data: dict[str, Any], *, token: str, days: int) -> None:
     # "block" it's called from, so date/weather/meals were never going to
     # stay groupable with the logo once any of them needed an independent
     # rerun — see `_day_card_fragment`'s docstring).
-    header = (
-        '<div class="acamar-header">'
-        f'<img class="acamar-logo" src="{_LOGO_DATA_URI}" alt="acamar">'
-        '<div class="acamar-wordmark">ac<span class="acamar-wordmark-a">a</span>mar</div>'
-        "</div>"
-    )
-    st.markdown(header, unsafe_allow_html=True)
+    st.markdown(_HEADER_HTML, unsafe_allow_html=True)
 
     _day_card_fragment(token, days)
 
@@ -892,23 +894,58 @@ def _render(data: dict[str, Any], *, token: str, days: int) -> None:
         _empty("Nothing else in the next few days.")
 
 
+def _sign_in_error(status_code: int | None) -> str:
+    """What to tell someone whose sign-in attempt failed, by the API's status."""
+    if status_code == 401:
+        return "Wrong password."
+    if status_code is None:
+        return _unavailable_message(None)
+    return f"Sign-in failed (API error {status_code})."
+
+
+def _sign_in(days: int) -> None:
+    """The sign-in screen: one password field (backlog item 50, 2026-10-25).
+
+    The password is checked by the API itself (`require_subscriber`), not
+    here — this app never holds the real one. On success it's kept in this
+    browser session's `st.session_state` only (closing the tab or reloading
+    asks again — the agreed v1, no cookie). Locally a subscriber token from
+    `scripts.token` works in the same field.
+    """
+    st.markdown(_STYLE, unsafe_allow_html=True)
+    st.markdown(_HEADER_HTML, unsafe_allow_html=True)
+    with st.form("sign_in"):
+        password = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Sign in", use_container_width=True)
+    if not (submitted and password):
+        return
+    try:
+        with st.spinner("Signing in…"):
+            _fetch_dashboard(password, days)
+    except requests.HTTPError as exc:
+        st.error(_sign_in_error(exc.response.status_code if exc.response is not None else None))
+        return
+    except requests.RequestException:
+        st.error(_sign_in_error(None))
+        return
+    st.session_state["token"] = password
+    st.rerun()
+
+
 def main() -> None:
-    """Render the dashboard: token gate → fetch → cards."""
+    """Render the dashboard: sign-in → fetch → cards."""
     st.set_page_config(page_title="ACAMAR", page_icon=str(_LOGO_ICON_PATH), layout="centered")
 
     token = st.session_state.get("token", "")
     with st.sidebar:
-        st.subheader("Access")
-        token = st.text_input("Token", value=token, type="password")
-        st.session_state["token"] = token
         days = st.slider("Look ahead", 1, 30, 30, help="days of events / reminders")
+        if token and st.button("Sign out"):
+            st.session_state.pop("token", None)
+            st.rerun()
 
     if not token:
         if not _SETTINGS.disable_auth:
-            st.info(
-                "Enter your access token in the sidebar. Create one with "
-                "`uv run python -m scripts.token create --label me`."
-            )
+            _sign_in(days)
             return
         token = "dev"  # noqa: S105 - not a secret, disable_auth means the API ignores it
 
@@ -918,7 +955,10 @@ def main() -> None:
     except requests.HTTPError as exc:
         code = exc.response.status_code if exc.response is not None else None
         if code == 401:
-            st.error("Token rejected.")
+            # The password changed (or a token was revoked) mid-session.
+            st.session_state.pop("token", None)
+            st.warning("Please sign in again.")
+            _sign_in(days)
             return
         _show_unavailable(_unavailable_message(code), exc)
         return

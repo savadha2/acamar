@@ -27,6 +27,17 @@ class Settings(BaseSettings):
     theoretical one. Meant to be flipped back to `false` (or unset) when
     done; not a permanent setting."""
 
+    household_password: str | None = None
+    """The one shared household password (2026-10-25, backlog item 50) —
+    accepted by `require_subscriber` alongside per-subscriber tokens, so the
+    dashboard (and every non-admin API route) needs it. Hand-picked by the
+    user; on GCP it comes from the `household-password` secret on the `api`
+    service only — the dashboard never holds it. Unset/empty = never
+    matches (fail closed). Surrounding whitespace is ignored on both sides,
+    so a secret stored with a trailing newline still works (the
+    cockpit-token incident, 2026-10-24). Not a substitute for `cockpit_token`:
+    admin routes never accept it."""
+
     query_enabled: bool = True
     """Whether `POST /query` (and the dashboard's chat bar) is available.
     Off on GCP (2026-10-24): no GPU there, and `llama3` on Cloud Run CPU

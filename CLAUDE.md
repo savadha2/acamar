@@ -105,10 +105,14 @@ Router, Synthesis, Critique, and Evaluator.
 Full DDL lives in `db/schema.sql` — apply it, don't recreate it from
 scratch. Key design decisions, so they aren't accidentally undone:
 
-- **Access is token-gated, not data-scoped.** The `subscribers` table holds
-  sha256 hashes of bearer tokens; an active token (`revoked_at IS NULL`)
-  authorizes every read. No per-token filtering of `documents` — add that
-  only if the tool is shared with data separation.
+- **Access is password- or token-gated, not data-scoped.** Every non-admin
+  route accepts either the one shared household password
+  (`HOUSEHOLD_PASSWORD`, from the `household-password` secret on GCP — the
+  dashboard's sign-in screen, 2026-10-25) or an active `subscribers` bearer
+  token (sha256-hashed, `revoked_at IS NULL`; still used locally/by scripts).
+  Either authorizes every read. No per-token filtering of `documents` — add
+  that only if the tool is shared with data separation. Admin routes need
+  the separate `cockpit_token`; neither of the above grants admin.
 - **`sources.school_id` is `NOT NULL`.** Every source is anchored to a
   school (only Faria for now). No `family_id` / owner CHECK anymore.
 - **`documents.student_ref` is free text, nullable, no FK.** A label like

@@ -10,13 +10,13 @@
 # deploy after, pointed at api's real URL via --set-env-vars. All three are
 # --allow-unauthenticated at the Cloud Run/IAM layer.
 #
-# api + dashboard also run with DISABLE_AUTH=true (2026-10-24, explicit
-# user decision after being shown the tradeoff, not a default) -- the
-# household dashboard's own bearer-token gate (api/auth.py) is OFF, so the
-# dashboard's real data is reachable by anyone with the URL, no login.
-# cockpit is NOT included -- its admin routes stay behind the separate
-# cockpit_token check regardless of this setting (a different code path
-# in api/auth.py, unaffected by disable_auth).
+# The household dashboard is behind ONE shared password (2026-10-25, backlog
+# item 50 — replaced 2026-10-24's DISABLE_AUTH=true, which left it open to
+# anyone with the URL). The password lives only in the `household-password`
+# secret, mounted on `api` as HOUSEHOLD_PASSWORD; api/auth.py checks it on
+# every non-admin route, so the API itself is protected, not just the page.
+# The dashboard never holds it — it just forwards what the person typed.
+# Admin routes still need the separate cockpit_token.
 #
 # OLLAMA_BASE_URL points at `ollama-embed` -- the project's private
 # (no --allow-unauthenticated), CPU-only Ollama on Cloud Run, NOT deployed by
@@ -98,8 +98,8 @@ jobs:
             --region="${{ env.REGION }}" \
             --allow-unauthenticated \
             --add-cloudsql-instances="${{ env.PROJECT_ID }}:${{ env.REGION }}:acamar-db" \
-            --set-secrets="DATABASE_URL=database-url:latest,COCKPIT_TOKEN=cockpit-token:latest" \
-            --set-env-vars="DISABLE_AUTH=true,QUERY_ENABLED=false,OLLAMA_BASE_URL=https://ollama-embed-86020187429.us-central1.run.app" \
+            --set-secrets="DATABASE_URL=database-url:latest,COCKPIT_TOKEN=cockpit-token:latest,HOUSEHOLD_PASSWORD=household-password:latest" \
+            --set-env-vars="QUERY_ENABLED=false,OLLAMA_BASE_URL=https://ollama-embed-86020187429.us-central1.run.app" \
             --quiet
 
       - name: deploy dashboard + cockpit (need api's URL, so they deploy after it)
@@ -112,7 +112,7 @@ jobs:
             --image="$dashboard_image" \
             --region="${{ env.REGION }}" \
             --allow-unauthenticated \
-            --set-env-vars="API_BASE_URL=$api_url,DISABLE_AUTH=true,QUERY_ENABLED=false" \
+            --set-env-vars="API_BASE_URL=$api_url,QUERY_ENABLED=false" \
             --quiet
 
           # MANUAL_MENU_SOURCE_ID pre-fills the Cockpit's "Source id" upload

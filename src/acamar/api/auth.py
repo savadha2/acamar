@@ -1,13 +1,15 @@
 """Bearer-token auth.
 
-An active ``subscribers`` row is required for every route except ``/health``
-and ``/admin/*`` — the latter is gated by a separate, non-subscriber
-credential (``settings.cockpit_token``, see ``require_admin`` below); a
-subscriber token alone does not grant admin access.
+Every route except ``/health`` and ``/admin/*`` needs either the shared
+household password (``settings.household_password``, 2026-10-25) or an
+active ``subscribers`` token. ``/admin/*`` is gated by a separate credential
+(``settings.cockpit_token``, see ``require_admin`` below); neither the
+household password nor a subscriber token grants admin access.
 """
 
 from __future__ import annotations
 
+import asyncio
 import secrets
 from datetime import UTC, datetime
 from typing import Annotated
@@ -32,12 +34,36 @@ _DEV_SUBSCRIBER = Subscriber(
 )
 """Returned when `settings.disable_auth` is set — see `config.py`."""
 
+_HOUSEHOLD = Subscriber(
+    id=UUID(int=1),
+    label="household (shared password)",
+    created_at=datetime(2000, 1, 1, tzinfo=UTC),
+)
+"""Returned for the shared household password — see `config.household_password`."""
+
+FAILED_AUTH_DELAY_SECONDS = 1.0
+"""Pause before every 401 for a presented-but-wrong credential: slows
+guessing to roughly one try per second per connection. Deliberately no
+lockout — a stranger hammering the public URL must not be able to lock the
+household out. A long, hand-picked password is the real defense."""
+
+
+def _is_household_password(credential: str) -> bool:
+    expected = (get_settings().household_password or "").strip()
+    # Empty/unset never matches — same fail-closed rule as cockpit_token.
+    # Bytes, not str: compare_digest raises TypeError on non-ASCII str, which
+    # would turn a guess containing "é" into a 500 instead of a 401.
+    return bool(expected) and secrets.compare_digest(credential.encode(), expected.encode())
+
 
 async def require_subscriber(
     subscribers: Annotated[SubscriberRepository, Depends(get_subscriber_repository)],
     authorization: Annotated[str | None, Header()] = None,
 ) -> Subscriber:
     """Resolve the caller from an ``Authorization: Bearer`` header, or 401.
+
+    The bearer value may be the household password or a subscriber token;
+    a wrong one is answered only after `FAILED_AUTH_DELAY_SECONDS`.
 
     Skips the check entirely when ``settings.disable_auth`` is set — a
     deliberate, temporary, dev-only escape hatch (see `config.py`), not a
@@ -47,10 +73,12 @@ async def require_subscriber(
         return _DEV_SUBSCRIBER
     if authorization is None or not authorization.lower().startswith("bearer "):
         raise _UNAUTHORIZED
-    subscriber = await subscribers.active_by_token_hash(
-        hash_token(authorization[7:].strip())
-    )
+    credential = authorization[7:].strip()
+    if _is_household_password(credential):
+        return _HOUSEHOLD
+    subscriber = await subscribers.active_by_token_hash(hash_token(credential))
     if subscriber is None:
+        await asyncio.sleep(FAILED_AUTH_DELAY_SECONDS)
         raise _UNAUTHORIZED
     return subscriber
 

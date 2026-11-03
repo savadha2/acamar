@@ -24,6 +24,7 @@ from acamar.dashboard.streamlit_app import (
     _meal_section_html,
     _menu_items_label,
     _row_html,
+    _sign_in_error,
     _todays_meals_html,
     _unavailable_message,
     _urgency_color,
@@ -406,3 +407,20 @@ def test_a_server_error_names_the_status_but_not_the_raw_exception() -> None:
     message = _unavailable_message(503)
     assert "error 503" in message
     assert "HTTPSConnectionPool" not in message
+
+
+# ---------------------------------------------------------------------------
+# sign-in (backlog item 50, 2026-10-25)
+# ---------------------------------------------------------------------------
+
+
+def test_sign_in_error_says_wrong_password_for_a_401() -> None:
+    assert _sign_in_error(401) == "Wrong password."
+
+
+def test_sign_in_error_reads_as_waking_up_with_no_status() -> None:
+    assert _sign_in_error(None) == _unavailable_message(None)
+
+
+def test_sign_in_error_reports_any_other_status_as_an_api_error() -> None:
+    assert _sign_in_error(503) == "Sign-in failed (API error 503)."
