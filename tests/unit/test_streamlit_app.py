@@ -25,6 +25,7 @@ from acamar.dashboard.streamlit_app import (
     _menu_items_label,
     _row_html,
     _todays_meals_html,
+    _unavailable_message,
     _urgency_color,
     _weather_box_html,
 )
@@ -390,3 +391,18 @@ def test_row_html_holiday_category_keeps_its_own_color_even_with_an_organization
     # renders in this same green (_URGENCY_GREEN), for an unrelated reason.
     assert '--acamar-accent:#ec4899' in html  # holiday pink
     assert '--acamar-accent:#22c55e' not in html  # not the city-recreation green
+
+
+# ---------------------------------------------------------------------------
+# friendly load-failure messages (2026-11-02)
+# ---------------------------------------------------------------------------
+
+
+def test_a_timeout_or_connection_failure_reads_as_waking_up() -> None:
+    assert _unavailable_message(None).startswith("ACAMAR is still waking up")
+
+
+def test_a_server_error_names_the_status_but_not_the_raw_exception() -> None:
+    message = _unavailable_message(503)
+    assert "error 503" in message
+    assert "HTTPSConnectionPool" not in message

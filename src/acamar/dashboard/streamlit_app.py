@@ -365,12 +365,20 @@ _STYLE = """
 """
 
 
+# Was 10 s — shorter than a real Cloud Run cold start (the API's first request
+# after idle took 9-14 s, 2026-11-02), so the first load of the day failed with
+# a raw "Read timed out". 30 s leaves headroom; normally it's ~0.1 s. A `#`
+# comment, not a string under the assignment — Streamlit's magic mode would
+# render a bare string on the page (backlog item 47).
+_DASHBOARD_TIMEOUT_SECONDS = 30
+
+
 def _fetch_dashboard(token: str, days: int) -> dict[str, Any]:
     response = requests.get(
         f"{_SETTINGS.api_base_url}/dashboard",
         headers={"Authorization": f"Bearer {token}"},
         params={"days": days},
-        timeout=10,
+        timeout=_DASHBOARD_TIMEOUT_SECONDS,
     )
     response.raise_for_status()
     return dict(response.json())
@@ -905,16 +913,42 @@ def main() -> None:
         token = "dev"  # noqa: S105 - not a secret, disable_auth means the API ignores it
 
     try:
-        data = _fetch_dashboard(token, days)
+        with st.spinner("Loading your dashboard…"):
+            data = _fetch_dashboard(token, days)
     except requests.HTTPError as exc:
         code = exc.response.status_code if exc.response is not None else None
-        st.error("Token rejected." if code == 401 else f"API error: {exc}")
+        if code == 401:
+            st.error("Token rejected.")
+            return
+        _show_unavailable(_unavailable_message(code), exc)
         return
     except requests.RequestException as exc:
-        st.error(f"Can't reach the API at {_SETTINGS.api_base_url} — is it running?  ({exc})")
+        _show_unavailable(_unavailable_message(None), exc)
         return
 
     _render(data, token=token, days=days)
+
+
+def _unavailable_message(status_code: int | None) -> str:
+    """A plain-language reason the dashboard couldn't load (not the raw error)."""
+    if status_code is None:
+        # A timeout or connection failure — almost always the API waking up
+        # from scale-to-zero, or briefly unreachable.
+        return "ACAMAR is still waking up. Give it a few seconds and try again."
+    return f"Something went wrong on the server (error {status_code}). Try again in a moment."
+
+
+def _show_unavailable(message: str, exc: Exception) -> None:
+    """Friendly message + a real retry; the technical error stays one click away.
+
+    The button reruns the script — reloading the page on a phone can just
+    reconnect to the same session and keep showing the old error.
+    """
+    st.warning(message)
+    if st.button("Try again", type="primary"):
+        st.rerun()
+    with st.expander("Technical details"):
+        st.code(f"{type(exc).__name__}: {exc}", language=None)
 
 
 main()
