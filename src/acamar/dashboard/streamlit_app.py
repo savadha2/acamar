@@ -201,8 +201,9 @@ _STYLE = """
        2026-09-29, 6th revision of this component; see backlog item 27's
        full history for the five that came before.
        `margin-bottom` bumped 10px -> 22px (2026-09-29, by request, now
-       that the pill no longer spans the full row — see `.acamar-day-card`
-       — the tighter gap read as cramped against the ask box below). 22px
+       that the pill no longer spans the full row; since 2026-11-13 the row
+       holds separate capsules, see `.acamar-day-pills` — the tighter gap
+       read as cramped against the ask box below). 22px
        matches `.acamar-section-label`'s own margin-top used everywhere
        else on this page, and `.acamar-meal-section:last-child`'s
        margin-bottom below was bumped to the same value, so both gaps
@@ -210,70 +211,28 @@ _STYLE = """
        consistent rhythm rather than two arbitrary numbers. */
     margin-top: 10px; margin-bottom: 22px;
 }
-.acamar-day-card {
-    /* A white card floating on this app's pinned-dark page background
-       (CLAUDE.md's own recorded decision, 2026-09-24 — not revisited
-       here) — deliberate, not an oversight: `.acamar-attention`/
-       `.acamar-row` already use the same "light card surface on a dark
-       page" pattern elsewhere in this file, this is that same pattern at
-       full-card scale, built against a supplied complete reference image.
-       Sized down twice now (2026-09-29, by request each time) — height
-       specifically targeted to roughly match the ask row's own height
-       below it (`.stTextInput input`/`.stButton button`, ~51-56px with
-       their own padding/min-height), not just "smaller in general".
-       Changed to an actual pill (2026-09-29, 7th revision — the full-width
-       bar from the previous revision didn't read right in review): `width:
-       100%` dropped so the card sizes to its own content instead of
-       stretching to the row's width, and `border-radius` bumped to 999px
-       to match the pill radius the ask row below already uses
-       (`.stTextInput input`/`.stButton button`). `.acamar-day-card-row`
-       stays a plain block (no centering), so the pill still left-aligns
-       with the ask box instead of drifting to the middle. */
-    width: fit-content; box-sizing: border-box;
-    background: #ffffff; border-radius: 999px; padding: 10px 22px;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16); color: #1a1a1a;
+.acamar-day-pills {
+    /* The day row as separate capsules — date, weather, one per piece of
+       advice (2026-11-13, by request: "split it into capsules … no need
+       to have one large capsule and fold everything inside"). Replaces the
+       single white day-card pill that held all of it. Wraps on a phone. */
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
 }
-.acamar-day-card .acamar-section-label {
-    /* Reuses the file's existing label style (uppercase/letter-spaced/
-       gray) for "TODAY"/"BREAKFAST"/"LUNCH" — but that style's default
-       `margin: 22px 0 10px` assumes standalone vertical stacking, wrong
-       inside this card's own layout, so it's reset here rather than
-       forked into a near-duplicate class. */
-    margin: 0 0 1px; font-size: 0.62em;
+.acamar-pill {
+    display: inline-flex; align-items: center; gap: 6px; height: 40px; box-sizing: border-box;
+    border-radius: 999px; padding: 0 16px; font-size: 0.95em; font-weight: 700;
+    white-space: nowrap; line-height: 1; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
 }
-.acamar-day-card-top {
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    flex-wrap: wrap; row-gap: 10px;
-}
-.acamar-day-card-date {
-    font-size: 1.05em; font-weight: 700; line-height: 1.1; white-space: nowrap;
-}
-.acamar-day-card-top-right {
-    /* Wraps on a phone: the advisory capsules drop to a second line rather
-       than squeezing the date and weather. */
-    display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end;
-}
-.acamar-advisories { display: flex; flex-wrap: wrap; gap: 8px; }
-.acamar-advisory {
-    display: inline-flex; align-items: center; gap: 6px; border-radius: 999px;
-    padding: 4px 12px; font-size: 0.85em; font-weight: 700; white-space: nowrap;
-}
-.acamar-advisory-icon { font-size: 1.2em; line-height: 1; }
-.acamar-advisory-reason { font-weight: 500; opacity: 0.8; font-size: 0.9em; }
-.acamar-advisory-reason::before { content: "· "; }
-.acamar-advisory-rain { background: #e3f0fb; color: #1d5fa8; }
-.acamar-advisory-cold { background: #efe9fb; color: #5b3fa8; }
-.acamar-advisory-sun { background: #fff1d6; color: #9a5b06; }
-.acamar-advisory-other { background: #f0f0f0; color: #444444; }
-.acamar-day-card-vdivider { width: 1px; height: 24px; background: #e5e5e5; }
-.acamar-weather-box {
-    /* Sized down again to match the day card's own further reduction
-       (2026-09-29, by request). */
-    background: #fdf1e4; border-radius: 10px; padding: 3px 14px; text-align: center;
-}
-.acamar-weather-box-temp {
-    font-size: 0.92em; font-weight: 700; color: #e8712f; white-space: nowrap;
-}
+.acamar-pill-kicker { font-size: 0.66em; letter-spacing: 0.1em; color: #8a8a8a; }
+.acamar-pill-icon { font-size: 1.15em; }
+.acamar-pill-reason { font-weight: 500; opacity: 0.8; font-size: 0.88em; }
+.acamar-pill-reason::before { content: "· "; }
+.acamar-pill-date { background: #ffffff; color: #1a1a1a; }
+.acamar-pill-weather { background: #fdf1e4; color: #e8712f; }
+.acamar-pill-rain { background: #e3f0fb; color: #1d5fa8; }
+.acamar-pill-cold { background: #efe9fb; color: #5b3fa8; }
+.acamar-pill-sun { background: #fff1d6; color: #9a5b06; }
+.acamar-pill-other { background: #f0f0f0; color: #444444; }
 .acamar-meal-section { margin-bottom: 18px; }
 .acamar-meal-section:last-child {
     /* Was 0 — relied on `.acamar-section-label`'s own 22px margin-top
@@ -540,24 +499,13 @@ def _menu_items_label(item: dict[str, Any]) -> str:
     return _food_items(items_text)
 
 
-def _weather_box_html(weather: dict[str, Any]) -> str:
-    """Peach-tinted box: condition icon + temp (bold, orange).
-
-    The advice line that used to sit under the temperature moved into its
-    own capsules beside this box (2026-11-13) — see `_advisory_capsules_html`.
-
-    2026-09-29 — matches a supplied full-card reference image exactly: a
-    distinctly-colored box, not a plain inline span (that was this
-    function's predecessor, `_weather_section_html`) — and temperature/
-    advice stacked on separate lines, not run together on one.
-    """
+def _weather_pill_html(weather: dict[str, Any]) -> str:
+    """Condition icon + today's high, as its own capsule."""
     temp = round(weather["temp_high_f"])
     condition = weather["condition"]
-    icon = _weather_icon(condition)
     return (
-        f'<div class="acamar-weather-box" title="{escape(condition)}">'
-        f'<div class="acamar-weather-box-temp">{icon} {temp}°F</div>'
-        f"</div>"
+        f'<span class="acamar-pill acamar-pill-weather" title="{escape(condition)}">'
+        f'<span class="acamar-pill-icon">{_weather_icon(condition)}</span>{temp}°F</span>'
     )
 
 
@@ -573,21 +521,17 @@ def _advisory_reason(code: str, weather: dict[str, Any]) -> str | None:
 
 
 def _advisory_capsules_html(weather: dict[str, Any]) -> str:
-    """One icon capsule per piece of advice (umbrella/jacket/sun), or "" if none."""
+    """One capsule per piece of advice (umbrella/jacket/sun), or "" if none."""
     capsules = []
     for code in weather.get("advice", []):
         icon, label, tint = _ADVISORIES.get(code, ("•", code.title(), "other"))
         reason = _advisory_reason(code, weather)
-        reason_html = (
-            f'<span class="acamar-advisory-reason">{escape(reason)}</span>' if reason else ""
-        )
+        reason_html = f'<span class="acamar-pill-reason">{escape(reason)}</span>' if reason else ""
         capsules.append(
-            f'<span class="acamar-advisory acamar-advisory-{tint}">'
-            f'<span class="acamar-advisory-icon">{icon}</span>'
-            f'<span class="acamar-advisory-label">{escape(label)}</span>'
-            f"{reason_html}</span>"
+            f'<span class="acamar-pill acamar-pill-{tint}">'
+            f'<span class="acamar-pill-icon">{icon}</span>{escape(label)}{reason_html}</span>'
         )
-    return f'<div class="acamar-advisories">{"".join(capsules)}</div>' if capsules else ""
+    return "".join(capsules)
 
 
 def _food_chip_html(food: str) -> str:
@@ -615,37 +559,24 @@ def _meal_section_html(item: dict[str, Any]) -> str:
 
 
 def _day_card_html(fresh: dict[str, Any]) -> str:
-    """The day card: TODAY/date on the left, a weather box on the right.
+    """The day row: separate capsules for date, weather, and each piece of advice.
 
-    2026-09-29 — 5th revision of this component (see backlog item 27's
-    full history). Meals used to live inside this card (v4) but moved out
-    entirely to their own section below the ask box, by request — see
-    `_todays_meals_html`. Built from one fetch (`fresh`,
-    `_day_card_fragment`'s own re-fetched dashboard data) so date/weather
-    can't show data from two different moments. Weather is additive — a
-    failed fetch just means that side's absent, not a broken card.
+    2026-11-13 — replaced the single day-card pill that held all of it, by
+    request. Built from one fetch (`fresh`, the
+    hourly `_day_card_fragment`'s own re-fetch) so date and weather can't
+    come from two different moments. Weather is additive: a failed fetch
+    just means those capsules are absent.
     """
     as_of = date.fromisoformat(fresh["as_of"])
-    date_block = (
-        '<div class="acamar-day-card-date-block">'
-        '<div class="acamar-section-label">TODAY</div>'
-        f'<div class="acamar-day-card-date">{escape(as_of.strftime("%a, %b %-d"))}</div>'
-        "</div>"
+    pills = (
+        '<span class="acamar-pill acamar-pill-date">'
+        '<span class="acamar-pill-kicker">TODAY</span>'
+        f'{escape(as_of.strftime("%a, %b %-d"))}</span>'
     )
-
-    top = f'<div class="acamar-day-card-top">{date_block}'
     weather = fresh.get("weather")
     if weather:
-        top += (
-            '<div class="acamar-day-card-top-right">'
-            '<div class="acamar-day-card-vdivider"></div>'
-            f"{_weather_box_html(weather)}"
-            f"{_advisory_capsules_html(weather)}"
-            "</div>"
-        )
-    top += "</div>"
-
-    return f'<div class="acamar-day-card">{top}</div>'
+        pills += _weather_pill_html(weather) + _advisory_capsules_html(weather)
+    return f'<div class="acamar-day-pills">{pills}</div>'
 
 
 def _todays_meals_html(data: dict[str, Any]) -> str:

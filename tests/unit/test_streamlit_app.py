@@ -29,7 +29,7 @@ from acamar.dashboard.streamlit_app import (
     _todays_meals_html,
     _unavailable_message,
     _urgency_color,
-    _weather_box_html,
+    _weather_pill_html,
 )
 
 
@@ -126,10 +126,10 @@ def test_food_chip_html_wraps_one_food_as_its_own_chip() -> None:
     )
 
 
-def test_weather_box_html_shows_icon_and_temp_only() -> None:
+def test_weather_pill_html_shows_icon_and_temp_only() -> None:
     weather = {"temp_high_f": 88.3, "condition": "clear", "advice": ["sun"]}
 
-    html = _weather_box_html(weather)
+    html = _weather_pill_html(weather)
 
     assert "88°F" in html
     assert "☀️" in html  # the condition icon
@@ -148,7 +148,7 @@ _RAINY_COLD = {
 def test_advisory_capsules_one_per_advice_with_icon_label_and_reason() -> None:
     html = _advisory_capsules_html(_RAINY_COLD)
 
-    assert html.count('class="acamar-advisory acamar-advisory-') == 2
+    assert html.count('class="acamar-pill acamar-pill-') == 2
     assert "☔" in html and "Umbrella" in html and "60% rain" in html
     assert "🧥" in html and "Jacket" in html and "low 56°F" in html
 
@@ -158,7 +158,7 @@ def test_sun_advice_capsule_reads_sunscreen_and_the_high() -> None:
         {"temp_high_f": 84.2, "temp_low_f": 70.0, "condition": "clear", "advice": ["sun"]}
     )
 
-    assert "acamar-advisory-sun" in html
+    assert "acamar-pill-sun" in html
     assert "Sunscreen + hat" in html and "high 84°F" in html
 
 
@@ -190,34 +190,37 @@ def test_meal_section_html_renders_one_discrete_chip_per_food_item() -> None:
     assert "Banana Strawberry, Yogurt Smoothie" not in html  # not one joined string
 
 
-def test_day_card_html_puts_date_and_weather_in_the_top_row() -> None:
-    # 2026-09-29: the day card is date+weather only now — meals moved out
-    # to their own section below the ask box (_todays_meals_html), so
-    # this fixture's "menu" data is deliberately irrelevant/ignored here.
+def test_day_card_html_is_a_row_of_separate_capsules() -> None:
+    # 2026-11-13, by request: date, weather and each piece of advice are
+    # their own capsules — not one large pill folding everything inside.
     fresh = {
-        "as_of": "2026-09-29",
-        "weather": {"temp_high_f": 88.3, "condition": "clear", "advice": ["sun"]},
-        "menu_fallback_date": None,
-        "menu": [{"title": "Breakfast Menu — Tuesday", "detail": "irrelevant"}],
+        "as_of": "2026-11-13",
+        "weather": {
+            "temp_high_f": 64.3,
+            "temp_low_f": 55.5,
+            "precipitation_probability": 93.0,
+            "condition": "rain likely",
+            "advice": ["umbrella", "warm"],
+        },
+        "menu": [{"title": "Breakfast Menu — Friday", "detail": "irrelevant"}],
     }
 
     html = _day_card_html(fresh)
 
-    assert "acamar-day-card-vdivider" in html
-    assert "Tue, Sep 29" in html
-    assert "TODAY" in html
-    assert "88°F" in html
-    assert "Sunscreen + hat" in html  # the advisory capsule sits in the card's top row
-    assert "acamar-meal-section" not in html  # meals never render inside the card anymore
+    assert html.count('class="acamar-pill ') == 4  # date, weather, umbrella, jacket
+    assert "Fri, Nov 13" in html and "TODAY" in html
+    assert "64°F" in html
+    assert "93% rain" in html and "low 56°F" in html
+    assert "acamar-meal-section" not in html  # meals never render in this row
 
 
-def test_day_card_html_still_renders_date_only_if_weather_is_absent() -> None:
+def test_day_card_html_is_just_the_date_capsule_without_weather() -> None:
     fresh: dict[str, Any] = {"as_of": "2026-09-29", "weather": None}
 
     html = _day_card_html(fresh)
 
     assert "Tue, Sep 29" in html
-    assert "acamar-day-card-vdivider" not in html  # no weather -> no vertical divider either
+    assert html.count('class="acamar-pill ') == 1
 
 
 def test_todays_meals_html_shows_a_labeled_chip_row_per_meal() -> None:
