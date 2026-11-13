@@ -112,7 +112,11 @@ scratch. Key design decisions, so they aren't accidentally undone:
   token (sha256-hashed, `revoked_at IS NULL`; still used locally/by scripts).
   Either authorizes every read. No per-token filtering of `documents` — add
   that only if the tool is shared with data separation. Admin routes need
-  the separate `cockpit_token`; neither of the above grants admin.
+  the separate `cockpit_token`; neither of the above grants admin. **On GCP
+  the household check is currently OFF** (`DISABLE_AUTH=true` on api +
+  dashboard, user decision 2026-11-12) — the password code and secret stay
+  in place; re-enable by dropping that flag in deploy.yml. `DISABLE_AUTH`
+  never applies to `/admin/*`.
 - **`sources.school_id` is `NOT NULL`.** Every source is anchored to a
   school (only Faria for now). No `family_id` / owner CHECK anymore.
 - **`documents.student_ref` is free text, nullable, no FK.** A label like
