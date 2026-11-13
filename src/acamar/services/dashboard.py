@@ -44,6 +44,9 @@ class WeatherCard(BaseModel):
 
     temp_high_f: float
     temp_low_f: float
+    precipitation_probability: float
+    """Max chance of rain (%) over the 8am-5pm window — shown as the reason on
+    the dashboard's umbrella capsule ("60% rain"), 2026-11-13."""
     condition: str
     advice: list[str]
     """0+ stable codes ("umbrella", "warm", "sun") from `weather_advice` —
@@ -164,6 +167,7 @@ class DashboardService:
         return WeatherCard(
             temp_high_f=forecast.temp_high_f,
             temp_low_f=forecast.temp_low_f,
+            precipitation_probability=forecast.precipitation_probability,
             condition=forecast.condition,
             advice=weather_advice(forecast),
         )

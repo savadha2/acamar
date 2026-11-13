@@ -13,6 +13,7 @@ from datetime import date
 from typing import Any
 
 from acamar.dashboard.streamlit_app import (
+    _advisory_capsules_html,
     _attention_card,
     _attention_tier,
     _day_card_html,
@@ -125,33 +126,54 @@ def test_food_chip_html_wraps_one_food_as_its_own_chip() -> None:
     )
 
 
-def test_weather_box_html_shows_temp_and_advice_stacked() -> None:
+def test_weather_box_html_shows_icon_and_temp_only() -> None:
     weather = {"temp_high_f": 88.3, "condition": "clear", "advice": ["sun"]}
 
     html = _weather_box_html(weather)
 
-    assert "acamar-weather-box-temp" in html
     assert "88°F" in html
-    assert "acamar-weather-box-advice" in html
-    assert "Hat + sunscreen" in html  # advice as plain text, no separate icon badge
     assert "☀️" in html  # the condition icon
+    assert "Sunscreen" not in html  # advice lives in its own capsules now (2026-11-13)
 
 
-def test_weather_box_html_joins_multiple_advice_codes() -> None:
-    weather = {"temp_high_f": 42.0, "condition": "rain likely", "advice": ["umbrella", "warm"]}
+_RAINY_COLD = {
+    "temp_high_f": 64.3,
+    "temp_low_f": 55.5,
+    "precipitation_probability": 60.0,
+    "condition": "rain likely",
+    "advice": ["umbrella", "warm"],
+}
 
-    html = _weather_box_html(weather)
 
-    assert "Umbrella, Warm" in html
+def test_advisory_capsules_one_per_advice_with_icon_label_and_reason() -> None:
+    html = _advisory_capsules_html(_RAINY_COLD)
+
+    assert html.count('class="acamar-advisory acamar-advisory-') == 2
+    assert "☔" in html and "Umbrella" in html and "60% rain" in html
+    assert "🧥" in html and "Jacket" in html and "low 56°F" in html
 
 
-def test_weather_box_html_omits_the_advice_line_when_none_applies() -> None:
-    weather = {"temp_high_f": 65.0, "condition": "clear", "advice": []}
+def test_sun_advice_capsule_reads_sunscreen_and_the_high() -> None:
+    html = _advisory_capsules_html(
+        {"temp_high_f": 84.2, "temp_low_f": 70.0, "condition": "clear", "advice": ["sun"]}
+    )
 
-    html = _weather_box_html(weather)
+    assert "acamar-advisory-sun" in html
+    assert "Sunscreen + hat" in html and "high 84°F" in html
 
-    assert "65°F" in html
-    assert "acamar-weather-box-advice" not in html  # no advice line at all, not an empty one
+
+def test_no_advice_means_no_capsules_at_all() -> None:
+    assert _advisory_capsules_html({"temp_high_f": 70.0, "condition": "clear", "advice": []}) == ""
+
+
+def test_a_missing_rain_chance_drops_the_reason_not_the_capsule() -> None:
+    # Older payloads (before precipitation_probability was sent) still render.
+    weather = {**_RAINY_COLD, "advice": ["umbrella"]}
+    del weather["precipitation_probability"]
+
+    html = _advisory_capsules_html(weather)
+
+    assert "Umbrella" in html and "% rain" not in html
 
 
 def test_meal_section_html_renders_one_discrete_chip_per_food_item() -> None:
@@ -185,6 +207,7 @@ def test_day_card_html_puts_date_and_weather_in_the_top_row() -> None:
     assert "Tue, Sep 29" in html
     assert "TODAY" in html
     assert "88°F" in html
+    assert "Sunscreen + hat" in html  # the advisory capsule sits in the card's top row
     assert "acamar-meal-section" not in html  # meals never render inside the card anymore
 
 

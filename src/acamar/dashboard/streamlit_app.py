@@ -71,10 +71,14 @@ _DEFAULT_WEATHER_ICON = "🌡️"
 # .weather_advice — a fixed small set, so an unrecognized code (shouldn't
 # happen) falls back to a titlecased version of the raw code rather than
 # dropping it.
-_ADVICE_LABELS = {
-    "umbrella": "Umbrella",
-    "warm": "Warm",
-    "sun": "Hat + sunscreen",  # matches weather_answer.py's phrasing exactly
+_ADVISORIES: dict[str, tuple[str, str, str]] = {
+    # code -> (icon, label, tint). Own capsules beside the weather box since
+    # 2026-11-13 — the old small text line under the temperature was easy to
+    # miss ("umbrella is not noticeable"). "warm" reads as "Jacket": it
+    # fires on a cold morning, and "Warm" alone was ambiguous.
+    "umbrella": ("☔", "Umbrella", "rain"),
+    "warm": ("🧥", "Jacket", "cold"),
+    "sun": ("🧴", "Sunscreen + hat", "sun"),
 }
 
 # Matches a lunch item-list fragment like "Option 1 - Meat" (real vendor
@@ -239,11 +243,28 @@ _STYLE = """
 }
 .acamar-day-card-top {
     display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap; row-gap: 10px;
 }
 .acamar-day-card-date {
     font-size: 1.05em; font-weight: 700; line-height: 1.1; white-space: nowrap;
 }
-.acamar-day-card-top-right { display: flex; align-items: center; gap: 16px; }
+.acamar-day-card-top-right {
+    /* Wraps on a phone: the advisory capsules drop to a second line rather
+       than squeezing the date and weather. */
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end;
+}
+.acamar-advisories { display: flex; flex-wrap: wrap; gap: 8px; }
+.acamar-advisory {
+    display: inline-flex; align-items: center; gap: 6px; border-radius: 999px;
+    padding: 4px 12px; font-size: 0.85em; font-weight: 700; white-space: nowrap;
+}
+.acamar-advisory-icon { font-size: 1.2em; line-height: 1; }
+.acamar-advisory-reason { font-weight: 500; opacity: 0.8; font-size: 0.9em; }
+.acamar-advisory-reason::before { content: "· "; }
+.acamar-advisory-rain { background: #e3f0fb; color: #1d5fa8; }
+.acamar-advisory-cold { background: #efe9fb; color: #5b3fa8; }
+.acamar-advisory-sun { background: #fff1d6; color: #9a5b06; }
+.acamar-advisory-other { background: #f0f0f0; color: #444444; }
 .acamar-day-card-vdivider { width: 1px; height: 24px; background: #e5e5e5; }
 .acamar-weather-box {
     /* Sized down again to match the day card's own further reduction
@@ -252,9 +273,6 @@ _STYLE = """
 }
 .acamar-weather-box-temp {
     font-size: 0.92em; font-weight: 700; color: #e8712f; white-space: nowrap;
-}
-.acamar-weather-box-advice {
-    font-size: 0.62em; color: #8a7a6a; margin-top: 0; white-space: nowrap; line-height: 1.2;
 }
 .acamar-meal-section { margin-bottom: 18px; }
 .acamar-meal-section:last-child {
@@ -523,7 +541,10 @@ def _menu_items_label(item: dict[str, Any]) -> str:
 
 
 def _weather_box_html(weather: dict[str, Any]) -> str:
-    """Peach-tinted box: temp (bold, orange) on top, advice text below.
+    """Peach-tinted box: condition icon + temp (bold, orange).
+
+    The advice line that used to sit under the temperature moved into its
+    own capsules beside this box (2026-11-13) — see `_advisory_capsules_html`.
 
     2026-09-29 — matches a supplied full-card reference image exactly: a
     distinctly-colored box, not a plain inline span (that was this
@@ -533,20 +554,40 @@ def _weather_box_html(weather: dict[str, Any]) -> str:
     temp = round(weather["temp_high_f"])
     condition = weather["condition"]
     icon = _weather_icon(condition)
-    codes = weather["advice"]
-    advice_text = ", ".join(_ADVICE_LABELS.get(code, code.title()) for code in codes)
-    tooltip = escape(f"{condition}, {', '.join(codes)}" if codes else condition)
-    advice_html = (
-        f'<div class="acamar-weather-box-advice">{escape(advice_text)}</div>'
-        if advice_text
-        else ""
-    )
     return (
-        f'<div class="acamar-weather-box" title="{tooltip}">'
+        f'<div class="acamar-weather-box" title="{escape(condition)}">'
         f'<div class="acamar-weather-box-temp">{icon} {temp}°F</div>'
-        f"{advice_html}"
         f"</div>"
     )
+
+
+def _advisory_reason(code: str, weather: dict[str, Any]) -> str | None:
+    """Why this advice fired, from the same forecast numbers the threshold used."""
+    if code == "umbrella" and weather.get("precipitation_probability") is not None:
+        return f"{round(weather['precipitation_probability'])}% rain"
+    if code == "warm" and weather.get("temp_low_f") is not None:
+        return f"low {round(weather['temp_low_f'])}°F"
+    if code == "sun":
+        return f"high {round(weather['temp_high_f'])}°F"
+    return None
+
+
+def _advisory_capsules_html(weather: dict[str, Any]) -> str:
+    """One icon capsule per piece of advice (umbrella/jacket/sun), or "" if none."""
+    capsules = []
+    for code in weather.get("advice", []):
+        icon, label, tint = _ADVISORIES.get(code, ("•", code.title(), "other"))
+        reason = _advisory_reason(code, weather)
+        reason_html = (
+            f'<span class="acamar-advisory-reason">{escape(reason)}</span>' if reason else ""
+        )
+        capsules.append(
+            f'<span class="acamar-advisory acamar-advisory-{tint}">'
+            f'<span class="acamar-advisory-icon">{icon}</span>'
+            f'<span class="acamar-advisory-label">{escape(label)}</span>'
+            f"{reason_html}</span>"
+        )
+    return f'<div class="acamar-advisories">{"".join(capsules)}</div>' if capsules else ""
 
 
 def _food_chip_html(food: str) -> str:
@@ -599,6 +640,7 @@ def _day_card_html(fresh: dict[str, Any]) -> str:
             '<div class="acamar-day-card-top-right">'
             '<div class="acamar-day-card-vdivider"></div>'
             f"{_weather_box_html(weather)}"
+            f"{_advisory_capsules_html(weather)}"
             "</div>"
         )
     top += "</div>"

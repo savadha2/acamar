@@ -273,6 +273,7 @@ async def test_weather_card_is_populated_from_the_provider() -> None:
     assert board.weather is not None
     assert board.weather.temp_high_f == 64.0
     assert board.weather.condition == "rain likely"
+    assert board.weather.precipitation_probability == 60.0  # the umbrella capsule's reason
     assert "umbrella" in board.weather.advice
 
 
